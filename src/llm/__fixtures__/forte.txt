@@ -1,0 +1,33 @@
+Mariana Lopes Teixeira
+Engenheira de Software Sênior
+São Paulo, SP · mariana.teixeira@exemplo.dev · linkedin.com/in/marianateixeira-exemplo
+
+RESUMO
+Engenheira de software com 9 anos de experiência em pagamentos, varejo e agências digitais.
+
+EXPERIÊNCIA PROFISSIONAL
+
+Engenheira de Software Sênior · Pagatudo Fintech
+jan 2021 – atual
+- Liderei a migração do motor de antifraude de um monólito Java para microsserviços em Kotlin.
+- Criei a fila de reprocessamento de transações com falha usando SQS.
+- Escrevi testes de contrato entre os serviços de pagamento.
+- Participei das cerimônias ágeis do time.
+Stack: Kotlin, Java, AWS, PostgreSQL
+
+Desenvolvedora Back-end Pleno · Rede Farma Brasil
+mar 2018 – dez 2020
+- Construí a API de estoque usada pelas lojas da rede.
+- Automatizei o fechamento fiscal mensal.
+- Dei suporte a sistemas legados.
+Stack: Node.js, TypeScript, MySQL
+
+Desenvolvedora Web · Estúdio Pixel
+2016 – 2018
+- Desenvolvi sites e landing pages para clientes.
+- Criei um gerador de relatórios de campanhas em Python.
+- Treinei estagiários.
+
+FORMAÇÃO
+Bacharelado em Sistemas de Informação · Faculdade Paulista Genérica · 2012 – 2015
+Ensino Médio · Colégio Estadual Inventado · 2009 – 2011

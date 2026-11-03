@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T00:00:00Z",
+  "title": "Design System: sem-sotaque",
+  "extensions": {
+    "colorMeta": {
+      "cobalto": { "role": "primary", "displayName": "Cobalto da cédula", "canonical": "#1c3d8f", "tonalRamp": ["#081a42", "#0f2659", "#15306f", "#1c3d8f", "#2a4996", "#4d6bb5", "#8fa5d6", "#d6dff2"] },
+      "cobalto-fundo": { "role": "primary", "displayName": "Cobalto fundo", "canonical": "#15306f", "tonalRamp": ["#05102c", "#0a1a44", "#10255a", "#15306f", "#1f3f86", "#3a5ba3", "#7690c8", "#cdd8ef"] },
+      "prata": { "role": "primary", "displayName": "Tinta prata", "canonical": "#eef2fa", "tonalRamp": ["#2a3142", "#4a5367", "#6c768c", "#9099ad", "#b2bbcd", "#c4cde3", "#dde3f0", "#eef2fa"] },
+      "ocre": { "role": "secondary", "displayName": "Ocre do ornamento", "canonical": "#d8b24c", "tonalRamp": ["#3a2d0c", "#5c4815", "#80651f", "#b28a2c", "#d8b24c", "#e3c46d", "#f0cf6e", "#f5ebcd"] },
+      "afirmado": { "role": "tertiary", "displayName": "Tinta afirmado", "canonical": "#8fe0bf", "tonalRamp": ["#0b2a1e", "#124331", "#1d6a4d", "#2d8a66", "#4ea883", "#74c7a6", "#8fe0bf", "#dff3ea"] },
+      "estimado": { "role": "tertiary", "displayName": "Tinta estimado", "canonical": "#cdbcff", "tonalRamp": ["#22163f", "#3a2868", "#5a3e9e", "#7558bb", "#9a80d8", "#bba6ef", "#cdbcff", "#efeafc"] },
+      "perigo": { "role": "tertiary", "displayName": "Perigo", "canonical": "#ffb4a8", "tonalRamp": ["#2c1815", "#5a1710", "#a3261b", "#c4402f", "#dd6a57", "#f2907f", "#ffb4a8", "#ffe6e1"] },
+      "foco": { "role": "neutral", "displayName": "Foco amarelo", "canonical": "#ffd76a" },
+      "suave": { "role": "neutral", "displayName": "Tinta suave", "canonical": "#c4cde3" },
+      "prata-suave": { "role": "neutral", "displayName": "Prata suave (capa da home)", "canonical": "rgb(238 242 250 / 0.78)" },
+      "folha": { "role": "neutral", "displayName": "Folha translúcida", "canonical": "rgb(8 22 66 / 0.32)" },
+      "campo-fundo": { "role": "neutral", "displayName": "Campo", "canonical": "rgb(255 255 255 / 0.06)" },
+      "linha": { "role": "neutral", "displayName": "Hairline prata", "canonical": "rgb(238 242 250 / 0.24)" },
+      "linha-forte": { "role": "neutral", "displayName": "Linha forte (3:1)", "canonical": "rgb(238 242 250 / 0.55)" }
+    },
+    "typographyMeta": {
+      "titulo": { "displayName": "Título (Caslon, --t-titulo)", "purpose": "O h1 de cada tela." },
+      "secao": { "displayName": "Seção (Caslon)", "purpose": "O h2 do fim e o \"Antes e depois\"." },
+      "marca": { "displayName": "Wordmark (Caslon)", "purpose": "sem-sotaque na faixa." },
+      "pergunta": { "displayName": "Pergunta (--t-pergunta)", "purpose": "Só a pergunta atual do chat." },
+      "corpo": { "displayName": "Corpo (--t-corpo)", "purpose": "Leitura e respostas, medida de 38rem." },
+      "pequeno": { "displayName": "Pequeno (--t-pequeno)", "purpose": "Perguntas passadas, linha antes, avisos, footer." },
+      "rotulo": { "displayName": "Rótulo de campo (--t-rotulo)", "purpose": "Mono caixa-alta acima de um valor; números e carimbos." }
+    },
+    "shadows": [
+      { "name": "compositor", "value": "0 -10px 24px rgb(5 14 44 / 0.35)", "purpose": "O compositor, levantado sobre o histórico do chat." },
+      { "name": "folha-que-sobe", "value": "0 -12px 32px rgb(5 14 44 / 0.5)", "purpose": "A confirmação Terminei? sobre o compositor." },
+      { "name": "papel", "value": "0 16px 36px -12px rgb(5 14 44 / 0.6)", "purpose": "O PDF branco sobre a cédula." },
+      { "name": "selo", "value": "0 0 0 6px rgb(216 178 76 / 0.25), 0 18px 40px rgb(5 14 44 / 0.55)", "purpose": "O selo de convite da home, com o halo ocre." },
+      { "name": "selo-hover", "value": "0 0 0 10px rgb(216 178 76 / 0.3), 0 22px 48px rgb(5 14 44 / 0.6)", "purpose": "O selo sob o ponteiro." },
+      { "name": "gravura", "value": "drop-shadow(0 6px 14px rgb(5 15 45 / 0.45))", "purpose": "A gravura da capa da home (filter)." }
+    ],
+    "motion": [
+      { "name": "carimbar", "value": "0.32s cubic-bezier(0.16, 1, 0.3, 1); scale 1.35 -> 1, opacity 0 -> 1", "purpose": "O momento autoral do sistema: um visto pousando." },
+      { "name": "subir", "value": "0.24s cubic-bezier(0.16, 1, 0.3, 1); translateY(1.5rem), opacity 0", "purpose": "Folha de confirmação e painel de apagar." },
+      { "name": "trabalhando", "value": "1.4s linear infinite", "purpose": "Faixa de luz no submit pendente." },
+      { "name": "girar", "value": "6s linear infinite", "purpose": "O selo pequeno da espera." },
+      { "name": "escrevendo", "value": "1.1s ease-in-out infinite", "purpose": "Três pontos antes da primeira palavra." },
+      { "name": "controle", "value": "0.15s ease-out", "purpose": "Cor e borda de botões." },
+      { "name": "imprimir", "value": "1.6s cubic-bezier(0.16, 1, 0.3, 1); clip-path inset(0 0 100% 0) -> inset(0)", "purpose": "A gravura da capa da home impressa de cima para baixo." },
+      { "name": "selo-gira", "value": "40s linear infinite", "purpose": "A legenda no aro do selo da home." },
+      { "name": "barra-pulsa", "value": "2.4s ease-out infinite", "purpose": "O halo do botão da barra de convite." },
+      { "name": "barra-desliza", "value": "translate 240ms ease-out", "purpose": "A barra de convite saindo quando o selo aparece." },
+      { "name": "reduced-motion", "value": "prefers-reduced-motion: reduce -> animation: none", "purpose": "Desliga todas as animações acima e a transição da barra." }
+    ],
+    "breakpoints": [
+      { "name": "pagina-de-dados-em-colunas", "value": "min-width: 40rem" },
+      { "name": "placa-centrada-com-margem", "value": "max-width: 40rem" },
+      { "name": "antes-depois-lado-a-lado", "value": "min-width: 48rem" },
+      { "name": "teclado-aberto", "value": "max-height: 520px" },
+      { "name": "toque", "value": "pointer: coarse" },
+      { "name": "hover", "value": "hover: hover" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Faixa",
+      "kind": "nav",
+      "refersTo": "faixa",
+      "description": "A faixa sticky de toda tela do Tester: wordmark em Caslon e autor em mono, sobre a tira de onda ocre; sem links.",
+      "html": "<header class=\"ds-faixa\"><div class=\"ds-faixa-dentro\"><span class=\"ds-marca\">sem-sotaque</span><span class=\"ds-autor\">por Daniel Bernardino</span></div><svg class=\"ds-onda\" viewBox=\"0 0 240 16\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><path d=\"M0 8 Q15 0 30 8 T60 8 T90 8 T120 8 T150 8 T180 8 T210 8 T240 8\"/><path d=\"M0 8 Q15 16 30 8 T60 8 T90 8 T120 8 T150 8 T180 8 T210 8 T240 8\"/></svg></header>",
+      "css": ".ds-faixa { background: var(--capa); color: var(--capa-texto); } .ds-faixa-dentro { display: flex; align-items: center; justify-content: space-between; gap: var(--e-4); min-height: var(--faixa-altura); padding: 0 var(--e-4); } .ds-marca { font-family: var(--fonte-titulo); font-size: 1.375rem; line-height: 1; } .ds-autor { font-family: var(--fonte-mono); font-size: var(--t-rotulo); letter-spacing: 0.02em; color: var(--capa-suave); white-space: nowrap; } .ds-onda { display: block; width: 100%; height: 1rem; fill: none; stroke: var(--ocre); stroke-width: 0.6; opacity: 0.7; }"
+    },
+    {
+      "name": "Botão primário",
+      "kind": "button",
+      "refersTo": "botao-primario",
+      "description": "A ação principal da tela, em prata com tinta cobalto, largura total; clareia para branco no hover.",
+      "html": "<button class=\"ds-btn-primario\">Parar e gerar meu currículo</button>",
+      "css": ".ds-btn-primario { font: inherit; font-weight: 600; width: 100%; min-height: var(--alvo); padding: var(--e-3) var(--e-5); border-radius: var(--raio); border: 1px solid var(--acento); background: var(--acento); color: var(--acento-texto); cursor: pointer; transition: background-color 0.15s ease-out, border-color 0.15s ease-out; } .ds-btn-primario:hover { background: #fff; border-color: #fff; } .ds-btn-primario:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão",
+      "kind": "button",
+      "refersTo": "botao",
+      "description": "Ação secundária: vazado, borda linha-forte.",
+      "html": "<button class=\"ds-btn\">Continuar respondendo</button>",
+      "css": ".ds-btn { font: inherit; min-height: var(--alvo); padding: var(--e-3) var(--e-5); border-radius: var(--raio); border: 1px solid var(--linha-forte); background: transparent; color: var(--texto); cursor: pointer; transition: border-color 0.15s ease-out; } .ds-btn:hover { border-color: var(--texto); } .ds-btn:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }"
+    },
+    {
+      "name": "Campo",
+      "kind": "input",
+      "refersTo": "campo",
+      "description": "Campo de formulário com rótulo 600 acima, no campo translúcido com a borda de 3:1.",
+      "html": "<label class=\"ds-campo\">E-mail<input placeholder=\"voce@exemplo.com\"></label>",
+      "css": ".ds-campo { display: grid; gap: var(--e-2); font-weight: 600; color: var(--texto); } .ds-campo input { font: inherit; font-weight: 400; min-height: var(--alvo); padding: var(--e-3); border: 1px solid var(--linha-forte); border-radius: var(--raio); background: var(--campo-fundo); color: var(--texto); caret-color: var(--acento); } .ds-campo input::placeholder { color: var(--suave); opacity: 1; } .ds-campo input:focus-visible { outline: 2px solid var(--foco); outline-offset: 0; border-color: var(--foco); }"
+    },
+    {
+      "name": "Placa",
+      "kind": "card",
+      "refersTo": "placa",
+      "description": "O painel cerimonial de uma tela: moldura ocre dupla, folha translúcida, cantoneiras pequenas.",
+      "html": "<section class=\"ds-placa\"><svg class=\"ds-cantoneira ds-se\" viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M4 60 V4 H60\"/><path d=\"M11 60 V11 H60\"/><path d=\"M60 4 c0 9 -7 13 -13 10 c-4 -2 -3 -8 1 -8\"/><path d=\"M4 60 c9 0 13 -7 10 -13 c-2 -4 -8 -3 -8 1\"/><path d=\"M11 11 L22 22 M18 11 L22 15 M11 18 L15 22\"/></svg><svg class=\"ds-cantoneira ds-sd\" viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M4 60 V4 H60\"/><path d=\"M11 60 V11 H60\"/><path d=\"M60 4 c0 9 -7 13 -13 10 c-4 -2 -3 -8 1 -8\"/><path d=\"M4 60 c9 0 13 -7 10 -13 c-2 -4 -8 -3 -8 1\"/><path d=\"M11 11 L22 22 M18 11 L22 15 M11 18 L15 22\"/></svg><svg class=\"ds-cantoneira ds-ie\" viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M4 60 V4 H60\"/><path d=\"M11 60 V11 H60\"/><path d=\"M60 4 c0 9 -7 13 -13 10 c-4 -2 -3 -8 1 -8\"/><path d=\"M4 60 c9 0 13 -7 10 -13 c-2 -4 -8 -3 -8 1\"/><path d=\"M11 11 L22 22 M18 11 L22 15 M11 18 L15 22\"/></svg><svg class=\"ds-cantoneira ds-id\" viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M4 60 V4 H60\"/><path d=\"M11 60 V11 H60\"/><path d=\"M60 4 c0 9 -7 13 -13 10 c-4 -2 -3 -8 1 -8\"/><path d=\"M4 60 c9 0 13 -7 10 -13 c-2 -4 -8 -3 -8 1\"/><path d=\"M11 11 L22 22 M18 11 L22 15 M11 18 L15 22\"/></svg><p>Eu sou o Daniel, dev como você. Vou te perguntar sobre o que você fez, em português.</p><ul class=\"ds-garantias\"><li>De 20 a 40 min</li><li>Nenhum número inventado</li></ul></section>",
+      "css": ".ds-placa { position: relative; margin-inline: 4px; padding: var(--e-6) var(--e-5); border: 1px solid var(--ocre); outline: 1px solid rgb(216 178 76 / 0.4); outline-offset: 3px; background: var(--folha); color: var(--texto); } .ds-placa p { font-size: 1.1875rem; line-height: 1.5; margin: 0 0 var(--e-4); } .ds-cantoneira { position: absolute; width: 1.75rem; height: 1.75rem; fill: none; stroke: var(--ocre); stroke-width: 2.5; stroke-linecap: round; } .ds-se { top: var(--e-1); left: var(--e-1); } .ds-sd { top: var(--e-1); right: var(--e-1); scale: -1 1; } .ds-ie { bottom: var(--e-1); left: var(--e-1); scale: 1 -1; } .ds-id { bottom: var(--e-1); right: var(--e-1); scale: -1 -1; } .ds-garantias { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--e-2); } .ds-garantias li { font-family: var(--fonte-mono); font-size: var(--t-rotulo); text-transform: uppercase; letter-spacing: 0.06em; padding: var(--e-1) var(--e-2); border: 1px solid var(--ocre); border-radius: var(--raio-carimbo); color: var(--ocre); }"
+    },
+    {
+      "name": "Página de dados",
+      "kind": "card",
+      "refersTo": "pagina-de-dados",
+      "description": "O consentimento como página de dados: moldura ocre dupla, um campo por linha, rótulos em ocre.",
+      "html": "<dl class=\"ds-pagina\"><div><dt class=\"ds-rotulo\">Quem lê</dt><dd>O Daniel, e mais ninguém.</dd></div><div><dt class=\"ds-rotulo\">Onde fica</dt><dd>Num banco em servidor da Railway.</dd></div></dl>",
+      "css": ".ds-pagina { margin: 0 4px; background: var(--folha); border: 1px solid var(--ocre); outline: 1px solid rgb(216 178 76 / 0.4); outline-offset: 3px; } .ds-pagina > div { padding: var(--e-4); } .ds-pagina > div + div { border-top: 1px solid var(--linha); } .ds-pagina dd { margin: 0; color: var(--texto); } .ds-rotulo { display: block; margin-bottom: var(--e-1); font-family: var(--fonte-mono); font-size: var(--t-rotulo); letter-spacing: var(--rastreio-rotulo); text-transform: uppercase; color: var(--ocre); }"
+    },
+    {
+      "name": "Régua de vistos",
+      "kind": "custom",
+      "refersTo": "visto-carimbado",
+      "description": "A assinatura: cobertura como fileira de 10 vistos, opaca no cobalto fundo; carimbado = anel ocre girado com check.",
+      "html": "<div class=\"ds-progresso\"><span class=\"ds-rotulo\">Currículo <strong>30%</strong> coberto</span><span class=\"ds-vistos\"><span class=\"ds-visto ds-carimbado\"></span><span class=\"ds-visto ds-carimbado\"></span><span class=\"ds-visto ds-carimbado\"></span><span class=\"ds-visto\"></span><span class=\"ds-visto\"></span><span class=\"ds-visto\"></span><span class=\"ds-visto\"></span><span class=\"ds-visto\"></span><span class=\"ds-visto\"></span><span class=\"ds-visto\"></span></span></div>",
+      "css": ".ds-progresso { display: grid; gap: var(--e-2); padding: var(--e-3) var(--e-4); background: var(--cobalto-fundo); border-bottom: 1px solid var(--linha); } .ds-rotulo { font-family: var(--fonte-mono); font-size: var(--t-rotulo); letter-spacing: var(--rastreio-rotulo); text-transform: uppercase; color: var(--suave); } .ds-rotulo strong { font-weight: 600; color: var(--texto); font-variant-numeric: tabular-nums; } .ds-vistos { display: grid; grid-template-columns: repeat(10, minmax(0, 2.75rem)); gap: var(--e-1); } .ds-visto { height: 1.5rem; border: 1px dashed var(--linha-forte); border-radius: var(--raio-carimbo); } .ds-carimbado { display: grid; place-items: center; border: 2px solid var(--ocre); background: rgb(216 178 76 / 0.12); color: var(--ocre); transform: rotate(-3deg); animation: ds-carimbar 0.32s cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-carimbado::after { content: ''; width: 0.85rem; height: 0.85rem; background: currentColor; mask: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5 6.5 12 13 4.5' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\") center / contain no-repeat; } .ds-carimbado:nth-child(3n + 2) { transform: rotate(2deg); } .ds-carimbado:nth-child(3n) { transform: rotate(-1deg); } @keyframes ds-carimbar { from { opacity: 0; scale: 1.35; } to { opacity: 1; scale: 1; } } @media (prefers-reduced-motion: reduce) { .ds-carimbado { animation: none; } }"
+    },
+    {
+      "name": "Par antes × depois",
+      "kind": "custom",
+      "refersTo": "carimbo-depois",
+      "description": "A linha antiga ao lado da nova, carimbada DEPOIS, com cada número na tinta da origem.",
+      "html": "<div class=\"ds-par\"><div class=\"ds-antes\"><span class=\"ds-rotulo\">Antes</span><p>Reduzi o tempo de processamento de 4 horas para 25 minutos.</p></div><div class=\"ds-depois\"><span class=\"ds-rotulo ds-carimbo\">Depois</span><p>Cut the nightly run from <span class=\"ds-numero ds-estimado\">~4</span> h to <span class=\"ds-numero\">25</span> min.</p></div></div>",
+      "css": ".ds-par { display: grid; border: 1px solid var(--linha); border-radius: var(--raio); overflow: hidden; background: var(--folha); } .ds-par p { margin: 0; } .ds-antes, .ds-depois { padding: var(--e-3) var(--e-4) var(--e-4); } .ds-antes { color: var(--suave); font-size: var(--t-pequeno); border-bottom: 1px dashed var(--linha-forte); } .ds-depois { background: var(--campo-fundo); color: var(--texto); } .ds-rotulo { display: block; margin-bottom: var(--e-1); font-family: var(--fonte-mono); font-size: var(--t-rotulo); letter-spacing: var(--rastreio-rotulo); text-transform: uppercase; color: var(--suave); } .ds-carimbo { display: inline-block; margin-bottom: var(--e-2); padding: 0.1rem var(--e-2); border: 2px solid var(--afirmado); border-radius: var(--raio-carimbo); color: var(--afirmado); font-weight: 600; transform: rotate(-2deg); } .ds-numero { font-family: var(--fonte-mono); font-size: 0.92em; font-weight: 600; color: var(--afirmado); text-decoration: underline 2px; text-underline-offset: 0.25em; white-space: nowrap; } .ds-estimado { color: var(--estimado); text-decoration-style: dashed; }"
+    },
+    {
+      "name": "Compositor",
+      "kind": "input",
+      "refersTo": "compositor",
+      "description": "Opaco no cobalto, com sombra para cima: uma linha que cresce, enviar quadrado em prata com seta SVG, atalhos em texto.",
+      "html": "<form class=\"ds-resposta\"><textarea rows=\"2\" placeholder=\"Sua resposta\"></textarea><button class=\"ds-enviar\" aria-label=\"Enviar\"><svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M10 16V4M4.5 9.5 10 4l5.5 5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><div class=\"ds-atalhos\"><button type=\"button\">Pular esta</button><button type=\"button\" class=\"ds-terminei\">Terminei</button></div></form>",
+      "css": ".ds-resposta { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: var(--e-2); padding: var(--e-3) var(--e-4) var(--e-2); background: var(--cobalto); border-top: 1px solid var(--linha); box-shadow: 0 -10px 24px rgb(5 14 44 / 0.35); } .ds-resposta textarea { font: inherit; min-width: 0; min-height: var(--alvo); max-height: 40vh; field-sizing: content; padding: var(--e-3); border: 1px solid var(--linha-forte); border-radius: var(--raio); background: var(--campo-fundo); color: var(--texto); caret-color: var(--acento); resize: none; } .ds-resposta textarea:focus-visible { outline: 2px solid var(--foco); outline-offset: 0; border-color: var(--foco); } .ds-enviar { display: grid; place-items: center; width: var(--alvo); height: var(--alvo); padding: 0; border: 1px solid var(--acento); border-radius: var(--raio); background: var(--acento); color: var(--acento-texto); cursor: pointer; } .ds-enviar:hover { background: #fff; border-color: #fff; } .ds-enviar:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; } .ds-atalhos { grid-column: 1 / -1; display: flex; justify-content: space-between; } .ds-atalhos button { font: inherit; min-height: 44px; padding: var(--e-2) 0; border: none; background: none; color: var(--suave); cursor: pointer; } .ds-atalhos button:hover { color: var(--texto); text-decoration: underline; text-underline-offset: 0.2em; } .ds-atalhos .ds-terminei { color: var(--acento); font-weight: 600; }"
+    },
+    {
+      "name": "Selo de convite (home)",
+      "kind": "button",
+      "refersTo": "selo-botao",
+      "description": "O pé da home: um selo redondo em ocre, com a legenda girando no aro, que pede o convite no WhatsApp.",
+      "html": "<a class=\"ds-selo\" href=\"#\"><svg class=\"ds-selo-aro\" viewBox=\"0 0 200 200\" aria-hidden=\"true\"><defs><path id=\"ds-selo-aro\" d=\"M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0\"/></defs><circle cx=\"100\" cy=\"100\" r=\"96\"/><circle cx=\"100\" cy=\"100\" r=\"66\"/><text><textPath href=\"#ds-selo-aro\" textLength=\"496\" lengthAdjust=\"spacing\">TESTE FECHADO · GRÁTIS · POR CONVITE · TESTE FECHADO · GRÁTIS · POR CONVITE ·</textPath></text></svg><span class=\"ds-selo-miolo\">Pedir convite</span></a>",
+      "css": ".ds-selo { position: relative; display: grid; place-items: center; width: min(17rem, 78vw); aspect-ratio: 1; margin: 0 auto; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f0cf6e, var(--ocre) 55%, #b28a2c); color: var(--cobalto); text-decoration: none; box-shadow: 0 0 0 6px rgb(216 178 76 / 0.25), 0 18px 40px rgb(5 14 44 / 0.55); transition: transform 160ms ease-out, box-shadow 160ms ease-out; } .ds-selo:hover { transform: rotate(-4deg) scale(1.03); box-shadow: 0 0 0 10px rgb(216 178 76 / 0.3), 0 22px 48px rgb(5 14 44 / 0.6); } .ds-selo:focus-visible { outline: 3px solid var(--prata); outline-offset: 12px; } .ds-selo-aro { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--cobalto); stroke-width: 1.2; animation: ds-selo-gira 40s linear infinite; } .ds-selo-aro text { fill: var(--cobalto); stroke: none; font: 600 11.5px/1 var(--fonte-mono); letter-spacing: 0.12em; } .ds-selo-miolo { max-width: 8ch; font-family: var(--fonte-titulo); font-size: 2rem; line-height: 1; text-align: center; } @keyframes ds-selo-gira { to { rotate: 360deg; } } @media (prefers-reduced-motion: reduce) { .ds-selo-aro { animation: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A cédula cobalto",
+    "overview": "A tela é uma cédula: papel azul-cobalto com granulado fino, tinta prata, e ornamentos em ocre (cantoneiras, tiras de onda, molduras duplas, carimbos), com os títulos em Libre Caslon Display, como a legenda de uma placa gravada. Os carimbos continuam dizendo de onde veio cada número: verde cheio é afirmado, violeta tracejado com `~` é estimado. Nasceu na home (aprovada em 2026-10-24) e virou o sistema de toda tela no passo 13 (2026-10-26). Recusa o chat de balões de SaaS de IA e o \"termos de uso\" em texto corrido.\n\nMobile primeiro, a 360px, para quem abre o link pelo WhatsApp. É o mesmo cobalto nos dois temas: não há tema claro. O ornamento segue o peso da tela. As telas de cerimônia (consentimento, resultado, fim, apagado, 404) levam a placa, a moldura ocre dupla e as cantoneiras. As de trabalho (chat, import, formulário do cabeçalho, espera) levam só o papel, a faixa e os carimbos. Uma decisão por vez: a pergunta atual é dona da dobra, sob a régua ocre, e o que já passou recua para o suave menor. A leitura fica na face do próprio celular, a Caslon só nos títulos e o mono só nos campos.\n\nO PDF é a exceção que confirma o papel: ele é o documento, não a interface, e continua branco, dentro da moldura ocre.",
+    "keyCharacteristics": [
+      "Papel cobalto com granulado em toda tela; o chat no cobalto fundo, só com o granulado.",
+      "Faixa com o wordmark em Caslon sobre a tira de onda ocre, em toda tela do Tester.",
+      "Ornamento por peso da tela: placa e cantoneiras na cerimônia, só papel e carimbos no trabalho.",
+      "A cobertura como fileira de 10 vistos carimbados em ocre; a origem de um número dita pela tinta e pela forma da linha.",
+      "Prata para a ação principal; ocre para o ornamento e a marca de cerimônia; verde e violeta só para a origem de um número.",
+      "Tudo que fica preso na tela é opaco."
+    ],
+    "rules": [
+      { "name": "The Ink Means Origin Rule", "body": "Verde é afirmado e violeta é estimado, e só isso: a origem de um número e o carimbo \"Depois\". Nunca decoram, nunca marcam cobertura, recibo ou aviso. A forma carrega o mesmo sinal que a cor: linha cheia = afirmado, linha tracejada com `~` = estimado.", "section": "colors" },
+      { "name": "The Ochre Ornament Rule", "body": "Tudo o que é ornamento ou marca de cerimônia é ocre: cantoneira, onda, moldura, carimbo de cobertura, garantia, recibo, anel da espera, aviso do que mudou, régua de 2px. Se algo precisa de destaque sem ser número, é ocre, não verde nem violeta.", "section": "colors" },
+      { "name": "The One Silver Action Rule", "body": "A ação principal da tela é a única prata cheia. Uma segunda ação nunca é primária: \"Não\" no reconsentimento é `.secundario` (vazado), \"Pular esta\" é texto suave, \"Continuar respondendo\" é vazado.", "section": "colors" },
+      { "name": "The Caslon Is The Plate Rule", "body": "A Caslon fica nos títulos (`h1`, `h2`) e no wordmark, e na home também nos numerais romanos, no miolo do selo e na legenda da capa. Nunca em parágrafo, rótulo, botão, nem no painel admin, que volta os títulos para a fonte do sistema em 700.", "section": "typography" },
+      { "name": "The Mono Is A Field Rule", "body": "Azeret Mono só onde uma cédula ou um passaporte usaria tipo de máquina: rótulo de campo, número, carimbo, o autor da faixa. Nunca em parágrafo ou título.", "section": "typography" },
+      { "name": "The Flat Page Rule", "body": "Nenhuma sombra decorativa. Se nada sobe sobre o papel, não há sombra.", "section": "elevation" },
+      { "name": "The Opaque Pin Rule", "body": "Nada sticky ou fixo usa o `--folha`, que é translúcido e deixa o histórico aparecer por baixo. A régua de cobertura é `--cobalto-fundo`; o compositor e a folha de confirmação são `--cobalto`; a barra de convite da home é `rgb(10 26 74 / 0.92)`.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do pôr todo valor sob um `.rotulo` mono, como campo de passaporte.",
+      "Do mostrar a origem de todo número pela forma da linha e pela tinta: cheia `--afirmado`, tracejada com `~` `--estimado`.",
+      "Do dar ornamento pelo peso da tela: placa, moldura dupla e cantoneiras só na cerimônia (consentimento, resultado, fim, apagado, 404); no trabalho (chat, import, cabeçalho, espera), só o papel, a faixa e os carimbos.",
+      "Do usar ocre para todo destaque que não é número: carimbo de cobertura, garantia, recibo, aviso, régua de 2px.",
+      "Do girar carimbos poucos graus (-3° a 2°; cancelado -8°); nunca alinhar um carimbo reto.",
+      "Do manter prata cheia só na ação principal; segundas ações vazadas ou em texto.",
+      "Do fazer opaca (`--cobalto` ou `--cobalto-fundo`) toda superfície sticky ou fixa.",
+      "Do desenhar a 360px primeiro, com alvos de 48px, e medir cada par novo de tinta e fundo contra a tabela de contraste (AA no texto, 3:1 na borda de controle).",
+      "Do manter faixa e cobertura sticky e soltá-las abaixo de 520px de altura.",
+      "Do passar texto novo de interface pelo Daniel antes de entrar, seguindo `docs/regras-de-redacao.md`. Pendentes hoje: o rótulo \"Você\" nas respostas do chat; uma legenda para as linhas de origem no antes × depois; o texto do 404."
+    ],
+    "donts": [
+      "Don't usar balões de chat, avatares ou alinhamento esquerda/direita para falante.",
+      "Don't usar verde ou violeta para decorar, marcar cobertura, recibo ou aviso: são a origem de um número.",
+      "Don't usar o `--folha` em superfície sticky ou fixa: ele é translúcido e o histórico aparece por baixo.",
+      "Don't pôr guilloché atrás de texto de leitura, nem ornamento no painel admin.",
+      "Don't pôr ocre como texto pequeno sobre o campo (4.2): ali ele é só texto grande ou ornamento.",
+      "Don't pôr a Caslon em parágrafo, rótulo ou botão, nem o Azeret Mono em parágrafo ou título.",
+      "Don't usar gradiente fora do papel (o `body`, as manchas da capa), do relevo do selo e da faixa de luz do submit pendente; nem vidro (`backdrop-filter`) fora da barra de convite da home; nem emoji.",
+      "Don't usar ícones de glifo ou de fonte; ícones são SVG inline. A seta `→` dos pares da home é um caractere de texto que ficou de antes, não um modelo.",
+      "Don't trocar a tinta de um número por estética, nem marcar estimado só pela cor.",
+      "Don't tingir o PDF: ele é a folha branca do currículo, dentro da moldura.",
+      "Don't pôr sombra em superfície que não sobe sobre o papel.",
+      "Don't usar o rótulo mono como sobretítulo acima de um `h1`/`h2`."
+    ]
+  }
+}

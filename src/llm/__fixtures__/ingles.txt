@@ -1,0 +1,24 @@
+Beatriz Kowalski Nunes
+Senior Full-stack Engineer
+Curitiba, Brazil · beatriz.nunes@example.dev · linkedin.com/in/beatriz-nunes-example
+
+SUMMARY
+Full-stack engineer with 8 years building B2B SaaS products. Comfortable owning features from the database schema to the UI.
+
+EXPERIENCE
+
+Senior Full-stack Engineer — Araucária Health (remote)
+Jun 2021 – Present
+- Led the migration of the scheduling module from a Rails monolith to a TypeScript service.
+- Built the patient reminder system that sends WhatsApp and SMS notifications, cutting no-shows by 30%.
+- Introduced end-to-end tests with Playwright and made them a required check on every pull request.
+Tech: TypeScript, NestJS, React, PostgreSQL, GCP
+
+Software Engineer — Pinhão Logistics
+Aug 2017 – May 2021
+- Designed the route optimization API used by 120 delivery drivers.
+- Moved deployments from manual FTP uploads to a CI/CD pipeline on GitHub Actions.
+Tech: Ruby on Rails, React, Redis
+
+EDUCATION
+B.Sc. in Information Systems — Federal University of Example, 2013 – 2017

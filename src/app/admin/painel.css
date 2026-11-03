@@ -1,0 +1,296 @@
+/* Copyright (C) 2026 DB Software Solutions LTDA */
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+/* Daniel's panel: read on a laptop, so wider than the Tester's screens. Same tokens as globals.css. */
+.painel main {
+  max-width: 72rem;
+}
+
+/* The panel takes the banknote's colours only: its titles stay in the system face, no ornaments. */
+.painel h1,
+.painel h2 {
+  font-family: var(--fonte);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.painel h1 {
+  font-size: 1.625rem;
+}
+
+.painel h2 {
+  font-size: 1.25rem;
+  margin: 2.5rem 0 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--linha);
+}
+
+.painel h3 {
+  font-size: 1.05rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.painel h4 {
+  font-size: 0.95rem;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.painel .suave {
+  color: var(--suave);
+}
+
+.painel .pequeno {
+  font-size: 0.85rem;
+}
+
+.painel .alerta {
+  color: var(--perigo);
+}
+
+.painel-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.painel-topo button[type='submit'] {
+  background: transparent;
+  border: none;
+  color: var(--suave);
+  font-weight: 400;
+  text-decoration: underline;
+}
+
+.painel .envio {
+  max-width: 40rem;
+}
+
+.painel .indice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.cartoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+
+.cartao {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--linha);
+  border-radius: 10px;
+}
+
+.cartao strong {
+  font-size: 1.6rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.cartao strong .suave {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.cartao .rotulo {
+  color: var(--suave);
+  font-size: 0.9rem;
+}
+
+.cartao.bateu {
+  border-color: var(--acento);
+}
+
+.cartao.falta {
+  border-color: var(--perigo);
+}
+
+.tabela {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.painel table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.painel th,
+.painel td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--linha);
+}
+
+.painel th {
+  color: var(--suave);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.painel td.texto-longo {
+  min-width: 18rem;
+}
+
+.painel a {
+  color: var(--acento);
+}
+
+.painel select {
+  font: inherit;
+  font-weight: 400;
+  padding: 0.75rem;
+  border: 1px solid var(--linha);
+  border-radius: 10px;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+/* The column never grows past the page: a select's longest option would widen it past 360px. */
+.painel-form {
+  max-width: 32rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.painel-form select {
+  width: 100%;
+  min-width: 0;
+}
+
+.link-gerado code {
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.marcador {
+  display: inline-block;
+  margin: 0 0.25rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--linha);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: var(--suave);
+}
+
+.marcador.alta,
+.marcador.origem-qualitativo {
+  border-color: var(--perigo);
+  color: var(--perigo);
+}
+
+.marcador.origem-estimado {
+  border-color: var(--estimado);
+  color: var(--estimado);
+}
+
+.transcricao,
+.corpus,
+.tentativas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.transcricao li {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  margin-bottom: 0.5rem;
+}
+
+.transcricao li.pessoa {
+  background: var(--campo-fundo);
+}
+
+.transcricao li.sistema {
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.transcricao li.decisao {
+  margin-left: 1.5rem;
+  border-left-style: dashed;
+  background: color-mix(in srgb, var(--linha) 25%, transparent);
+}
+
+.transcricao .meta {
+  font-size: 0.82rem;
+  color: var(--suave);
+}
+
+.transcricao p {
+  margin: 0.25rem 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.corpus > li {
+  padding: 0.5rem 0 1rem;
+  border-bottom: 1px solid var(--linha);
+}
+
+.corpus ul {
+  padding-left: 1rem;
+}
+
+.corpus .accomplishment {
+  margin: 0.75rem 0;
+}
+
+.corpus .accomplishment p {
+  margin: 0 0 0.25rem;
+}
+
+.metrics {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.tentativa {
+  padding: 0.75rem 0 1rem;
+  border-bottom: 1px solid var(--linha);
+}
+
+.tentativa h3 {
+  margin-top: 0.5rem;
+}
+
+.violacoes {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.9rem;
+}
+
+.destaque {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--acento);
+  border-radius: 10px;
+}
+
+.destaque h3 {
+  margin-top: 0;
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) 1fr;
+  gap: 0.4rem 1rem;
+}
+
+.campos dt {
+  color: var(--suave);
+}
+
+.campos dd {
+  margin: 0;
+  white-space: pre-wrap;
+}

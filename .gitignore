@@ -1,0 +1,24 @@
+node_modules/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+.env
+.env.*
+!.env.example
+
+# Dados de tester nunca vão para o git
+storage/
+*.pdf
+!src/**/__fixtures__/**/*.pdf
+dumps/
+
+__pycache__/
+.venv/
+.DS_Store
+
+# A local cache of the impeccable hook, with absolute paths.
+.impeccable/hook.cache.json

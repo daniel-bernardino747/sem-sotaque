@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "eventos_link_aberto_uma_vez" ON "eventos" USING btree ("sessao_id") WHERE "eventos"."tipo" = 'link_aberto';

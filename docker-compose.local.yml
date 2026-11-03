@@ -1,0 +1,49 @@
+# Self-host (step 23): the whole product on your own machine, for you alone.
+#
+#     cp .env.example .env      # then fill ANTHROPIC_API_KEY
+#     docker compose -f docker-compose.local.yml up
+#
+# and open http://localhost:3000. The same image production runs, with
+# MODO=local (one user, no login, no paywall, no consent, no landing, no
+# /admin) and the migrations applied on every start.
+#
+# Through the API key only: whether a Claude subscription token may drive the
+# app from a container is not clear in Anthropic's terms (docs/steps/23-self-host.md),
+# so LLM_BACKEND is pinned empty here and the image has no `claude` CLI. The
+# subscription path is the native one, in README.md.
+name: sem-sotaque-local
+
+services:
+  app:
+    build: .
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      MODO: local
+      LLM_BACKEND: ""
+      DATABASE_URL: postgres://sem_sotaque:sem_sotaque@db:5432/sem_sotaque
+      APP_URL: http://localhost:3000
+    command: ["sh", "-c", "npm run db:migrate && exec node_modules/.bin/next start"]
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: sem_sotaque
+      POSTGRES_PASSWORD: sem_sotaque
+      POSTGRES_DB: sem_sotaque
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sem_sotaque -d sem_sotaque"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - db-local:/var/lib/postgresql/data
+
+volumes:
+  db-local:

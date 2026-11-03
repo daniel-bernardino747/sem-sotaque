@@ -1,0 +1,98 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-10-23T21:45:15.593Z",
+        "reason": "Claude: throwaway decision-page sketch, not shipped UI; real build keeps labels >= 11px"
+      },
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-10-23T21:45:15.966Z",
+        "reason": "Claude: throwaway decision-page sketch, not shipped UI; real build keeps labels >= 11px"
+      },
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/model-pick.html"
+        ],
+        "createdAt": "2026-10-23T21:45:16.632Z",
+        "reason": "Claude: throwaway decision-page sketch, not shipped UI; real build keeps labels >= 11px"
+      },
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/model-pick.html"
+        ],
+        "createdAt": "2026-10-23T21:45:17.119Z",
+        "reason": "Claude: throwaway decision-page sketch, not shipped UI; real build keeps labels >= 11px"
+      },
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/challenger-ticket.html"
+        ],
+        "createdAt": "2026-10-23T21:45:17.691Z",
+        "reason": "Claude: throwaway decision-page sketch, not shipped UI; real build keeps labels >= 11px"
+      },
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/challenger-ticket.html"
+        ],
+        "createdAt": "2026-10-23T21:45:18.251Z",
+        "reason": "Claude: throwaway decision-page sketch, not shipped UI; real build keeps labels >= 11px"
+      },
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-10-23T21:45:18.670Z",
+        "reason": "Claude: throwaway decision-page sketch, not shipped UI; real build keeps labels >= 11px"
+      },
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-10-23T21:45:19.318Z",
+        "reason": "Claude: throwaway decision-page sketch, not shipped UI; real build keeps labels >= 11px"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-10-24T00:15:36.585Z",
+        "reason": "Claude: the cover's printed band of the chosen Página de vistos world; ruled elements have square top corners (radius 0 0 r r)"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-10-24T00:41:24.098Z",
+        "reason": "Claude: the category-standard card of the direction round deliberately shows Inter; throwaway sketch, not shipped UI"
+      }
+    ]
+  }
+}

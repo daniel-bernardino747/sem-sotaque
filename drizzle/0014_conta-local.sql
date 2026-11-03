@@ -1,0 +1,1 @@
+ALTER TYPE "public"."provedor" ADD VALUE 'local';

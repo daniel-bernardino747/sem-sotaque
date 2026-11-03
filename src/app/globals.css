@@ -1,0 +1,2505 @@
+/* Copyright (C) 2026 DB Software Solutions LTDA */
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+
+/*
+ * Mobile first: most Testers open their link from WhatsApp, on a phone.
+ * The world is a banknote: cobalt paper with a fine grain and guilloché,
+ * silver ink, ochre ornaments (corner flourishes, wave strips, stamps), titles
+ * in Libre Caslon Display and field labels in mono. Stamps still say where a
+ * number came from (solid green: stated; dashed violet: estimated). It is the
+ * same cobalt in both themes. DESIGN.md has the system.
+ */
+:root {
+  --cobalto: #1c3d8f;
+  --cobalto-fundo: #15306f;
+  --prata: #eef2fa;
+  --prata-suave: rgb(238 242 250 / 0.78);
+
+  /* the page */
+  --fundo: var(--cobalto);
+  --folha: rgb(8 22 66 / 0.32);
+  --campo-fundo: rgb(255 255 255 / 0.06);
+  --texto: var(--prata);
+  --suave: #c4cde3;
+  --linha: rgb(238 242 250 / 0.24);
+  --linha-forte: rgb(238 242 250 / 0.55); /* 3:1 on the field: input edges stay visible */
+
+  /* the band, the primary action, the ornaments */
+  --capa: var(--cobalto-fundo);
+  --capa-texto: var(--prata);
+  --capa-suave: #c4cde3;
+  --ocre: #d8b24c; /* 4.9:1 on cobalt; on a field only for large text and ornaments */
+  --acento: var(--prata);
+  --acento-texto: var(--cobalto);
+  --foco: #ffd76a;
+
+  /* stamp inks: a Metric's origin */
+  --afirmado: #8fe0bf;
+  --afirmado-fundo: rgb(143 224 191 / 0.1);
+  --estimado: #cdbcff;
+  --estimado-fundo: rgb(205 188 255 / 0.1);
+
+  --perigo: #ffb4a8;
+  --perigo-fundo: rgb(255 180 168 / 0.1);
+
+  /* type: the platform's own face for reading, one mono for fields, numbers and stamps, one display face for titles */
+  --fonte: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --fonte-mono: var(--mono-carregada, ui-monospace), ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --fonte-titulo: var(--serifa, Georgia), Georgia, 'Times New Roman', serif;
+  --t-rotulo: 0.75rem; /* 12px, mono caps */
+  --t-pequeno: 0.9375rem; /* 15px */
+  --t-corpo: 1.0625rem; /* 17px */
+  --t-pergunta: 1.3125rem; /* 21px */
+  --t-titulo: 2rem; /* 32px: the display face reads small */
+  --rastreio-rotulo: 0.12em;
+
+  /* space: 4px steps */
+  --e-1: 0.25rem;
+  --e-2: 0.5rem;
+  --e-3: 0.75rem;
+  --e-4: 1rem;
+  --e-5: 1.5rem;
+  --e-6: 2rem;
+  --e-7: 3rem;
+
+  --raio: 6px;
+  --raio-carimbo: 3px;
+  --medida: 38rem;
+  --alvo: 48px;
+  --faixa-altura: 3rem;
+  --faixa-total: calc(var(--faixa-altura) + 1rem); /* the band plus its wave strip: what a sticky part sits under */
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Overscroll and the space past the footer show the paper's deep end, not white. */
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--linha-forte) transparent;
+  background: var(--cobalto-fundo);
+}
+
+/* Cobalt banknote paper: a fine grain over a ground that deepens toward the foot. */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--fundo);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23p)'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, transparent 40%, var(--cobalto-fundo));
+  color: var(--texto);
+  font: var(--t-corpo) / 1.55 var(--fonte);
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--prata);
+  color: var(--cobalto);
+}
+
+main,
+footer {
+  max-width: var(--medida);
+  margin: 0 auto;
+  padding: var(--e-5) var(--e-4);
+}
+
+main {
+  min-height: 70vh;
+}
+
+h1 {
+  font-family: var(--fonte-titulo);
+  font-size: var(--t-titulo);
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+  margin: var(--e-2) 0 var(--e-4);
+  text-wrap: balance;
+}
+
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+h2 {
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+p {
+  margin: 0 0 var(--e-4);
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--acento);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+/* ---- the shell: the cover band and the footer ---- */
+
+.faixa {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: var(--capa);
+  color: var(--capa-texto);
+}
+
+.faixa-dentro {
+  max-width: var(--medida);
+  min-height: var(--faixa-altura);
+  margin: 0 auto;
+  padding: 0 var(--e-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-4);
+}
+
+.marca {
+  font-family: var(--fonte-titulo);
+  font-size: 1.375rem;
+  line-height: 1;
+  color: inherit;
+  text-decoration: none;
+}
+
+.faixa .autor {
+  font-family: var(--fonte-mono);
+  font-size: var(--t-rotulo);
+  letter-spacing: 0.02em;
+  color: var(--capa-suave);
+  white-space: nowrap;
+}
+
+/* ---- the banknote's ornaments (ornamentos.tsx) ---- */
+
+/* A corner flourish, placed in the corners of a positioned parent. */
+.cantoneira {
+  position: absolute;
+  width: 3rem;
+  height: 3rem;
+  fill: none;
+  stroke: var(--ocre);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.cantoneira.se {
+  top: var(--e-3);
+  left: var(--e-3);
+}
+
+.cantoneira.sd {
+  top: var(--e-3);
+  right: var(--e-3);
+  scale: -1 1;
+}
+
+.cantoneira.ie {
+  bottom: var(--e-3);
+  left: var(--e-3);
+  scale: 1 -1;
+}
+
+.cantoneira.id {
+  bottom: var(--e-3);
+  right: var(--e-3);
+  scale: -1 -1;
+}
+
+/* The wave strip that parts bands. */
+.onda {
+  display: block;
+  width: 100%;
+  height: 1rem;
+  fill: none;
+  stroke: var(--ocre);
+  stroke-width: 0.6;
+  opacity: 0.7;
+}
+
+.balao {
+  width: 1.35em;
+  height: 1.35em;
+  flex: none;
+  fill: currentColor;
+}
+
+/* A field label: what a data page prints above each value. */
+.rotulo {
+  display: block;
+  font-family: var(--fonte-mono);
+  font-size: var(--t-rotulo);
+  font-weight: 400;
+  letter-spacing: var(--rastreio-rotulo);
+  text-transform: uppercase;
+  color: var(--suave);
+}
+
+footer {
+  border-top: 1px solid var(--linha);
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+  padding-bottom: var(--e-6);
+}
+
+/* ---- controls ---- */
+
+button,
+a.botao {
+  font: inherit;
+  min-height: var(--alvo);
+  padding: var(--e-3) var(--e-5);
+  border-radius: var(--raio);
+  border: 1px solid var(--linha-forte);
+  background: transparent;
+  color: var(--texto);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color 0.15s ease-out,
+    border-color 0.15s ease-out,
+    color 0.15s ease-out;
+}
+
+button[type='submit'],
+button.primario,
+a.botao.primario {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--acento-texto);
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  button:not(:disabled):hover {
+    border-color: var(--texto);
+  }
+
+  /* Silver on cobalt brightens to white under the pointer. */
+  button[type='submit']:not(:disabled):hover,
+  button.primario:not(:disabled):hover,
+  a.botao.primario:hover {
+    background: #fff;
+    border-color: #fff;
+  }
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/*
+ * A submit that is working: BotaoEnviar disables it and swaps its label
+ * ("Lendo seu currículo…"). It keeps its ink and a band of light runs across,
+ * so it reads as busy, not as broken.
+ */
+button[type='submit']:disabled {
+  opacity: 1;
+  cursor: progress;
+  background-image: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.18) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: trabalhando 1.4s linear infinite;
+}
+
+@keyframes trabalhando {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+button.primario {
+  width: 100%;
+}
+
+a.botao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--acento);
+  border-color: var(--acento);
+}
+
+button.discreto {
+  min-height: 44px;
+  border: none;
+  padding: var(--e-2) 0;
+  background: none;
+  color: var(--suave);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---- forms ---- */
+
+.envio {
+  margin-top: var(--e-5);
+  display: grid;
+  gap: var(--e-5);
+}
+
+.campo {
+  display: grid;
+  gap: var(--e-2);
+  font-weight: 600;
+}
+
+.campo input,
+.campo textarea {
+  font: inherit;
+  font-weight: 400;
+  width: 100%;
+  min-height: var(--alvo);
+  padding: var(--e-3);
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--raio);
+  background: var(--campo-fundo);
+  color: var(--texto);
+  caret-color: var(--acento);
+}
+
+.campo textarea {
+  resize: vertical;
+}
+
+.campo input:focus-visible,
+.campo textarea:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 0;
+  border-color: var(--foco);
+}
+
+::placeholder {
+  color: var(--suave);
+  opacity: 1;
+}
+
+.caixa {
+  display: flex;
+  gap: var(--e-3);
+  align-items: flex-start;
+  padding: var(--e-3) var(--e-4);
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--raio);
+  background: var(--campo-fundo);
+  cursor: pointer;
+}
+
+.caixa:has(input:checked) {
+  border-color: var(--acento);
+}
+
+.caixa input {
+  width: 1.4rem;
+  height: 1.4rem;
+  margin: 0.1rem 0 0;
+  flex: none;
+  accent-color: var(--acento);
+}
+
+.ou,
+.aviso {
+  margin: 0;
+  text-align: center;
+  color: var(--suave);
+}
+
+.erro {
+  margin: 0;
+  padding: var(--e-3) var(--e-4);
+  border: 1px solid var(--perigo);
+  border-radius: var(--raio);
+  background: var(--perigo-fundo);
+  color: var(--texto);
+}
+
+.envio button,
+.seguir button {
+  width: 100%;
+}
+
+.seguir {
+  margin-top: var(--e-5);
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- the consent: a data page, one field per thing that happens to your data ---- */
+
+/*
+ * A plate of the note, for a screen's one ceremonial panel: an ochre frame
+ * with a fainter one outside it, and the corner flourishes (smaller than the
+ * cover's, so they clear the text at 360px).
+ */
+.placa {
+  position: relative;
+  margin-inline: 4px;
+  padding: var(--e-6) var(--e-5);
+  border: 1px solid var(--ocre);
+  outline: 1px solid rgb(216 178 76 / 0.4);
+  outline-offset: 3px;
+  background: var(--folha);
+}
+
+.placa .cantoneira {
+  width: 1.75rem;
+  height: 1.75rem;
+  stroke-width: 2.5;
+}
+
+.placa .cantoneira.se,
+.placa .cantoneira.sd {
+  top: var(--e-1);
+}
+
+.placa .cantoneira.ie,
+.placa .cantoneira.id {
+  bottom: var(--e-1);
+}
+
+.placa .cantoneira.se,
+.placa .cantoneira.ie {
+  left: var(--e-1);
+}
+
+.placa .cantoneira.sd,
+.placa .cantoneira.id {
+  right: var(--e-1);
+}
+
+/* The opening: who is asking, what you get, and the three terms, before any fine print. */
+.abertura {
+  margin-block: var(--e-4) var(--e-6);
+}
+
+.abertura p {
+  font-size: 1.1875rem;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  margin-bottom: var(--e-4);
+}
+
+.garantias {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+
+.garantias li {
+  font-family: var(--fonte-mono);
+  font-size: var(--t-rotulo);
+  text-transform: uppercase;
+  padding: var(--e-1) var(--e-2);
+  border: 1px solid var(--ocre);
+  border-radius: var(--raio-carimbo);
+  color: var(--ocre);
+  letter-spacing: 0.06em;
+}
+
+.dados-intro {
+  color: var(--suave);
+}
+
+.pagina-de-dados {
+  margin: 0 4px;
+  background: var(--folha);
+  border: 1px solid var(--ocre);
+  outline: 1px solid rgb(216 178 76 / 0.4);
+  outline-offset: 3px;
+}
+
+/* The field labels print in the ornaments' ochre (6:1 on the page's darker panel). */
+.pagina-de-dados dt {
+  color: var(--ocre);
+}
+
+.pagina-de-dados > div {
+  padding: var(--e-4);
+}
+
+.pagina-de-dados > div + div {
+  border-top: 1px solid var(--linha);
+}
+
+.pagina-de-dados dt {
+  margin-bottom: var(--e-1);
+}
+
+.pagina-de-dados dd {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* The file writes "Quem lê: o Daniel…"; set as a field, the value starts its own sentence. */
+.pagina-de-dados dd::first-letter {
+  text-transform: uppercase;
+}
+
+/* Wide screens read it as a form: label column, value column. */
+@media (min-width: 40rem) {
+  .pagina-de-dados > div {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    gap: var(--e-4);
+  }
+
+  .pagina-de-dados dt {
+    margin: 0.2rem 0 0;
+  }
+}
+
+/* What changed: an ochre notice. Violet stays the ink of an estimated number. */
+.mudou {
+  padding: var(--e-4);
+  border: 2px dashed var(--ocre);
+  border-radius: var(--raio);
+  background: rgb(216 178 76 / 0.1);
+}
+
+.consentimento {
+  margin-top: var(--e-5);
+  display: grid;
+  gap: var(--e-3);
+}
+
+.consentimento button {
+  width: 100%;
+}
+
+/* Until the box is ticked, "Começar" reads as not yet. */
+.consentimento:has(input[name='aceito']:not(:checked)) button[type='submit'] {
+  background: transparent;
+  border-color: var(--linha-forte);
+  color: var(--suave);
+}
+
+/* ---- apagar meus dados ---- */
+
+.confirmar-apagar {
+  padding: var(--e-4);
+  border: 1px solid var(--perigo);
+  border-top-width: 3px;
+  border-radius: 0 0 var(--raio) var(--raio);
+  background: var(--perigo-fundo);
+  color: var(--texto);
+  animation: subir 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.confirmar-apagar .botoes {
+  display: grid;
+  gap: var(--e-2);
+}
+
+/* A page that is only an ending (erased, not found): one plate, centred on the note. */
+.apagado,
+.nao-encontrada {
+  min-height: 0;
+  margin: var(--e-6) auto;
+  max-width: calc(var(--medida) - var(--e-6));
+  padding: var(--e-7) var(--e-5);
+  text-align: center;
+}
+
+@media (max-width: 40rem) {
+  .apagado,
+  .nao-encontrada {
+    margin-inline: var(--e-4);
+  }
+}
+
+/*
+ * The sign-in (`/entrar`) and the v0 link asking for an account: one narrow
+ * plate centred on the note, like the endings, sized to its content (not the
+ * page's 70vh), with the two providers as equal buttons under the text.
+ */
+.entrar {
+  min-height: 0;
+  margin: var(--e-6) auto;
+  max-width: 30rem;
+  padding: var(--e-7) var(--e-6);
+  text-align: center;
+}
+
+@media (max-width: 40rem) {
+  .entrar {
+    margin-inline: var(--e-4);
+    padding-inline: var(--e-5);
+  }
+}
+
+.entrar h1 {
+  margin-top: 0;
+}
+
+.entrar > p {
+  color: var(--suave);
+  margin: 0 auto var(--e-6);
+  max-width: 26rem;
+  text-wrap: pretty;
+}
+
+.entrar .erro {
+  margin-bottom: var(--e-5);
+  text-align: left;
+}
+
+.botoes-entrar {
+  display: grid;
+  gap: var(--e-3);
+}
+
+.botoes-entrar a.botao {
+  gap: var(--e-3);
+  color: var(--texto);
+  border-color: var(--linha-forte);
+  background: var(--campo-fundo);
+}
+
+@media (hover: hover) {
+  .botoes-entrar a.botao:hover {
+    border-color: var(--texto);
+    background: rgb(255 255 255 / 0.1);
+  }
+}
+
+.marca-provedor {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+}
+
+/* Google asks for its G on white: a small disc of paper under it. */
+.marca-provedor.google {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.marca-provedor.google svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.nao-encontrada p {
+  margin: 0;
+  color: var(--suave);
+}
+
+.carimbo-cancelado {
+  color: var(--perigo);
+  transform: rotate(-8deg);
+  margin-bottom: var(--e-4);
+}
+
+.apagado p {
+  color: var(--suave);
+}
+
+.confirmar-apagar button.perigo {
+  background: var(--perigo);
+  border-color: var(--perigo);
+  color: var(--fundo);
+}
+
+/* ---- the import ---- */
+
+/* The PDF field: a dashed slot to drop a document in, with the phone's picker as its button. */
+.campo.arquivo input {
+  padding: var(--e-4);
+  border-style: dashed;
+  background: var(--folha);
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+  cursor: pointer;
+}
+
+.campo.arquivo input::file-selector-button {
+  font: inherit;
+  font-weight: 600;
+  min-height: 44px;
+  margin-right: var(--e-3);
+  padding: var(--e-2) var(--e-4);
+  border: 1px solid var(--acento);
+  border-radius: var(--raio);
+  background: var(--campo-fundo);
+  color: var(--acento);
+  cursor: pointer;
+}
+
+.ou {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  font-family: var(--fonte-mono);
+  font-size: var(--t-rotulo);
+  letter-spacing: var(--rastreio-rotulo);
+  text-transform: uppercase;
+}
+
+.ou::before,
+.ou::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--linha);
+}
+
+.envio .aviso {
+  font-size: var(--t-pequeno);
+}
+
+/* What the import found: one field per Affiliation, its Accomplishments still drafts, under the ochre rule. */
+.encontrado {
+  list-style: none;
+  padding: 0;
+  margin: var(--e-5) 0 0;
+  background: var(--folha);
+  border: 1px solid var(--linha);
+  border-top: 2px solid var(--ocre);
+  border-radius: 0 0 var(--raio) var(--raio);
+}
+
+.encontrado > li {
+  padding: var(--e-4);
+}
+
+.encontrado > li + li {
+  border-top: 1px solid var(--linha);
+}
+
+.encontrado h2 {
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.encontrado .subtitulo {
+  margin: var(--e-1) 0 0;
+  font-family: var(--fonte-mono);
+  font-size: var(--t-rotulo);
+  letter-spacing: 0.04em;
+  color: var(--suave);
+}
+
+.encontrado ul {
+  list-style: none;
+  margin: var(--e-3) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-2);
+}
+
+/* A draft: an empty stamp slot beside each line, waiting for its number. */
+.encontrado ul li {
+  display: grid;
+  grid-template-columns: 1rem 1fr;
+  gap: var(--e-3);
+  font-size: var(--t-pequeno);
+}
+
+.encontrado ul li::before {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.2rem;
+  border: 1px dashed var(--linha-forte);
+  border-radius: var(--raio-carimbo);
+}
+
+/* ---- o chat do interrogatório ---- */
+
+/*
+ * One question at a time on the banknote: the question waiting for an answer
+ * is set large under an ochre rule, earlier questions recede, and each answer
+ * is a filled-in field. The coverage stays pinned above as a row of ochre
+ * stamps. A 20 to 40 minute read, so the page is the deep cobalt (silver at
+ * 11:1) with only the grain, and every pinned surface is opaque.
+ */
+body:has(.chat) {
+  background-color: var(--cobalto-fundo);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23p)'/%3E%3C/svg%3E");
+}
+
+.chat {
+  display: grid;
+  margin-top: calc(-1 * var(--e-5));
+}
+
+.chat > * + * {
+  margin-top: var(--e-4);
+}
+
+/* The composer's sheet meets the footer: no strip of page under it at the end of the scroll. */
+main:has(> .chat) {
+  padding-bottom: 0;
+}
+
+/* The scroll anchor closing the chat sits flush under the composer, so the end-scroll lands on it. */
+.chat > div:last-child:empty {
+  margin-top: 0;
+}
+
+.progresso {
+  position: sticky;
+  top: var(--faixa-total);
+  z-index: 2;
+  display: grid;
+  gap: var(--e-2);
+  margin: 0 calc(-1 * var(--e-4));
+  padding: var(--e-3) var(--e-4);
+  background: var(--cobalto-fundo);
+  border-bottom: 1px solid var(--linha);
+}
+
+.progresso strong {
+  font-family: var(--fonte-mono);
+  font-weight: 600;
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
+
+.vistos {
+  display: grid;
+  /* slots stay stamp-sized on a wide screen instead of stretching into bars */
+  grid-template-columns: repeat(10, minmax(0, 2.75rem));
+  gap: var(--e-1);
+}
+
+.visto {
+  height: 1.5rem;
+  border: 1px dashed var(--linha-forte);
+  border-radius: var(--raio-carimbo);
+}
+
+/* A stamp: a ring of ochre ink with a check, never quite square to the page. */
+.visto.carimbado {
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ocre);
+  background: rgb(216 178 76 / 0.12);
+  color: var(--ocre);
+  transform: rotate(-3deg);
+  animation: carimbar 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.visto.carimbado::after {
+  content: '';
+  width: 0.85rem;
+  height: 0.85rem;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5 6.5 12 13 4.5' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.visto.carimbado:nth-child(3n + 2) {
+  transform: rotate(2deg);
+}
+
+.visto.carimbado:nth-child(3n) {
+  transform: rotate(-1deg);
+}
+
+@keyframes carimbar {
+  from {
+    opacity: 0;
+    scale: 1.35;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.mensagens {
+  list-style: none;
+  margin: 0;
+  padding: var(--e-3) 0 0;
+  display: grid;
+  gap: var(--e-4);
+}
+
+.mensagens li {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Questions already answered: printed on the page, a step back. */
+.mensagens .assistente {
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+  line-height: 1.5;
+}
+
+/* An answer: a field line the person filled in, the ink on a hairline. */
+.mensagens .pessoa {
+  padding: 0 0 var(--e-3);
+  border-bottom: 1px solid var(--linha-forte);
+  color: var(--texto);
+}
+
+/* The question waiting for an answer owns the screen. */
+.mensagens .assistente.atual {
+  margin-top: var(--e-3);
+  padding-top: var(--e-4);
+  border-top: 2px solid var(--ocre);
+  color: var(--texto);
+  font-size: var(--t-pergunta);
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.mensagens .divisor {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  font-family: var(--fonte-mono);
+  font-size: var(--t-rotulo);
+  letter-spacing: var(--rastreio-rotulo);
+  text-transform: uppercase;
+  color: var(--suave);
+}
+
+.mensagens .divisor::before,
+.mensagens .divisor::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--linha);
+}
+
+/* Back after a while: the question is asked again below the divider, so its first copy steps out. */
+.mensagens .assistente:has(+ .divisor) {
+  display: none;
+}
+
+/* …and the answer before it gives up its hairline, so the divider (or the question's rule) is the only rule there. */
+.mensagens .pessoa:has(+ .atual),
+.mensagens .pessoa:has(+ .divisor),
+.mensagens .pessoa:has(+ .assistente + .divisor) {
+  border-bottom: none;
+}
+
+/* Waiting for the first words: three ink dots instead of an ellipsis. */
+.mensagens .pontos {
+  display: inline-flex;
+  gap: 0.35em;
+  color: transparent;
+  font-size: 0;
+}
+
+.mensagens .pontos::before {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--acento);
+  box-shadow:
+    0.75rem 0 0 var(--acento),
+    1.5rem 0 0 var(--acento);
+  margin: 0.6rem 1.5rem 0.6rem 0;
+  animation: escrevendo 1.1s ease-in-out infinite;
+}
+
+@keyframes escrevendo {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.chat .erro {
+  display: grid;
+  gap: var(--e-3);
+  justify-items: start;
+}
+
+.chat .erro p {
+  margin: 0;
+}
+
+/* The composer: one line that grows, pinned above the keyboard. */
+.resposta {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: var(--e-2) var(--e-2);
+  margin: 0 calc(-1 * var(--e-4));
+  padding: var(--e-3) var(--e-4) max(var(--e-2), env(safe-area-inset-bottom));
+  background: var(--cobalto);
+  border-top: 1px solid var(--linha);
+  box-shadow: 0 -10px 24px rgb(5 14 44 / 0.35);
+}
+
+.resposta textarea {
+  font: inherit;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--alvo);
+  max-height: 40vh;
+  field-sizing: content;
+  padding: var(--e-3);
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--raio);
+  background: var(--campo-fundo);
+  color: var(--texto);
+  caret-color: var(--acento);
+  resize: none;
+}
+
+.resposta textarea:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 0;
+  border-color: var(--foco);
+}
+
+.resposta button.enviar {
+  display: grid;
+  place-items: center;
+  width: var(--alvo);
+  height: var(--alvo);
+  padding: 0;
+}
+
+.resposta button.enviar:disabled {
+  opacity: 1;
+  animation: none;
+  background: transparent;
+  border-color: var(--linha-forte);
+  color: var(--suave);
+  cursor: default;
+}
+
+.resposta .atalhos {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--e-2);
+}
+
+.resposta .atalhos button {
+  min-height: 44px;
+  padding: var(--e-2) 0;
+  border: none;
+  background: none;
+  color: var(--suave);
+}
+
+.resposta .atalhos button.terminei {
+  color: var(--acento);
+  font-weight: 600;
+}
+
+/* In a retomada, "Terminei" is the way home: a link that reads like the button it replaces. */
+.resposta .atalhos a.terminei {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--acento);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .resposta .atalhos button:not(:disabled):hover {
+    color: var(--texto);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+/* Under the offer to stop: stop here, or go back to a pending subject. */
+.oferta {
+  display: grid;
+  gap: var(--e-3);
+}
+
+.oferta p {
+  margin: var(--e-2) 0 0;
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+}
+
+.oferta ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-2);
+}
+
+.oferta li button {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--e-3) var(--e-4);
+  text-align: left;
+  overflow-wrap: anywhere;
+  background: var(--campo-fundo);
+  border-color: var(--linha);
+}
+
+/* "Terminei?" rises over the composer like a sheet, so the answer is right under the thumb. */
+.confirmar-fim {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  margin: 0 calc(-1 * var(--e-4));
+  padding: var(--e-4) var(--e-4) max(var(--e-4), env(safe-area-inset-bottom));
+  background: var(--cobalto);
+  border-top: 2px solid var(--ocre);
+  box-shadow: 0 -12px 32px rgb(5 14 44 / 0.5);
+  animation: subir 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.confirmar-fim .botoes {
+  display: grid;
+  gap: var(--e-2);
+}
+
+@keyframes subir {
+  from {
+    transform: translateY(1.5rem);
+    opacity: 0;
+  }
+}
+
+/* Keyboard open on a short phone: the stamps fold away, the percentage stays. */
+@media (max-height: 520px) {
+  .faixa {
+    position: static;
+  }
+
+  .vistos {
+    display: none;
+  }
+
+  .progresso {
+    top: 0;
+    padding-block: var(--e-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visto.carimbado,
+  .confirmar-fim,
+  .confirmar-apagar,
+  button[type='submit']:disabled,
+  .mensagens .pontos::before {
+    animation: none;
+  }
+}
+
+/* ---- a espera ---- */
+
+/* The seal turning while the background run works; the phrase says which step. */
+.etapa {
+  display: flex;
+  gap: var(--e-4);
+  align-items: center;
+  margin: var(--e-5) 0;
+  padding: var(--e-4);
+  background: var(--folha);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.etapa .pontos {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 2px dashed var(--ocre);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ocre) 0 22%, transparent 24%);
+  animation: girar 6s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .etapa .pontos {
+    animation: none;
+  }
+}
+
+/* ---- o resultado ---- */
+
+.aviso-teste {
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+}
+
+/* The résumé stays white paper: it is the document, not the interface. The note frames it in ochre. */
+.pdf {
+  margin: var(--e-5) 4px;
+  border: 1px solid var(--ocre);
+  outline: 1px solid rgb(216 178 76 / 0.4);
+  outline-offset: 3px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 16px 36px -12px rgb(5 14 44 / 0.6);
+}
+
+.pdf object {
+  display: block;
+  width: 100%;
+  /* A4 is 1 : 1.414; a little taller fits the viewer's toolbar. */
+  aspect-ratio: 1 / 1.45;
+}
+
+/* No PDF viewer here: say so, and keep the box from pretending to be a page. */
+.pdf object p {
+  margin: 0;
+  padding: var(--e-4);
+  color: var(--texto);
+}
+
+.pdf object p a {
+  color: var(--acento);
+  font-weight: 600;
+}
+
+.pdf:has(object p) {
+  background: var(--folha);
+}
+
+.botoes-pdf {
+  display: grid;
+  gap: var(--e-3);
+}
+
+a.botao.abrir-pdf {
+  display: none;
+}
+
+/* A touch screen gets the phone's own PDF viewer instead of an embed it would leave blank. */
+@media (pointer: coarse) {
+  .pdf {
+    display: none;
+  }
+
+  a.botao.abrir-pdf {
+    display: flex;
+  }
+
+  .botoes-pdf {
+    margin-top: var(--e-5);
+  }
+}
+
+.ir-ao-fim {
+  margin: var(--e-4) 0 0;
+  text-align: center;
+  font-size: var(--t-pequeno);
+}
+
+/* ---- antes e depois: each old line beside the stamped line it became ---- */
+
+.antes-depois-titulo {
+  font-size: 1.375rem;
+  line-height: 1.25;
+  margin: var(--e-7) 0 var(--e-2);
+  padding-top: var(--e-5);
+  border-top: 2px solid var(--ocre);
+}
+
+.antes-depois,
+.antes-depois ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.antes-depois > li {
+  margin-top: var(--e-6);
+}
+
+.antes-depois h3 {
+  font-size: 1rem;
+  line-height: 1.35;
+  margin: 0 0 var(--e-3);
+}
+
+.antes-depois .par {
+  display: grid;
+  margin-bottom: var(--e-4);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  overflow: hidden;
+  background: var(--folha);
+}
+
+.antes-depois .antes,
+.antes-depois .depois {
+  padding: var(--e-3) var(--e-4) var(--e-4);
+}
+
+/* Before: the line as it came, in Portuguese, a step back. */
+.antes-depois .antes {
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+  border-bottom: 1px dashed var(--linha-forte);
+}
+
+/* After: the English line, on the field ground, stamped. */
+.antes-depois .depois {
+  position: relative;
+  background: var(--campo-fundo);
+  color: var(--texto);
+}
+
+.antes-depois .rotulo {
+  margin-bottom: var(--e-1);
+}
+
+.antes-depois .depois .rotulo {
+  display: inline-block;
+  margin-bottom: var(--e-2);
+  padding: 0.1rem var(--e-2);
+  border: 2px solid var(--afirmado);
+  border-radius: var(--raio-carimbo);
+  color: var(--afirmado);
+  font-weight: 600;
+  transform: rotate(-2deg);
+}
+
+.antes-depois .par p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.antes-depois .par p + p {
+  margin-top: var(--e-2);
+}
+
+.antes-depois .novo {
+  font-style: italic;
+}
+
+/* A number in a new line, in the ink of its origin: stated solid, "~" estimated dashed. */
+.antes-depois .numero {
+  font-family: var(--fonte-mono);
+  font-size: 0.92em;
+  font-weight: 600;
+  color: var(--afirmado);
+  text-decoration: underline 2px;
+  text-underline-offset: 0.25em;
+  white-space: nowrap;
+}
+
+.antes-depois .numero.estimado {
+  color: var(--estimado);
+  text-decoration-style: dashed;
+}
+
+@media (min-width: 48rem) {
+  .antes-depois .par {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .antes-depois .antes {
+    border-bottom: none;
+    border-right: 1px dashed var(--linha-forte);
+  }
+}
+
+/* ---- o fim da sessão ---- */
+
+.fim {
+  margin-top: var(--e-7);
+  padding-top: var(--e-5);
+  border-top: 1px solid var(--linha);
+  scroll-margin-top: calc(var(--faixa-total) + var(--e-4));
+}
+
+.fim h2 {
+  font-size: 1.375rem;
+  margin: 0 0 var(--e-2);
+}
+
+.fim > p {
+  color: var(--suave);
+}
+
+.fim .bloco {
+  margin-top: var(--e-5);
+  padding: var(--e-5) var(--e-4);
+  background: var(--folha);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+}
+
+/* The founder's price is the one offer: it is the end's plate (`.placa`). */
+.fim .bloco.placa {
+  padding: var(--e-6) var(--e-5);
+  border: 1px solid var(--ocre);
+  border-radius: 0;
+}
+
+.fim h3 {
+  font-size: 1.125rem;
+  line-height: 1.35;
+  margin: 0 0 var(--e-2);
+}
+
+.fim .envio {
+  margin-top: var(--e-4);
+  gap: var(--e-4);
+}
+
+.fim fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.fim .indicacao {
+  display: grid;
+  gap: var(--e-3);
+}
+
+.fim .indicacao + .indicacao {
+  padding-top: var(--e-4);
+  border-top: 1px dashed var(--linha-forte);
+}
+
+.fim .pagaria legend {
+  font-weight: 600;
+  margin-bottom: var(--e-3);
+}
+
+.fim .opcoes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--e-2);
+}
+
+.fim .opcao {
+  display: flex;
+  gap: var(--e-2);
+  align-items: center;
+  justify-content: center;
+  min-height: var(--alvo);
+  padding: var(--e-2);
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--raio);
+  background: var(--campo-fundo);
+  cursor: pointer;
+}
+
+.fim .opcao:has(input:checked) {
+  border-color: var(--acento);
+  outline: 1px solid var(--acento);
+  font-weight: 600;
+}
+
+.fim .opcao:has(input:focus-visible) {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+.fim .opcao input {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+  accent-color: var(--acento);
+}
+
+.fim .caixa small {
+  display: block;
+  margin-top: var(--e-1);
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+  font-weight: 400;
+}
+
+.fim button.discreto {
+  justify-self: start;
+}
+
+/* What was sent, stamped as received in ochre (green stays the ink of a stated number). */
+.recebido {
+  margin: var(--e-4) 0 0;
+  padding: var(--e-3) var(--e-4);
+  border: 2px solid var(--ocre);
+  border-radius: var(--raio-carimbo);
+  background: rgb(216 178 76 / 0.1);
+  color: var(--texto);
+}
+
+/* Consent v2 shown again: "no" is a real choice, so it reads as a plain button, not a submit. */
+.consentimento button.secundario {
+  background: transparent;
+  color: var(--texto);
+  border-color: var(--linha-forte);
+  font-weight: 400;
+}
+
+/* ---- a home: uma cédula inteira, da capa ao pé ---- */
+
+
+/*
+ * Below the cover the page runs in full-bleed bands, the darker one carrying
+ * the question, each parted from the next by a strip of guilloché in ochre.
+ */
+.inicio {
+  max-width: none;
+  padding: 0;
+}
+
+.inicio h2 {
+  margin: 0 0 var(--e-5);
+  font-family: var(--serifa);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+}
+
+.inicio-abre {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: var(--e-6) var(--e-4);
+  text-align: center;
+}
+
+.inicio-abre p {
+  font-size: 1.3125rem;
+  line-height: 1.5;
+}
+
+.inicio-abre .garantias {
+  justify-content: center;
+}
+
+.inicio-abre .garantias li {
+  text-align: center;
+  text-wrap: balance;
+}
+
+.inicio-faixa {
+  padding: var(--e-7) var(--e-4);
+}
+
+.inicio-faixa.escura {
+  background: rgb(8 22 66 / 0.45);
+}
+
+.inicio-dentro {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.passos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-5);
+}
+
+.passos li {
+  display: grid;
+  align-content: start;
+  gap: var(--e-2);
+}
+
+.romano {
+  font-family: var(--serifa);
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--ocre);
+}
+
+.passos .rotulo {
+  color: var(--texto);
+}
+
+.passos p {
+  margin: 0;
+}
+
+/* One invented exchange, set with the chat's own parts, beside the line it becomes. */
+.inicio-dividida {
+  display: grid;
+  gap: var(--e-6);
+}
+
+.inicio-dividida .mensagens {
+  padding: var(--e-4) 0 0;
+}
+
+.inicio-resultado {
+  align-self: center;
+  margin: 4px;
+  padding: var(--e-5);
+  border: 1px solid var(--ocre);
+  outline: 1px solid rgb(216 178 76 / 0.4);
+  outline-offset: 3px;
+}
+
+.inicio-resultado p {
+  margin: var(--e-3) 0 0;
+  font-size: 1.25rem;
+  line-height: 1.45;
+}
+
+.carimbo-depois {
+  width: fit-content;
+  padding: 0.1rem var(--e-2);
+  border: 2px solid var(--afirmado);
+  border-radius: var(--raio-carimbo);
+  color: var(--afirmado);
+  font-weight: 600;
+  transform: rotate(-2deg);
+}
+
+.inicio .dados-intro {
+  font-size: var(--t-pequeno);
+}
+
+.inicio-pares {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.inicio-pares li {
+  display: grid;
+  gap: var(--e-2);
+  padding: var(--e-5) 0;
+  border-top: 1px solid var(--linha);
+}
+
+.inicio-pares p {
+  margin: 0;
+}
+
+.inicio-pares .rotulo {
+  margin-bottom: var(--e-1);
+}
+
+.inicio-antes {
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+}
+
+/* A number in a new line, in the ink of its origin: stated solid, "~" estimated dashed. */
+.inicio .numero {
+  font-family: var(--fonte-mono);
+  font-size: 0.92em;
+  font-weight: 600;
+  color: var(--afirmado);
+  text-decoration: underline 2px;
+  text-underline-offset: 0.25em;
+  white-space: nowrap;
+}
+
+.inicio .numero.estimado {
+  color: var(--estimado);
+  text-decoration-style: dashed;
+}
+
+.seta {
+  color: var(--ocre);
+  font-size: 1.5rem;
+  line-height: 1;
+  rotate: 90deg;
+  justify-self: start;
+}
+
+@media (min-width: 48rem) {
+  .passos {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--e-6);
+  }
+
+  .inicio-dividida {
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--e-7);
+  }
+
+  .inicio-pares li {
+    grid-template-columns: 1fr auto 1.4fr;
+    gap: var(--e-5);
+    align-items: center;
+  }
+
+  .seta {
+    rotate: none;
+  }
+}
+
+/* The foot of the note: centred, under the last strip. */
+.cedula footer {
+  border-top: none;
+  padding-top: var(--e-5);
+  padding-bottom: var(--e-7);
+  text-align: center;
+  color: var(--suave);
+}
+
+.contato {
+  margin: 0;
+  font-size: var(--t-pequeno);
+}
+
+.contato a {
+  color: var(--prata);
+}
+
+/* The call at the foot: a round ochre seal, its legend running round the rim. */
+.selo {
+  padding: var(--e-7) var(--e-4) var(--e-5);
+  text-align: center;
+}
+
+.selo h2 {
+  margin: 0 0 var(--e-5);
+  font-family: var(--serifa);
+  font-size: 2.25rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.selo-botao {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(17rem, 78vw);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f0cf6e, var(--ocre) 55%, #b28a2c);
+  color: var(--cobalto);
+  text-decoration: none;
+  box-shadow:
+    0 0 0 6px rgb(216 178 76 / 0.25),
+    0 18px 40px rgb(5 14 44 / 0.55);
+  transition:
+    transform 160ms ease-out,
+    box-shadow 160ms ease-out;
+}
+
+.selo-botao:hover {
+  transform: rotate(-4deg) scale(1.03);
+  box-shadow:
+    0 0 0 10px rgb(216 178 76 / 0.3),
+    0 22px 48px rgb(5 14 44 / 0.6);
+}
+
+.selo-botao:active {
+  transform: scale(0.97);
+}
+
+/* The focus yellow would melt into an ochre button: these two take a silver ring, clear of the seal's halo. */
+.selo-botao:focus-visible {
+  outline: 3px solid var(--prata);
+  outline-offset: 12px;
+}
+
+.barra-convite-botao:focus-visible {
+  outline: 3px solid var(--prata);
+  outline-offset: 3px;
+}
+
+.selo-aro {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--cobalto);
+  stroke-width: 1.2;
+  animation: selo-gira 40s linear infinite;
+}
+
+.selo-aro text {
+  fill: var(--cobalto);
+  stroke: none;
+  font: 600 11.5px/1 var(--fonte-mono);
+  letter-spacing: 0.12em;
+}
+
+.selo-miolo {
+  display: grid;
+  justify-items: center;
+  gap: var(--e-2);
+  max-width: 8ch;
+  font-family: var(--serifa);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.selo-miolo .balao {
+  width: 2rem;
+  height: 2rem;
+}
+
+.selo-sub {
+  margin: var(--e-5) 0 0;
+  font-size: 1.125rem;
+}
+
+@keyframes selo-gira {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* Until the seal is in view the same call rides a bar pinned to the bottom (barra-convite.tsx). */
+.barra-convite {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  padding: var(--e-3) var(--e-4) calc(var(--e-3) + env(safe-area-inset-bottom));
+  background: rgb(10 26 74 / 0.92);
+  border-top: 2px solid var(--ocre);
+  backdrop-filter: blur(8px);
+  transition:
+    translate 240ms ease-out,
+    visibility 240ms;
+}
+
+.barra-convite[data-escondida='true'] {
+  translate: 0 100%;
+  visibility: hidden;
+}
+
+.barra-convite-texto {
+  color: var(--ocre);
+  font: 600 0.75rem/1.2 var(--fonte-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.barra-convite-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-height: 3rem;
+  padding: 0 var(--e-5);
+  border-radius: 999px;
+  background: var(--ocre);
+  color: var(--cobalto);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  animation: barra-pulsa 2.4s ease-out infinite;
+}
+
+@keyframes barra-pulsa {
+  0% {
+    box-shadow: 0 0 0 0 rgb(216 178 76 / 0.6);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 12px rgb(216 178 76 / 0);
+  }
+}
+
+@media (min-width: 48rem) {
+  .barra-convite {
+    justify-content: center;
+    gap: var(--e-6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selo-aro,
+  .barra-convite-botao {
+    animation: none;
+  }
+
+  .selo-botao,
+  .selo-botao:hover,
+  .selo-botao:active {
+    transform: none;
+    transition: none;
+  }
+
+  .barra-convite {
+    transition: none;
+  }
+}
+
+/* ---- a capa da home: a placa gravada de um documento ---- */
+
+.capa {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  min-height: min(100svh, 52rem);
+  padding: var(--e-7) var(--e-4) var(--e-6);
+  background-image:
+    radial-gradient(60% 45% at 78% 18%, rgb(255 255 255 / 0.1), transparent 70%),
+    radial-gradient(70% 55% at 15% 85%, var(--cobalto-fundo), transparent 75%),
+    radial-gradient(50% 40% at 30% 30%, rgb(10 25 70 / 0.35), transparent 70%);
+}
+
+.capa-guilloche {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: -1;
+  width: max(140vmax, 60rem);
+  translate: -50% -50%;
+  fill: none;
+  stroke: rgb(255 255 255 / 0.045);
+  stroke-width: 0.3;
+}
+
+/* The plate: everything inside is placed in the frame's own 300 × 380 box. */
+.capa-placa {
+  position: relative;
+  width: min(100%, 30rem);
+  aspect-ratio: 300 / 380;
+  container-type: inline-size;
+}
+
+.capa-moldura {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: rgb(238 242 250 / 0.6);
+  stroke-width: 0.6;
+}
+
+.capa-marca {
+  position: absolute;
+  font-family: var(--serifa);
+  top: 10.5%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  text-align: center;
+  font-size: 7.6cqi;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.capa-gravura {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 62%;
+  height: auto;
+  translate: -50% -50%;
+  filter: drop-shadow(0 6px 14px rgb(5 15 45 / 0.45));
+  animation: imprimir 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* The one authored moment: the plate is printed from the top down. */
+@keyframes imprimir {
+  from {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0.4;
+  }
+  to {
+    clip-path: inset(0);
+    opacity: 1;
+  }
+}
+
+.capa-legenda {
+  margin: 0;
+  font: inherit;
+}
+
+.capa-lado {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  width: 26%;
+  font-family: var(--fonte-mono);
+  font-size: max(0.6875rem, 2.6cqi);
+  letter-spacing: 0;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--prata-suave);
+}
+
+.capa-lado.esquerdo {
+  left: 2%;
+}
+
+.capa-lado.direito {
+  right: 2%;
+  text-align: right;
+}
+
+.capa-pe {
+  position: absolute;
+  font-family: var(--serifa);
+  bottom: 6.5%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 5.6cqi;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+}
+
+.capa-autor {
+  position: absolute;
+  bottom: var(--e-4);
+  left: 0;
+  right: 0;
+  margin: 0;
+  text-align: center;
+  font-family: var(--fonte-mono);
+  font-size: var(--t-rotulo);
+  letter-spacing: 0.04em;
+  color: var(--prata-suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capa-gravura {
+    animation: none;
+  }
+}
+
+/* ---- a casa (passo 14) ---- */
+
+/*
+ * The home: the plate on top (ceremony: the greeting and the coverage), work
+ * below it. One principal action at a time; the rest are outlined or text.
+ */
+.casa {
+  display: grid;
+  gap: var(--e-6);
+  margin-top: var(--e-4);
+}
+
+.casa-abertura h1 {
+  margin-top: 0;
+}
+
+.casa-abertura .cobertura {
+  display: grid;
+  gap: var(--e-2);
+  margin-top: var(--e-5);
+}
+
+.casa-abertura .cobertura strong {
+  font-family: var(--fonte-mono);
+  font-weight: 600;
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
+
+.casa-acoes {
+  display: grid;
+  gap: var(--e-5);
+}
+
+.casa-acoes .acao {
+  display: grid;
+  gap: var(--e-2);
+}
+
+.casa-acoes .acao form {
+  display: grid;
+}
+
+.casa-acoes .motivo,
+.casa-acoes .em-aberto,
+.casa-secao .vazio {
+  margin: 0;
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+}
+
+.casa-acoes .acao form + .em-aberto,
+.casa-acoes .acao a + .em-aberto {
+  margin-top: calc(-1 * var(--e-1));
+}
+
+.casa-secao {
+  display: grid;
+  gap: var(--e-3);
+  padding-top: var(--e-5);
+  border-top: 1px solid var(--linha);
+}
+
+.casa-secao h2 {
+  margin: 0;
+}
+
+.casa-secao p {
+  margin: 0;
+}
+
+.gerar-de-novo {
+  display: grid;
+  gap: var(--e-3);
+}
+
+.gerar-de-novo form {
+  display: grid;
+}
+
+/* A second action that submits: outlined silver, like a link-button, not the silver fill of the principal one. */
+button[type='submit'].vazado,
+button.vazado {
+  width: 100%;
+  background: transparent;
+  border-color: var(--acento);
+  color: var(--acento);
+  font-weight: 600;
+}
+
+/* A text action that submits keeps the look of a text action. */
+button[type='submit'].discreto {
+  justify-self: start;
+  font-weight: 400;
+  color: var(--suave);
+}
+
+@media (hover: hover) {
+  button[type='submit'].vazado:not(:disabled):hover {
+    background: transparent;
+    border-color: var(--texto);
+    color: var(--texto);
+  }
+
+  button[type='submit'].discreto:not(:disabled):hover {
+    background: none;
+    color: var(--texto);
+  }
+}
+
+/* The way back home from a route under it. */
+.voltar {
+  margin: var(--e-4) 0 0;
+  font-size: var(--t-pequeno);
+}
+
+/* "Gerar de novo" with the header to change: folded until asked for. */
+.de-novo {
+  margin-top: var(--e-5);
+  padding: var(--e-4);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+}
+
+.de-novo summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--acento);
+  font-weight: 600;
+}
+
+.versoes ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.versoes li {
+  padding: var(--e-3) 0;
+  border-bottom: 1px solid var(--linha);
+  font-size: var(--t-pequeno);
+}
+
+.botoes-pdf + .gerar-de-novo {
+  margin-top: var(--e-5);
+}
+
+/* ---- as vagas (passo 15) ---- */
+
+.subtitulo {
+  margin: calc(-1 * var(--e-2)) 0 var(--e-4);
+  color: var(--suave);
+}
+
+.dica,
+.campo small {
+  margin: 0;
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+  font-weight: 400;
+}
+
+.confirmar-vaga fieldset {
+  display: grid;
+  gap: var(--e-4);
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.confirmar-vaga legend {
+  margin-bottom: var(--e-3);
+  padding: 0;
+  font-family: var(--fonte-titulo);
+  font-size: 1.375rem;
+  line-height: 1.25;
+}
+
+.lacunas ul {
+  display: grid;
+  gap: var(--e-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lacuna {
+  display: grid;
+  gap: var(--e-2);
+  padding-top: var(--e-4);
+  border-top: 1px dashed var(--linha-forte);
+}
+
+.lacuna p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Required or nice-to-have, as a field label: mono caps, not a colour. */
+.lacuna .tipo {
+  margin-left: var(--e-1);
+  font-family: var(--fonte-mono);
+  font-size: var(--t-rotulo);
+  letter-spacing: var(--rastreio-rotulo);
+  text-transform: uppercase;
+  color: var(--suave);
+  white-space: nowrap;
+}
+
+.lacuna .opcoes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--e-2);
+}
+
+.lacuna .opcao {
+  display: flex;
+  gap: var(--e-2);
+  align-items: center;
+  justify-content: center;
+  min-height: var(--alvo);
+  padding: var(--e-2);
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--raio);
+  background: var(--campo-fundo);
+  cursor: pointer;
+}
+
+.lacuna .opcao:has(input:checked) {
+  border-color: var(--acento);
+  outline: 1px solid var(--acento);
+  font-weight: 600;
+}
+
+.lacuna .opcao:has(input:focus-visible) {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+.lacuna .opcao input {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+  accent-color: var(--acento);
+}
+
+.cobertos {
+  margin-bottom: var(--e-4);
+}
+
+.cobertos summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--acento);
+  font-weight: 600;
+}
+
+.cobertos ul {
+  margin: 0;
+  padding-left: var(--e-5);
+  overflow-wrap: anywhere;
+}
+
+/* A confirmed Vaga's conversation (passo 16): the action, then how many questions are open. */
+.conversa-da-vaga {
+  display: grid;
+  gap: var(--e-2);
+  margin-bottom: var(--e-5);
+}
+
+.conversa-da-vaga form {
+  display: grid;
+}
+
+.conversa-da-vaga .em-aberto {
+  margin: 0;
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+}
+
+.apagar-vaga {
+  margin-top: var(--e-7);
+  padding-top: var(--e-4);
+  border-top: 1px solid var(--linha);
+}
+
+/* A Vaga's résumé (passo 17): the PDF, then the map, one requirement over the line that answers it. */
+.curriculo-da-vaga {
+  margin-bottom: var(--e-6);
+}
+
+.mapa-da-vaga {
+  margin-top: var(--e-6);
+}
+
+.mapa-da-vaga ul {
+  margin: 0 0 var(--e-3);
+  padding: 0;
+  list-style: none;
+}
+
+.mapa-da-vaga li {
+  display: grid;
+  gap: var(--e-1);
+  padding: var(--e-3) 0;
+  border-bottom: 1px solid var(--linha);
+  overflow-wrap: anywhere;
+}
+
+.mapa-da-vaga p {
+  margin: 0;
+}
+
+.mapa-da-vaga .requisito {
+  font-weight: 600;
+}
+
+.mapa-da-vaga .linha,
+.mapa-da-vaga .nao-coberto {
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+}
+
+.mapa-da-vaga .nao-coberto {
+  font-style: italic;
+}
+
+.curriculo-da-vaga .gerar-de-novo {
+  margin-top: var(--e-5);
+}
+
+/* The home's list of Vagas: one row each, the role over the company. */
+.vagas-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vagas-lista li {
+  border-bottom: 1px solid var(--linha);
+}
+
+.vagas-lista a {
+  display: grid;
+  gap: var(--e-1);
+  min-height: var(--alvo);
+  padding: var(--e-3) 0;
+  color: var(--texto);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.vagas-lista a strong {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.vagas-lista a span {
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+}
+
+/* ---- /termos e /privacidade (passo 22): a long text, one readable column ---- */
+
+.documento {
+  min-height: 0;
+}
+
+.documento h2 {
+  margin-top: var(--e-6);
+}
+
+.documento ul {
+  padding-left: var(--e-5);
+}
+
+.documento li + li {
+  margin-top: var(--e-2);
+}
+
+.links-legais {
+  margin: var(--e-3) 0 0;
+  font-size: var(--t-pequeno);
+}
+
+.links-legais a {
+  color: var(--suave);
+}

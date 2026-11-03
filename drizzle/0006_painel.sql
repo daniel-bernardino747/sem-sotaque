@@ -1,0 +1,1 @@
+ALTER TABLE "sessoes" ADD COLUMN "notas_daniel" text;

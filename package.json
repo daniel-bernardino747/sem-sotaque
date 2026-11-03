@@ -1,0 +1,44 @@
+{
+  "name": "sem-sotaque",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "render:fixture": "tsx scripts/render-fixture.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx --env-file-if-exists=.env scripts/db-migrate.ts",
+    "token:new": "tsx --env-file-if-exists=.env scripts/token-new.ts",
+    "simular": "tsx --env-file-if-exists=.env scripts/simular.ts",
+    "gerar": "tsx --env-file-if-exists=.env scripts/gerar.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "@typesafe-ai/sdk": "0.6.0",
+    "arctic": "^3.7.0",
+    "drizzle-orm": "^0.45.4",
+    "next": "16.1.6",
+    "postgres": "^3.4.9",
+    "react": "^19",
+    "react-dom": "^19",
+    "stripe": "^23.1.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
+  }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE "plano" ADD COLUMN "retomados" jsonb DEFAULT '[]'::jsonb NOT NULL;

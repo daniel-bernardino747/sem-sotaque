@@ -1,0 +1,21 @@
+Lívia Tavares Moura
+Desenvolvedora Front-end Júnior
+Belo Horizonte, MG · livia.moura@exemplo.dev · github.com/liviamoura-exemplo
+
+RESUMO
+Desenvolvedora front-end em início de carreira, com foco em React e acessibilidade. Busco minha primeira oportunidade internacional.
+
+EXPERIÊNCIA
+
+Estagiária de Desenvolvimento Front-end
+Papelaria Riacho Doce · fev 2024 – atual
+- Desenvolvi a nova página de catálogo da loja virtual em React.
+- Corrigi problemas de acessibilidade apontados pelo Lighthouse.
+- Participei das reuniões diárias e do planejamento das sprints.
+Tecnologias: React, TypeScript, CSS Modules
+
+FORMAÇÃO
+Análise e Desenvolvimento de Sistemas · Faculdade Horizonte Mineiro · 2022 – 2024
+
+PROJETOS
+Agenda Fácil — aplicativo de agendamento para um salão de beleza do bairro, feito no TCC com Next.js e Firebase.

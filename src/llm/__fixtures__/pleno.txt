@@ -1,0 +1,29 @@
+Rodrigo Albuquerque Pinheiro
+Desenvolvedor Back-end Pleno
+Recife, PE · rodrigo.pinheiro@exemplo.dev
+
+SOBRE
+Desenvolvedor back-end com 6 anos de experiência em sistemas de pagamento e logística. Gosto de transformar processos manuais em código.
+
+EXPERIÊNCIA PROFISSIONAL
+
+Desenvolvedor Back-end Pleno · Fintech Maracatu Pagamentos
+mar 2022 – atual
+- Reescrevi o serviço de conciliação de boletos em Go, reduzindo o tempo de processamento de 4 horas para 25 minutos.
+- Implementei a idempotência na API de cobranças, eliminando cobranças duplicadas.
+- Mentorei 2 desenvolvedores júnior do time de pagamentos.
+Stack: Go, PostgreSQL, Kafka, AWS
+
+Desenvolvedor Back-end · Transportadora Capibaribe
+jan 2020 – fev 2022
+- Criei a API de rastreamento de entregas usada pelo aplicativo dos motoristas.
+- Automatizei a geração de relatórios de frete que o financeiro fazia em planilha.
+Stack: Node.js, TypeScript, MySQL
+
+Desenvolvedor Júnior · Agência Frevo Digital
+2018 – 2019
+- Mantive sites institucionais de clientes em WordPress e PHP.
+- Integrei formulários de contato com o CRM dos clientes.
+
+FORMAÇÃO
+Bacharelado em Ciência da Computação · Universidade Federal Inventada de Pernambuco · 2014 – 2018
