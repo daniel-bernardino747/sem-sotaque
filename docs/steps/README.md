@@ -38,7 +38,7 @@ Um passo por janela. Cada arquivo é autossuficiente: objetivo, o que ler antes,
 | 22 | [Privacidade, termos e o fim para quem paga](22-privacidade.md) | 21 | feito |
 | 23 | [Self-host (`MODO=local`)](23-self-host.md) | 20 | feito (com pendência) |
 | 24 | [O código aberto](24-codigo-aberto.md) | 22, 23 | feito |
-| 25 | [Lançamento do beta](25-lancamento.md) | 09, 21, 22, 24 | pendente |
+| 25 | [Lançamento do beta](25-lancamento.md) | 09, 21, 22, 24 | em andamento |
 
 **Paralelo possível:** 03 ∥ 04 (depois do 02) e 08 ∥ 06/07 (depois do 05). Na Parte 3: 23 ∥ 21/22 (depois do 20), e o 09 a qualquer momento. Janelas paralelas devem trabalhar em worktrees ou branches separados e não editar o mesmo arquivo de schema ao mesmo tempo. Se um passo precisar de coluna nova, ele cria uma migração própria.
 
