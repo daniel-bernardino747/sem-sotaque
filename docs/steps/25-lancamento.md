@@ -40,8 +40,8 @@ Anúncio nas redes (o Daniel faz). Candidaturas (18) e o painel das vagas (19), 
 **Estado em 2026-11-04** (o passo segue em andamento; o resto é trabalho de console do Daniel):
 
 - **Item 1, o domínio:** feito. `https://semsotaque.teamdbsolutions.com/health` dá 200 com certificado válido.
-- **Item 2, OAuth de produção:** falta. O `/entrar` de produção não mostra nenhum botão, ou seja, `GITHUB_*` e `GOOGLE_*` não estão no Coolify. Sem eles, ninguém entra, e por isso ninguém assina.
-- **Item 3, Stripe em modo real:** falta (o Price, o webhook do domínio, o Portal e `STRIPE_*` no Coolify, como em `docs/deploy.md`).
+- **Item 2, OAuth de produção:** feito em 2026-11-04. Um OAuth App do GitHub próprio de produção (o "sem-sotaque (dev)" continua para `localhost`) e um cliente Web do Google, com a tela de consentimento publicada. Conferido de fora: o `/entrar` mostra os dois botões, e os dois provedores aceitam o client id e o `redirect_uri` (o Google vai para a escolha de conta, sem `redirect_uri_mismatch`). A volta, a troca do code pela conta, só se testa entrando de verdade (ensaio). **Pegadinha do Coolify:** variável nova só vale depois de um redeploy e marcada para runtime; antes disso, `/api/auth/<provedor>` volta para `/entrar?erro=1`.
+- **Item 3, Stripe em modo real:** feito em 2026-11-04 (o Price, o Portal, `STRIPE_*` no Coolify, e o webhook como "event destination" com os 7 eventos de `docs/deploy.md`). Conferido de fora: um evento sem assinatura válida recebe 400 (sem o `STRIPE_WEBHOOK_SECRET`, seria 500). O Checkout de verdade só se testa logado (ensaio).
 - **`CONTATO_WHATSAPP`:** conferir no Coolify. Sem ela, o link de "mais versões" da vaga abre um e-mail.
 - **Item 4, a página de venda:** feita, com o texto aprovado pelo Daniel em 2026-11-04 (`src/app/page.tsx`, `src/app/pagina-de-venda.test.ts`).
   - O "antes × depois" é do Rodrigo, a persona inventada (`scripts/personas.ts`, `sabe-os-numeros`). O "antes" vem do `src/llm/__fixtures__/pleno.txt`; o "depois" é a saída real de `npm run gerar -- sabe-os-numeros` de 2026-10-14, sem edição. Saíram as linhas do currículo do Daniel.
