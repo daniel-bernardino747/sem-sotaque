@@ -32,11 +32,11 @@ Divulgação (passo 25). Issues e templates além do `CONTRIBUTING.md`.
 
 ## Pronto quando
 
-- [ ] O repo público existe, com um commit, `LICENSE` AGPL-3.0, `README.md`, `CONTRIBUTING.md` e o CLA Assistant respondendo num PR de teste.
-- [ ] `git grep` no repo público não acha os documentos privados, preço em R$, e-mail ou telefone pessoal, nem segredo.
-- [ ] Os links dos passos apontam para `docs/decisoes.md` e nenhum está morto.
-- [ ] O Coolify fez um deploy a partir do repo público e o `/health` responde.
-- [ ] `npm run typecheck` e `npm test` passam no clone limpo.
+- [x] O repo público existe, com um commit, `LICENSE` AGPL-3.0, `README.md`, `CONTRIBUTING.md` e o CLA Assistant respondendo num PR de teste.
+- [x] `git grep` no repo público não acha os documentos privados, preço em R$, e-mail ou telefone pessoal, nem segredo.
+- [x] Os links dos passos apontam para `docs/decisoes.md` e nenhum está morto.
+- [x] O Coolify fez um deploy a partir do repo público e o `/health` responde.
+- [x] `npm run typecheck` e `npm test` passam no clone limpo.
 
 ## Notas de implementação
 
@@ -48,7 +48,7 @@ Divulgação (passo 25). Issues e templates além do `CONTRIBUTING.md`.
 
 **A varredura** (`git grep` na árvore inteira, menos os documentos do negócio):
 - **Segredos:** nenhum. Só as credenciais de dev do `docker-compose.yml` e os placeholders `sk_…`/`whsec_…` da documentação.
-- **WhatsApp pessoal:** estava fixo em `src/app/whatsapp.ts`. Agora `linkDeContato` (`src/app/contato.ts`) lê `CONTATO_WHATSAPP`, e sem ela os links mandam e-mail para hello@teamdbsolutions.com. **Ponha `CONTATO_WHATSAPP` no Coolify**, ou a landing passa a pedir convite por e-mail.
+- **WhatsApp pessoal:** estava fixo em `src/app/whatsapp.ts`. Agora `linkDeContato` (`src/app/contato.ts`) lê `CONTATO_WHATSAPP`, e sem ela os links mandam e-mail para hello@teamdbsolutions.com. O Coolify já tem a variável.
 - **E-mail:** só o da empresa (hello@teamdbsolutions.com), que já é público na política. O CNPJ e o endereço também já estão na política.
 - **Testers:** nenhum nome. A única menção é um prefixo de id de sessão, no passo 09.
 - **URLs internas:** a única era a do Railway (`.railway/railway.ts` e as notas do 09). O `.railway/` e a dependência `railway` saíram, porque produção é o Coolify. A VPS não tem URL nem IP no repo.
@@ -62,6 +62,11 @@ Divulgação (passo 25). Issues e templates além do `CONTRIBUTING.md`.
 - `src/docs.test.ts`: nenhum link relativo morto nos `.md`. Ele e o teste da licença pulam onde não há `.git`, como dentro da imagem.
 - O `CLAUDE.md` público troca "o Daniel" por quem pediu o trabalho, tira a regra do `../career` (que fica no privado), troca o commit por passo por um PR por passo e ganha a regra de dizer o custo antes de uma chamada paga.
 - Este passo foi editado para não nomear os documentos privados, porque o `git grep` do "Pronto quando" roda nele também.
+
+**O fechamento** (2026-11-04):
+- O Coolify builda do repo público. Depois do deploy, o `/health` respondeu `{"ok":true}`, e a landing de produção mostra o link "Código-fonte" e o convite pelo WhatsApp.
+- O repo privado perdeu o código no mesmo dia, depois do deploy.
+- O CLA Assistant está ligado ao repo, com o texto de `CLA.md` num gist. Ele respondeu no PR que fechou este passo.
 
 ## Achados
 
