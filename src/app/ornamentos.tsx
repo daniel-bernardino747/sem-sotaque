@@ -55,12 +55,3 @@ export function Onda() {
     </svg>
   );
 }
-
-/** A speech bubble, the WhatsApp call's glyph (not the app's logo). */
-export function Balao() {
-  return (
-    <svg className="balao" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 3.5c-4.7 0-8.5 3.3-8.5 7.4 0 2.2 1.1 4.2 2.9 5.5L5.6 20.5l4.2-2.3c.7.2 1.4.2 2.2.2 4.7 0 8.5-3.3 8.5-7.5S16.7 3.5 12 3.5Z" />
-    </svg>
-  );
-}

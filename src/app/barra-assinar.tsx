@@ -5,14 +5,12 @@
 
 import { useEffect, useState } from 'react';
 
-import { Balao } from './ornamentos';
-
 /**
- * The invitation pinned to the bottom of the screen while the home scrolls,
+ * The call to subscribe pinned to the bottom of the screen while the home scrolls,
  * until the seal at its foot comes into view and takes over the call. Once the
  * seal is on screen, or scrolled past, the bar slides away.
  */
-export function BarraConvite({ href, selo }: { href: string; selo: string }) {
+export function BarraAssinar({ href, selo }: { href: string; selo: string }) {
   const [escondida, setEscondida] = useState(false);
 
   useEffect(() => {
@@ -26,11 +24,10 @@ export function BarraConvite({ href, selo }: { href: string; selo: string }) {
   }, [selo]);
 
   return (
-    <div className="barra-convite" data-escondida={escondida} inert={escondida}>
-      <span className="barra-convite-texto">Teste fechado e grátis</span>
-      <a className="barra-convite-botao" href={href}>
-        <Balao />
-        Pedir convite
+    <div className="barra-assinar" data-escondida={escondida} inert={escondida}>
+      <span className="barra-assinar-texto">Beta · R$ 99 por trimestre</span>
+      <a className="barra-assinar-botao" href={href}>
+        Assinar
       </a>
     </div>
   );

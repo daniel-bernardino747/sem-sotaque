@@ -233,13 +233,6 @@ a {
   opacity: 0.7;
 }
 
-.balao {
-  width: 1.35em;
-  height: 1.35em;
-  flex: none;
-  fill: currentColor;
-}
-
 /* A field label: what a data page prints above each value. */
 .rotulo {
   display: block;
@@ -1743,6 +1736,37 @@ a.botao.abrir-pdf {
   text-decoration-style: dashed;
 }
 
+/* The price and the free way, side by side: what you get, and the open code. */
+.inicio-lista {
+  margin: var(--e-4) 0 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: var(--e-2);
+}
+
+.inicio-lista li::marker {
+  color: var(--ocre);
+}
+
+.inicio-resultado h2 {
+  margin-top: 0;
+}
+
+.inicio-resultado .inicio-local {
+  font-size: 1rem;
+}
+
+.inicio-codigo {
+  display: inline-block;
+  margin-top: var(--e-4);
+  color: var(--ocre);
+  font-family: var(--fonte-mono);
+  font-size: var(--t-rotulo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-underline-offset: 0.3em;
+}
+
 .seta {
   color: var(--ocre);
   font-size: 1.5rem;
@@ -1841,7 +1865,7 @@ a.botao.abrir-pdf {
   outline-offset: 12px;
 }
 
-.barra-convite-botao:focus-visible {
+.barra-assinar-botao:focus-visible {
   outline: 3px solid var(--prata);
   outline-offset: 3px;
 }
@@ -1874,11 +1898,6 @@ a.botao.abrir-pdf {
   line-height: 1;
 }
 
-.selo-miolo .balao {
-  width: 2rem;
-  height: 2rem;
-}
-
 .selo-sub {
   margin: var(--e-5) 0 0;
   font-size: 1.125rem;
@@ -1890,8 +1909,8 @@ a.botao.abrir-pdf {
   }
 }
 
-/* Until the seal is in view the same call rides a bar pinned to the bottom (barra-convite.tsx). */
-.barra-convite {
+/* Until the seal is in view the same call rides a bar pinned to the bottom (barra-assinar.tsx). */
+.barra-assinar {
   position: fixed;
   inset: auto 0 0;
   z-index: 40;
@@ -1908,19 +1927,19 @@ a.botao.abrir-pdf {
     visibility 240ms;
 }
 
-.barra-convite[data-escondida='true'] {
+.barra-assinar[data-escondida='true'] {
   translate: 0 100%;
   visibility: hidden;
 }
 
-.barra-convite-texto {
+.barra-assinar-texto {
   color: var(--ocre);
   font: 600 0.75rem/1.2 var(--fonte-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.barra-convite-botao {
+.barra-assinar-botao {
   display: inline-flex;
   align-items: center;
   gap: var(--e-2);
@@ -1946,7 +1965,7 @@ a.botao.abrir-pdf {
 }
 
 @media (min-width: 48rem) {
-  .barra-convite {
+  .barra-assinar {
     justify-content: center;
     gap: var(--e-6);
   }
@@ -1954,7 +1973,7 @@ a.botao.abrir-pdf {
 
 @media (prefers-reduced-motion: reduce) {
   .selo-aro,
-  .barra-convite-botao {
+  .barra-assinar-botao {
     animation: none;
   }
 
@@ -1965,7 +1984,7 @@ a.botao.abrir-pdf {
     transition: none;
   }
 
-  .barra-convite {
+  .barra-assinar {
     transition: none;
   }
 }
