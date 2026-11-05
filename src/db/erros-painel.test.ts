@@ -4,7 +4,7 @@
 import { afterAll, describe, expect, inject, it } from 'vitest';
 
 import { db, fecharDb } from './client';
-import { criarTester, errosEAtritos, registrarEvento } from './index';
+import { criarTester, errosEAtritos, registrarChamadaLlm, registrarEvento } from './index';
 import * as t from './schema';
 
 const semBanco = !inject('bancoDisponivel');
@@ -41,7 +41,7 @@ describe.skipIf(semBanco)('errosEAtritos (o painel)', () => {
     expect(p.sessoes.find((s) => s.sessaoId === sessao.id)).toEqual({ sessaoId: sessao.id, apelido: 'Fulana Inventada', n: 3 });
   });
 
-  it('counts the frictions and the sessions that hit the cap, and the render time', async () => {
+  it("counts the frictions, the sessions that hit the cap, the model's failures per stage and the week's render time", async () => {
     const antes = await errosEAtritos();
     const { sessao } = await criarTester({ apelido: 'Beltrano Inventado', origem: 'teste' });
     await registrarEvento(sessao.id, 'tentou_de_novo', { onde: 'chat' });
@@ -51,6 +51,12 @@ describe.skipIf(semBanco)('errosEAtritos (o painel)', () => {
     await registrarEvento(sessao.id, 'terminou', { abertos: 0, total: 3, por: 'pessoa' });
     const [selection] = await db().insert(t.selections).values({ sessaoId: sessao.id, json: {} }).returning();
     await db().insert(t.renders).values({ selectionId: selection.id, pdf: Buffer.from('%PDF'), medida: {}, duracaoMs: 9_876_543 });
+    // A render older than the window stays out of it.
+    await db()
+      .insert(t.renders)
+      .values({ selectionId: selection.id, pdf: Buffer.from('%PDF'), medida: {}, duracaoMs: 99_999_999, createdAt: new Date(Date.now() - 8 * DIA) });
+    await registrarChamadaLlm({ sessaoId: sessao.id, etapa: 'critico', modelo: 'teste', custoUsd: 0, duracaoMs: 1, erro: 'refusal (x)' });
+    await registrarChamadaLlm({ sessaoId: sessao.id, etapa: 'critico', modelo: 'teste', custoUsd: 0, duracaoMs: 1, erro: null });
 
     const depois = await errosEAtritos();
 
@@ -60,5 +66,6 @@ describe.skipIf(semBanco)('errosEAtritos (o painel)', () => {
     expect(depois.teto - antes.teto).toBe(1);
     expect(depois.render?.maximo).toBe(9_876_543);
     expect(depois.render?.n).toBe((antes.render?.n ?? 0) + 1);
+    expect((depois.falhasDoModelo.critico ?? 0) - (antes.falhasDoModelo.critico ?? 0)).toBe(1);
   });
 });
