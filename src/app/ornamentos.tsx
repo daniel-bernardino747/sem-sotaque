@@ -3,21 +3,35 @@
 
 /**
  * The banknote's ornaments, shared by every screen that carries them: the
- * guilloché rosette, the ochre corner flourishes, the wave strip that parts
+ * guilloché lens, the ochre corner flourishes, the wave strip that parts
  * bands, and the call's speech bubble. All decorative, hidden from assistive tech.
  */
 
-/** A banknote's security print: one rosette of ellipses turned around the centre. */
-export function Guilloche({ className }: { className: string }) {
+/**
+ * A banknote's security print, cut like a camera lens: the rosette of ellipses,
+ * the concentric rings, and a scale of distance ticks just inside the ring around the plate, each its own layer so the
+ * page can turn and breathe them separately. Fixed behind the whole page.
+ */
+export function Lente() {
   return (
-    <svg className={className} viewBox="-200 -200 400 400" aria-hidden="true">
-      {Array.from({ length: 28 }, (_, i) => (
-        <ellipse key={i} cx="0" cy="0" rx="190" ry="72" transform={`rotate(${(i * 180) / 28})`} />
-      ))}
-      {Array.from({ length: 6 }, (_, i) => (
-        <circle key={`c${i}`} cx="0" cy="0" r={60 + i * 26} />
-      ))}
-    </svg>
+    <div className="lente" aria-hidden="true">
+      <svg className="lente-rosa" viewBox="-200 -200 400 400">
+        {Array.from({ length: 28 }, (_, i) => (
+          <ellipse key={i} cx="0" cy="0" rx="190" ry="72" transform={`rotate(${(i * 180) / 28})`} />
+        ))}
+      </svg>
+      <svg className="lente-aneis" viewBox="-200 -200 400 400">
+        {Array.from({ length: 6 }, (_, i) => (
+          <circle key={i} cx="0" cy="0" r={60 + i * 26} />
+        ))}
+      </svg>
+      <svg className="lente-escala" viewBox="-200 -200 400 400">
+        <circle cx="0" cy="0" r="56" />
+        {Array.from({ length: 120 }, (_, i) => (
+          <line key={i} x1="0" y1={-56} x2="0" y2={i % 10 === 0 ? -51 : i % 5 === 0 ? -53 : -54.5} transform={`rotate(${i * 3})`} />
+        ))}
+      </svg>
+    </div>
   );
 }
 

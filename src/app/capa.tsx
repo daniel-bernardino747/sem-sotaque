@@ -1,7 +1,7 @@
 // Copyright (C) 2026 DB Software Solutions LTDA
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { Cantoneiras, Guilloche } from './ornamentos';
+import { Cantoneiras, Lente } from './ornamentos';
 
 /**
  * The cross-shaped frame of the cover: a vertical arm with arched ends over a
@@ -19,7 +19,7 @@ const MOLDURA =
 export function Capa() {
   return (
     <section className="capa">
-      <Guilloche className="capa-guilloche" />
+      <Lente />
       <Cantoneiras />
 
       <div className="capa-placa">
