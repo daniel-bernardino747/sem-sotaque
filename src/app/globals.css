@@ -1592,25 +1592,38 @@ a.botao.abrir-pdf {
   letter-spacing: -0.005em;
 }
 
+/* The pain, right under the cover: the visitor's own situations, then the turn to what this does. */
 .inicio-abre {
   max-width: 44rem;
   margin: 0 auto;
-  padding: var(--e-6) var(--e-4);
-  text-align: center;
+  padding: var(--e-7) var(--e-4) var(--e-6);
 }
 
-.inicio-abre p {
-  font-size: 1.3125rem;
+.inicio-abre h2 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.dores {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--e-4);
+}
+
+.dores li {
+  padding-left: var(--e-4);
+  border-left: 2px solid var(--ocre);
+  font-size: 1.125rem;
   line-height: 1.5;
 }
 
-.inicio-abre .garantias {
-  justify-content: center;
-}
-
-.inicio-abre .garantias li {
-  text-align: center;
-  text-wrap: balance;
+.dores-virada {
+  margin: var(--e-6) 0 0;
+  font-size: 1.3125rem;
+  line-height: 1.5;
 }
 
 .inicio-faixa {
@@ -1736,35 +1749,16 @@ a.botao.abrir-pdf {
   text-decoration-style: dashed;
 }
 
-/* The price and the free way, side by side: what you get, and the open code. */
-.inicio-lista {
-  margin: var(--e-4) 0 0;
-  padding-left: 1.25rem;
-  display: grid;
-  gap: var(--e-2);
+/* Why a number holds up in the interview, over the invented exchange. */
+.inicio-promessa {
+  margin: 0 0 var(--e-5);
+  font-size: 1.125rem;
 }
 
-.inicio-lista li::marker {
-  color: var(--ocre);
-}
-
-.inicio-resultado h2 {
-  margin-top: 0;
-}
-
-.inicio-resultado .inicio-local {
-  font-size: 1rem;
-}
-
-.inicio-codigo {
-  display: inline-block;
-  margin-top: var(--e-4);
-  color: var(--ocre);
-  font-family: var(--fonte-mono);
-  font-size: var(--t-rotulo);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-underline-offset: 0.3em;
+.inicio-nota {
+  max-width: 44rem;
+  margin: var(--e-6) 0 0;
+  color: var(--suave);
 }
 
 .seta {
@@ -1903,6 +1897,44 @@ a.botao.abrir-pdf {
   font-size: 1.125rem;
 }
 
+/* The one place the price is said: at the decision, with the guarantees beside it. */
+.selo-preco {
+  max-width: 36rem;
+  margin: 0 auto var(--e-4);
+  font-size: 1.3125rem;
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+.selo-preco strong {
+  color: var(--ocre);
+  font-weight: 600;
+}
+
+.selo .garantias {
+  justify-content: center;
+  max-width: 40rem;
+  margin: 0 auto var(--e-7);
+}
+
+.selo-letra {
+  max-width: 32rem;
+  margin: var(--e-3) auto 0;
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+  text-wrap: balance;
+}
+
+/* Running it yourself: a quiet line in the footer, for whoever looks for it. */
+.codigo-aberto {
+  margin: var(--e-3) 0 0;
+  font-size: var(--t-pequeno);
+}
+
+.codigo-aberto a {
+  color: var(--suave);
+}
+
 @keyframes selo-gira {
   to {
     rotate: 360deg;
@@ -1991,29 +2023,98 @@ a.botao.abrir-pdf {
 
 /* ---- a capa da home: a placa gravada de um documento ---- */
 
-.capa {
+/*
+ * The cover has no ground of its own: the lens behind it is fixed to the
+ * viewport, so its lines run under the whole page and no edge parts the
+ * cover from the bands below.
+ */
+.cedula {
   position: relative;
   isolation: isolate;
+}
+
+.capa {
+  position: relative;
   overflow: hidden;
   display: grid;
   place-items: center;
   min-height: min(100svh, 52rem);
   padding: var(--e-7) var(--e-4) var(--e-6);
+}
+
+/* The guilloché as a camera lens (ornamentos.tsx): one layer per element, each moving on its own. */
+.lente {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
   background-image:
     radial-gradient(60% 45% at 78% 18%, rgb(255 255 255 / 0.1), transparent 70%),
     radial-gradient(70% 55% at 15% 85%, var(--cobalto-fundo), transparent 75%),
     radial-gradient(50% 40% at 30% 30%, rgb(10 25 70 / 0.35), transparent 70%);
 }
 
-.capa-guilloche {
+.lente > svg {
   position: absolute;
-  inset: 50% auto auto 50%;
-  z-index: -1;
+  top: 50%;
+  left: 50%;
   width: max(140vmax, 60rem);
+  height: auto;
+  aspect-ratio: 1;
   translate: -50% -50%;
   fill: none;
   stroke: rgb(255 255 255 / 0.045);
   stroke-width: 0.3;
+  will-change: transform;
+}
+
+/* The rosette turns slowly, like the glass inside the barrel. */
+.lente-rosa {
+  animation: lente-gira 320s linear infinite;
+}
+
+/* The rings breathe in and out: a focus being pulled. */
+.lente-aneis {
+  stroke: rgb(255 255 255 / 0.07);
+  animation: lente-foco 9s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+/* The distance scale on the ring around the plate, turning against the rosette. */
+.lente-escala {
+  stroke: rgb(238 242 250 / 0.13);
+  stroke-width: 0.22;
+  animation: lente-gira 140s linear infinite reverse;
+}
+
+@keyframes lente-gira {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@keyframes lente-foco {
+  from {
+    scale: 0.985;
+  }
+  to {
+    scale: 1.04;
+  }
+}
+
+/* Scrolling zooms in: the page moves through the lens. */
+@supports (animation-timeline: scroll()) {
+  .lente {
+    animation: lente-zoom linear both;
+    animation-timeline: scroll(root);
+  }
+
+  @keyframes lente-zoom {
+    to {
+      scale: 1.35;
+      opacity: 0.75;
+    }
+  }
 }
 
 /* The plate: everything inside is placed in the frame's own 300 × 380 box. */
@@ -2124,7 +2225,9 @@ a.botao.abrir-pdf {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .capa-gravura {
+  .capa-gravura,
+  .lente,
+  .lente > svg {
     animation: none;
   }
 }

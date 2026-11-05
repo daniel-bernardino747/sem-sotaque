@@ -8,7 +8,8 @@ import { useEffect, useState } from 'react';
 /**
  * The call to subscribe pinned to the bottom of the screen while the home scrolls,
  * until the seal at its foot comes into view and takes over the call. Once the
- * seal is on screen, or scrolled past, the bar slides away.
+ * seal is on screen, or scrolled past, the bar slides away. It says the result,
+ * never the price: the price is said once, beside the seal.
  */
 export function BarraAssinar({ href, selo }: { href: string; selo: string }) {
   const [escondida, setEscondida] = useState(false);
@@ -25,7 +26,7 @@ export function BarraAssinar({ href, selo }: { href: string; selo: string }) {
 
   return (
     <div className="barra-assinar" data-escondida={escondida} inert={escondida}>
-      <span className="barra-assinar-texto">Beta · R$ 99 por trimestre</span>
+      <span className="barra-assinar-texto">Um currículo em inglês que você defende</span>
       <a className="barra-assinar-botao" href={href}>
         Assinar
       </a>
