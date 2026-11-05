@@ -1,17 +1,17 @@
-# 09: Deploy no Railway e ensaio geral
+# 09: Deploy e ensaio geral
 
 ## Objetivo
 
-O v0 no ar num subdomínio do Railway, testado de ponta a ponta por gente de verdade antes do primeiro link ir para um grupo.
+O v0 no ar, testado de ponta a ponta por gente de verdade antes do primeiro link ir para um grupo.
 
 ## Ler antes
 
 - `Dockerfile` e notas do passo 01 (cache do Tectonic)
-- `../scholia-mcp/railway.json` e o `Dockerfile` de lá: o Daniel já faz deploy no Railway, siga o mesmo padrão
+- `docs/deploy.md`: a produção roda numa VPS com Coolify, que faz o deploy a cada push na `main`. O Railway foi o primeiro deploy deste passo e saiu (notas abaixo)
 
 ## Fazer
 
-1. Projeto no Railway com o serviço do app (Dockerfile) e um Postgres. Variáveis: `DATABASE_URL`, `ANTHROPIC_API_KEY`, `ADMIN_TOKEN` (forte, gerado agora), `APP_URL`. As migrações rodam no deploy.
+1. O app (Dockerfile) e um Postgres em produção: hoje no Coolify (`docs/deploy.md`), antes no Railway. Variáveis: `DATABASE_URL`, `ANTHROPIC_API_KEY`, `ADMIN_TOKEN` (forte, gerado agora), `APP_URL`. As migrações rodam no deploy.
 2. **Limite de gasto** na conta da Anthropic, ou um teto por sessão no `src/llm/cliente.ts` que pare de chamar e avise, para um tester que deixa a aba em loop não virar conta alta. Anote o valor escolhido.
 3. Backup do Postgres ligado.
 4. **Ensaio geral, nesta ordem:**
@@ -23,13 +23,13 @@ O v0 no ar num subdomínio do Railway, testado de ponta a ponta por gente de ver
 
 ## Fora do escopo
 
-Domínio próprio, CDN, monitoramento além do log do Railway.
+Domínio próprio, CDN, monitoramento além do log do container e do painel.
 
 ## Pronto quando
 
 - [ ] As duas sessões do ensaio chegaram ao PDF sem intervenção
 - [ ] Apagar pelo botão funcionou em produção
-- [ ] Render em produção abaixo de ~10 s com o cache aquecido (anote o tempo real)
+- [ ] Render em produção abaixo de ~10 s com o cache aquecido (anote o tempo real; com o passo 26, a mediana aparece no painel)
 - [ ] O limite de gasto está ativo
 - [ ] O Daniel decidiu que dá para mandar o primeiro link. **Pergunte a ele.** Anote a data nas notas deste passo
 

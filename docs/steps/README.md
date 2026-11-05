@@ -12,7 +12,7 @@ Um passo por janela. Cada arquivo é autossuficiente: objetivo, o que ler antes,
 | 06 | [Geração: Selection, checagens, crítico, PDF](06-geracao.md) | 05 | feito |
 | 07 | [Fim da sessão: fundador, indicação, depoimento](07-fim.md) | 06 | feito |
 | 08 | [Painel do Daniel](08-painel.md) | 05 | feito |
-| 09 | [Deploy no Railway e ensaio geral](09-deploy.md) | 06, 07, 08 | em andamento |
+| 09 | [Deploy e ensaio geral](09-deploy.md) | 06, 07, 08 | em andamento |
 | 10 | [Avaliador e assunto por vez](10-avaliador.md) | 05, 06, 08 | feito |
 | 11 | [Menos chamadas por sessão](11-custo-por-sessao.md) | 10 | feito (com pendência) |
 | 12 | [Backend LLM pela assinatura (só local)](12-backend-assinatura.md) | 04 | feito |
