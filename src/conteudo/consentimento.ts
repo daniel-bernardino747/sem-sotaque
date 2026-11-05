@@ -33,6 +33,26 @@ export const MUDOU_NO_V2 =
  */
 export const CONSENTIMENTO_VAGAS_VERSAO = 'vagas-v2';
 
+/**
+ * When the policy that keeps errors and frictions (step 26) applies to every
+ * session: the deploy plus the 7 days the banner at the home announces.
+ * Midnight in Brasília. Before it, only a session that accepted v4 records them.
+ */
+export const ERROS_VALEM_A_PARTIR = new Date('2026-11-13T03:00:00Z');
+
+/** Text versions before v4, whose consent said nothing about errors. */
+const SEM_ERROS = new Set(['v1', 'v2', 'v3']);
+
+/**
+ * Whether a session's errors and frictions are recorded (step 26, decision 9):
+ * from the consent for a v4 session, from `ERROS_VALEM_A_PARTIR` for any other
+ * (an older text, or none accepted yet).
+ */
+export function gravaErrosEAtritos(versao: string | null, agora = new Date()): boolean {
+  if (versao !== null && !SEM_ERROS.has(versao)) return true;
+  return agora.getTime() >= ERROS_VALEM_A_PARTIR.getTime();
+}
+
 /** v2 and later name the TypeSafe: the evaluator may run only for them. */
 export function aceitouAvaliador(versao: string | null): boolean {
   return versao !== null && versao !== 'v1';
