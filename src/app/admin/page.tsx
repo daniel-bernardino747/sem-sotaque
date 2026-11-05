@@ -316,6 +316,16 @@ function ErrosEAtritos({ e }: { e: Awaited<ReturnType<typeof errosEAtritos>> }) 
           <strong>{e.teto}</strong>
         </div>
         <div className="cartao">
+          <span className="rotulo">Chamadas do modelo com erro</span>
+          <strong>{Object.values(e.falhasDoModelo).reduce((soma, n) => soma + n, 0)}</strong>
+          <span className="pequeno">
+            {Object.entries(e.falhasDoModelo)
+              .sort((a, b) => b[1] - a[1])
+              .map(([etapa, n]) => `${etapa}: ${n}`)
+              .join(' · ') || '—'}
+          </span>
+        </div>
+        <div className="cartao">
           <span className="rotulo">Render do PDF</span>
           <strong>{e.render ? `${(e.render.mediana / 1000).toFixed(1)} s` : '—'}</strong>
           <span className="pequeno">{e.render ? `mediana de ${e.render.n} · máximo ${(e.render.maximo / 1000).toFixed(1)} s` : 'nenhum medido ainda'}</span>
