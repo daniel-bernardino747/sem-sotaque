@@ -5,8 +5,8 @@ import Stripe from 'stripe';
 
 import { cobranca } from '@/assinatura/stripe';
 import { tratarEvento } from '@/assinatura/webhook';
-import { modo } from '@/modo';
 import { registrarErro } from '@/erros';
+import { modo } from '@/modo';
 
 /**
  * Stripe's webhook (step 21): the only writer of the subscription status. The

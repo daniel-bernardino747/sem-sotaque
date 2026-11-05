@@ -5,11 +5,11 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { entrar } from '@/db';
+import { registrarErro } from '@/erros';
 import { modo } from '@/modo';
 
 import { COOKIE_CONTA, OPCOES_COOKIE_CONTA, opcoesDoCookie } from './acesso';
 import { COOKIE_OAUTH, iniciar, lerIda, perfilDoRetorno, provedorDaRota, VALIDADE_OAUTH_S } from './oauth';
-import { registrarErro } from '@/erros';
 
 /**
  * The start of a sign-in (`GET /api/auth/<provedor>`, or the v0 link's

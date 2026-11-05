@@ -31,6 +31,8 @@ import {
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 
+import { ORIGENS_ERRO } from '../erros/forma';
+
 /** `bytea`, read and written as a Node Buffer (postgres.js does the conversion). */
 const bytea = customType<{ data: Buffer; driverData: Buffer }>({
   dataType: () => 'bytea',
@@ -734,7 +736,7 @@ export const eventos = pgTable(
 
 // ---- os erros (passo 26) ----------------------------------------------------
 
-export const origemErro = pgEnum('origem_erro', ['servidor', 'navegador']);
+export const origemErro = pgEnum('origem_erro', ORIGENS_ERRO);
 
 /**
  * What broke, by its shape only (`src/erros/forma.ts`): never the message nor

@@ -34,6 +34,7 @@ import {
 } from '@/db';
 import { abrirConversaDaVaga, contarAlgoNovo, emRetomada, retomar } from '@/avaliador';
 import { CONSENTIMENTO_VERSAO, REACEITE_VERSAO } from '@/conteudo/consentimento';
+import { anotarAtrito, registrarErro } from '@/erros';
 import { ErroImport, importarCurriculo, type EntradaImport } from '@/import';
 import { lerCabecalho } from '@/geracao/cabecalho';
 import { garantirGeracao, novaGeracao } from '@/geracao/segundo-plano';
@@ -43,7 +44,6 @@ import { encerrarInterrogatorio } from '@/interrogatorio/turno';
 import { garantirLeitura } from '@/vaga';
 import { lerConfirmacao, lerVagaColada } from '@/vaga/entrada';
 import { modo } from '@/modo';
-import { anotarAtrito, registrarErro } from '@/erros';
 
 /**
  * The signed-in session every action works on, read again on each call (an

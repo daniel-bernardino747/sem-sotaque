@@ -12,10 +12,10 @@
  * moves it to `leitura_falhou`, and only "tentar de novo" starts it again.
  */
 import { corpusDaSessao, gravarLeitura, marcarEstagioDaLeitura, vagaDaSessao } from '@/db';
+import { registrarErro } from '@/erros';
 import { llm, type ClienteLlm } from '@/llm/cliente';
 
 import { lerVaga } from './leitura';
-import { registrarErro } from '@/erros';
 
 const rodando = new Set<string>();
 

@@ -49,6 +49,7 @@ import {
 } from '@/db';
 import type { Cabecalho } from '@/db/geracao';
 import type { PerguntaDeEntrevista } from '@/db/schema';
+import { registrarErro } from '@/erros';
 import { Refs } from '@/interrogatorio/estado';
 import { llm, type ClienteLlm, type Etapa } from '@/llm/cliente';
 import { renderResume, type Medida, type RenderedResume, type Selection } from '@/render';
@@ -67,7 +68,6 @@ import {
   type MapaDeLinhas,
   type Rascunho,
 } from './rascunho';
-import { registrarErro } from '@/erros';
 
 /** Attempts before the best one is delivered for Daniel to review. */
 export const LIMITE_TENTATIVAS = 4;
