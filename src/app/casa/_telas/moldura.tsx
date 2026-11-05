@@ -13,6 +13,7 @@ import { modo } from '@/modo';
 import { abriuOLink, apagarDados, gerirAssinatura, sairDaConta } from '../acoes';
 import { Abertura } from './abertura';
 import { ApagarDados } from './apagar-dados';
+import { OuvidoDeErros } from './ouvido-de-erros';
 
 /**
  * What every route under `/casa` draws around its screen: the band, and
@@ -29,6 +30,7 @@ export async function Moldura({ children }: { children: ReactNode }) {
   return (
     <>
       <Abertura registrar={abriuOLink} />
+      <OuvidoDeErros />
       <Faixa />
       <main>{children}</main>
       <footer>
