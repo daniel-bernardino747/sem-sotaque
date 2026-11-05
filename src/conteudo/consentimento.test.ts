@@ -3,7 +3,16 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { aceitouAvaliador, CONSENTIMENTO_VAGAS_VERSAO, CONSENTIMENTO_VERSAO, MUDOU_NO_V2, paragrafos, textoDoConsentimento } from './consentimento';
+import {
+  aceitouAvaliador,
+  CONSENTIMENTO_VAGAS_VERSAO,
+  CONSENTIMENTO_VERSAO,
+  ERROS_VALEM_A_PARTIR,
+  gravaErrosEAtritos,
+  MUDOU_NO_V2,
+  paragrafos,
+  textoDoConsentimento,
+} from './consentimento';
 
 describe('paragrafos', () => {
   it('splits on blank lines and marks the bold runs', () => {
@@ -62,5 +71,21 @@ describe('textoDoConsentimento', () => {
 describe('aceitouAvaliador', () => {
   it('lets the evaluator run only from v2 on', () => {
     expect([null, 'v1', 'v2', 'v3'].map(aceitouAvaliador)).toEqual([false, false, true, true]);
+  });
+});
+
+describe('gravaErrosEAtritos', () => {
+  const antes = new Date(ERROS_VALEM_A_PARTIR.getTime() - 1);
+  const depois = ERROS_VALEM_A_PARTIR;
+
+  it('records a v4 session from the consent, before the date', () => {
+    expect(gravaErrosEAtritos('v4', antes)).toBe(true);
+  });
+
+  it('records a session of an older text only from the date the banner announced', () => {
+    for (const versao of ['v1', 'v2', 'v3', null]) {
+      expect(gravaErrosEAtritos(versao, antes)).toBe(false);
+      expect(gravaErrosEAtritos(versao, depois)).toBe(true);
+    }
   });
 });
