@@ -29,7 +29,7 @@ import {
   vagaDaSessao,
 } from '@/db';
 import { db, fecharDb } from '@/db/client';
-import { eventos, geracoes, sessoes } from '@/db/schema';
+import { eventos, geracoes, renders, sessoes } from '@/db/schema';
 import { pdftotextDisponivel, textoDoPdf } from '@/import/texto';
 import { criarClienteLlm, type LinhaChamada, type SdkMinimo } from '@/llm/cliente';
 import { MODELO_PADRAO } from '@/llm/precos';
@@ -200,6 +200,19 @@ describe.skipIf(semBanco)('gerarCurriculo', () => {
     expect(await tentativasDaSessao(sessaoId)).toHaveLength(LIMITE_TENTATIVAS);
     expect(await ultimaGeracao(sessaoId)).toMatchObject({ revisar: true });
     expect((await sessaoPorId(sessaoId))?.estado).toBe('pronto');
+  });
+
+  it('records how long the render took', async () => {
+    const sessaoId = await sessaoPronta();
+    const lento = async (s: Selection) => {
+      await new Promise((r) => setTimeout(r, 30));
+      return paginaCheia(s);
+    };
+    await gerar(sessaoId, { cliente: clienteFalso([selecao('Banco Ipê do Sul', 'Cut reconciliation from 4 hours to 25 minutes in Go.'), leitura()]).cliente, renderizar: lento });
+
+    const [tentativa] = await tentativasDaSessao(sessaoId);
+    const [render] = await db().select().from(renders).where(eq(renders.selectionId, tentativa.id));
+    expect(render.duracaoMs).toBeGreaterThanOrEqual(25);
   });
 
   it('generates a new version of a closed session without moving its state or its funnel', async () => {
