@@ -22,7 +22,7 @@ export interface FormaDoErro {
   onde: string;
   /** `erro.name`, or the type of what was thrown when it is not an Error. */
   classe: string;
-  /** A known code: the `ErroLlm`'s `motivo`, an HTTP status, a Postgres or Node code. */
+  /** A known code: the `ErroLlm`'s `motivo`, the `ErroImport`'s `codigo`, an HTTP status, a Postgres or Node code. */
   codigo: string | null;
   /** Next's digest: it ties the browser's error to the server's, and to the container log. */
   digest: string | null;
@@ -47,8 +47,8 @@ function classeDe(erro: unknown): string {
 
 function codigoDe(erro: unknown): string | null {
   if (typeof erro !== 'object' || erro === null) return null;
-  const { motivo, status, code } = erro as { motivo?: unknown; status?: unknown; code?: unknown };
-  return token(motivo) ?? token(status) ?? token(code);
+  const { motivo, codigo, status, code } = erro as { motivo?: unknown; codigo?: unknown; status?: unknown; code?: unknown };
+  return token(motivo) ?? token(codigo) ?? token(status) ?? token(code);
 }
 
 /** The shape of `erro`, raw as it was caught. */
