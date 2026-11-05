@@ -1,6 +1,6 @@
 # sem-sotaque
 
-> **In English:** a tool that interviews a Brazilian developer about their career, in Portuguese, without inventing a single number, and writes a one-page résumé in English for international jobs, in general and per job posting. Use the hosted version (paid) or run it on your own machine with your own Anthropic API key: `cp .env.example .env`, fill `ANTHROPIC_API_KEY`, `docker compose -f docker-compose.local.yml up`, open `localhost:3000`. The model never writes LaTeX: it picks a JSON Selection from what you said, and a fixed template renders the PDF. Nome de trabalho; o nome do produto ainda não foi decidido.
+> **In English:** a tool that interviews a Brazilian developer about their career, in Portuguese, without inventing a single number, and writes a one-page résumé in English for international jobs, in general and per job posting. Use the hosted version (paid) or run it on your own machine with your own Anthropic API key: `cp .env.example .env`, fill `ANTHROPIC_API_KEY`, `docker compose -f docker-compose.local.yml up`, open `localhost:3000`. The model never writes LaTeX: it picks a JSON Selection from what you said, and a fixed template renders the PDF.
 
 O sem-sotaque conversa com você em português sobre o que você fez no trabalho, pergunta o que um recrutador de fora vai querer saber e escreve um currículo de uma página, em inglês, para vaga internacional. Ele não inventa número: toda métrica tem origem (você disse, ou estimou com uma âncora), e todo bullet aponta para o que você contou.
 
@@ -41,6 +41,8 @@ docker compose up -d db
 npm run db:migrate
 MODO=local npm run dev           # e abra http://localhost:3000
 ```
+
+**No Windows,** o `next dev` com Turbopack (o padrão) quebra ao baixar as fontes do Google ("next/font/google queries have exactly one entry"). Use o webpack: `MODO=local npx next dev --webpack`. No Linux, o Turbopack funciona (conferido em 2026-11-05, dentro da imagem).
 
 **Pela assinatura do Claude, em vez da chave:** com o [Claude Code](https://code.claude.com) instalado e logado no host (`claude auth status`), rode `MODO=local LLM_BACKEND=assinatura npm run dev`. O app chama o `claude -p` sem modificação, e as chamadas aparecem com "custo não medido". Leia o parágrafo sobre a política acima antes: o uso é seu, sob os termos da Anthropic. O hospedado recusa a assinatura sempre, com qualquer `NODE_ENV`.
 

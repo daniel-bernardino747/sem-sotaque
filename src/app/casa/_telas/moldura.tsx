@@ -47,7 +47,7 @@ export async function Moldura({ children }: { children: ReactNode }) {
             </button>
           </form>
         )}
-        <ApagarDados apagar={apagarDados} cancelaAssinatura={cancelaAssinatura} />
+        <ApagarDados apagar={apagarDados} cancelaAssinatura={cancelaAssinatura} comConta={!local} />
         {/* The terms and the policy are the hosted service's: MODO=local has neither. */}
         {!local && <LinksLegais />}
       </footer>

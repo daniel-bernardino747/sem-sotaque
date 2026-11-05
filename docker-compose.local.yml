@@ -24,7 +24,9 @@ services:
       LLM_BACKEND: ""
       DATABASE_URL: postgres://sem_sotaque:sem_sotaque@db:5432/sem_sotaque
       APP_URL: http://localhost:3000
-    command: ["sh", "-c", "npm run db:migrate && exec node_modules/.bin/next start"]
+    # tsx straight, not `npm run db:migrate`: that one reads a .env file, which
+    # is not in the image (env_file above passes it), and says so on every start.
+    command: ["sh", "-c", "node_modules/.bin/tsx scripts/db-migrate.ts && exec node_modules/.bin/next start"]
     ports:
       - "3000:3000"
     depends_on:

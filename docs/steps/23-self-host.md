@@ -88,19 +88,21 @@ O repo público, a licença e o CLA (passo 24). Multiusuário no `local`.
 
 **Pronto quando:**
 
-- [ ] **Parcial.** Casa sem login pelo Docker numa pasta limpa: OK. O interrogatório responde no `local` sem login, mas **pelo caminho nativo**: no Docker ele depende de uma `ANTHROPIC_API_KEY` válida (pendência 1).
+- [x] Casa sem login pelo Docker numa pasta limpa, e o interrogatório responde dentro do Docker (fechado em 2026-11-05, abaixo).
 - [x] O `hospedado` recusa a assinatura com `NODE_ENV=development`; o `local` aceita com `NODE_ENV=production` (`src/llm/assinatura.test.ts`).
 - [x] Sem `TYPESAFE_API_KEY`, uma sessão local vai até o PDF.
 - [x] A política está verificada, com as fontes, e o README segue o resultado.
 - [x] `npm run typecheck` e `npm test` passam.
 
-**Pendências (dependem do Daniel):** (1) uma `ANTHROPIC_API_KEY` válida, para ver o interrogatório responder dentro do Docker; (2) uma `TYPESAFE_API_KEY` válida, para a rodada com o Jev do item 4 (`MODO=local LLM_BACKEND=assinatura ANTHROPIC_API_KEY= npm run simular -- nao-sei`) e a comparação com a sem o Jev acima; (3) a decisão sobre a assinatura no Docker.
+**Pendência 1 fechada em 2026-11-05**, no clone do repo público (`main` em `e4bce05`): `cp .env.example .env` só com a `ANTHROPIC_API_KEY` (sem a da TypeSafe), `docker compose -f docker-compose.local.yml up -d --build` (3,5 min de build). `/` e `/entrar` dão 307 para `/casa`, `/admin` 404, `/casa` 200 sem login. Pela tela, com o Playwright: o import do `pleno.txt` (4 experiências, 8 registros, 15 s), "Começar as perguntas", a primeira pergunta em 27 s ("Um recrutador em Toronto não sabe o que é boleto…"), uma resposta do Rodrigo e a pergunta seguinte em 6 s. O avaliador decidiu duas vezes pelas regras fixas, sem erro. Custo: US$ 0,12 em 4 chamadas, nenhuma com erro. Não foi até o PDF (o PDF sem o Jev já tinha sido medido acima, pelo caminho nativo).
+
+**Pendências que restam (dependem do Daniel):** (2) uma `TYPESAFE_API_KEY` válida, para a rodada com o Jev do item 4 (`MODO=local LLM_BACKEND=assinatura ANTHROPIC_API_KEY= npm run simular -- nao-sei`) e a comparação com a sem o Jev acima; (3) a decisão sobre a assinatura no Docker.
 
 ## Achados
 
 - **As duas chaves do `.env` de dev estão inválidas** (401): a `ANTHROPIC_API_KEY` e a `TYPESAFE_API_KEY`. O passo 17 já tinha esbarrado na chave da API. Sem a da TypeSafe, o Jev de dev cai na reserva em todo checkpoint, e o painel enche de linhas de erro de `avaliador`.
-- **Textos da casa que falam de entrar:** "se fechar, é só entrar de novo" e "e a sua conta sai junto" (passo 20) aparecem também no `local`, onde ninguém entra. Não estão errados a ponto de confundir; uma variante por `modo()` fica para quando alguém reclamar.
-- **`/apagado` diz "A sua conta saiu junto."** também no `local`, e não oferece volta para a casa (abrir `/` cria uma conta nova). Mesma família do achado acima.
+- **Resolvido em 2026-11-05** (`avisoDeApagar` e a `Espera`, com `textos-local.test.ts`). **Textos da casa que falam de entrar:** "se fechar, é só entrar de novo" e "e a sua conta sai junto" (passo 20) aparecem também no `local`, onde ninguém entra. Não estão errados a ponto de confundir; uma variante por `modo()` fica para quando alguém reclamar.
+- **Resolvido em 2026-11-05:** no `local`, o `/apagado` oferece "Começar de novo". **`/apagado` diz "A sua conta saiu junto."** também no `local`, e não oferece volta para a casa (abrir `/` cria uma conta nova). Mesma família do achado acima.
 - **`Provedor` (o tipo) não inclui `local`, mas `Conta['provedor']` inclui.** Código novo que indexe algo do OAuth por `conta.provedor` (como `NOMES` em `src/conta/oauth.ts`) recebe `undefined` sem erro de tipo no `local`.
 - **No `local`, o teto por sessão (`TETO_SESSAO_USD`, US$ 3 + US$ 2 por vaga) continua valendo** pela API: protege a chave de quem roda, mas uma sessão longa pode esbarrar nele. O README diz como subir.
-- O `npm run db:migrate` imprime ".env not found. Continuing without it." na subida do container. É inofensivo (o compose passa as variáveis), mas assusta quem lê o log.
+- **Resolvido em 2026-11-05:** o `docker-compose.local.yml` chama o `tsx` direto. O `npm run db:migrate` imprime ".env not found. Continuing without it." na subida do container. É inofensivo (o compose passa as variáveis), mas assusta quem lê o log.

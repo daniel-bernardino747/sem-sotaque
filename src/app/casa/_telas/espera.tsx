@@ -35,7 +35,7 @@ export function Espera({ etapa }: { etapa: string | null }) {
         {FRASES[(etapa ?? 'selecao') as EtapaDaGeracao] ?? FRASES.selecao}
       </p>
       <p className="aviso">
-        Leva um ou dois minutos. Pode deixar esta página aberta; se fechar, é só entrar de novo.
+        Leva um ou dois minutos. Pode deixar esta página aberta; se fechar, ele continua, e você volta aqui depois.
       </p>
     </>
   );

@@ -6,9 +6,10 @@ import { Cantoneiras } from '@/app/ornamentos';
 /**
  * After "Apagar meus dados". `/apagado` (with an account, step 20) says the
  * account went too; a v0 link erased before there were accounts keeps saying
- * the link opens nothing.
+ * the link opens nothing. In MODO=local (step 23) there is no account: the
+ * home starts over, empty, and the page says so.
  */
-export function Apagado({ deConta = false }: { deConta?: boolean }) {
+export function Apagado({ deConta = false, local = false }: { deConta?: boolean; local?: boolean }) {
   return (
     <main className="apagado placa">
       <Cantoneiras />
@@ -19,11 +20,22 @@ export function Apagado({ deConta = false }: { deConta?: boolean }) {
         <path d="M22 70 74 26" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
       </svg>
       <h1>Seus dados foram apagados</h1>
-      <p>
-        O currículo, as respostas e tudo o que saiu deles não existem mais.{' '}
-        {deConta ? 'A sua conta saiu junto.' : 'Este link não abre mais nada.'}
-      </p>
-      <p>Obrigado por ter testado.</p>
+      {local ? (
+        <>
+          <p>O currículo, as respostas e tudo o que saiu deles não existem mais.</p>
+          <p>
+            <a href="/casa">Começar de novo</a>
+          </p>
+        </>
+      ) : (
+        <>
+          <p>
+            O currículo, as respostas e tudo o que saiu deles não existem mais.{' '}
+            {deConta ? 'A sua conta saiu junto.' : 'Este link não abre mais nada.'}
+          </p>
+          <p>Obrigado por ter testado.</p>
+        </>
+      )}
     </main>
   );
 }
