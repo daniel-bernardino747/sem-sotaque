@@ -6,8 +6,8 @@ A app roda numa VPS com **Coolify**, ao lado de um Postgres 16 do próprio Cooli
 
 - **Build pack: Dockerfile** (o `Dockerfile` da raiz), não Nixpacks: a imagem traz o Tectonic, o `pdftotext` e o `pypdf`, e já sai com o cache do Tectonic aquecido (um render do fixture no build, ~2 min).
 - Node **24.22.1**, fixado no `Dockerfile` (`ARG NODE_VERSION`), no `.nvmrc` e no `engines` do `package.json`. Ao subir a versão, mude os três juntos.
-- Dentro da imagem: `npm ci` → `npm run build` → `next start` (o `CMD`, direto, sem `npm start`), na porta **3000** e em `0.0.0.0` (`ENV PORT=3000 HOSTNAME=0.0.0.0`). No Coolify: "Ports Exposes" = `3000`.
-- **Pre-deployment command:** `npm run db:migrate`. Ele aplica as migrações pendentes de `drizzle/` com o migrator do `drizzle-orm` e só precisa de `DATABASE_URL`. É idempotente: rodar de novo, sem migração nova, não faz nada.
+- Dentro da imagem: `npm ci` → `npm run build`. O `CMD` aplica as migrações e só então sobe o `next start` (por `exec`, sem `npm start`), na porta **3000** e em `0.0.0.0` (`ENV PORT=3000 HOSTNAME=0.0.0.0`). No Coolify: "Ports Exposes" = `3000`.
+- **Migrações na subida:** o `CMD` roda `scripts/db-migrate.ts` (o migrator do `drizzle-orm`, só precisa de `DATABASE_URL`) antes do `next start`. É idempotente, e se falhar o container não sobe, então o healthcheck segura o deploy e a versão anterior continua no ar. As migrações são sempre aditivas: a versão anterior roda sobre o banco já migrado enquanto a nova sobe. O "Pre-deployment command" do Coolify pode ficar vazio: no deploy do passo 26 ele não aplicou a 0017 e a 0018, e a app subiu com o código à frente do banco.
 - **Healthcheck:** `GET /health` na porta 3000. Responde `200 {"ok":true}` quando a app alcança o banco, e `503` quando não. Não chama Anthropic nem Typesafe. A imagem tem `curl`, que o Coolify usa para checar.
 - No `SIGTERM` do Coolify, o `next start` (PID 1) termina as requisições abertas e sai com 0, em ~1 s.
 

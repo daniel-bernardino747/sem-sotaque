@@ -59,6 +59,10 @@ USER node
 RUN npm run render:fixture
 
 EXPOSE 3000
-# `next start` itself, not `npm start`: as PID 1 it gets the deploy's SIGTERM,
-# drains open requests and exits 0. Behind npm, the container exits 1.
-CMD ["node_modules/.bin/next", "start"]
+# The migrations first, on every start: a deploy never serves code ahead of its
+# database (the passo 26 deploy did, when the pre-deployment command did not
+# apply them). Idempotent; a failure stops the container before it serves.
+# Then `next start` itself through `exec`, not `npm start`: as PID 1 it gets the
+# deploy's SIGTERM, drains open requests and exits 0. Behind npm, the container
+# exits 1. `tsx` straight, not `npm run db:migrate`, which looks for a .env.
+CMD ["sh", "-c", "node_modules/.bin/tsx scripts/db-migrate.ts && exec node_modules/.bin/next start"]
