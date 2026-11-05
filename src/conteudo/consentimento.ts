@@ -10,7 +10,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-export const CONSENTIMENTO_VERSAO = 'v3';
+export const CONSENTIMENTO_VERSAO = 'v4';
 
 /**
  * The text a v1 session mid-interrogation is shown again (step 10). It stays
@@ -51,6 +51,18 @@ const SEM_ERROS = new Set(['v1', 'v2', 'v3']);
 export function gravaErrosEAtritos(versao: string | null, agora = new Date()): boolean {
   if (versao !== null && !SEM_ERROS.has(versao)) return true;
   return agora.getTime() >= ERROS_VALEM_A_PARTIR.getTime();
+}
+
+/**
+ * The banner at the home (step 26, decision 9): a session that accepted a text
+ * before v4 is told what changes in the policy, and when, until that date. A
+ * v4 session read it in its consent; one that has not accepted yet will.
+ */
+/** What the banner says. The date is `ERROS_VALEM_A_PARTIR`'s, in Brasília. */
+export const AVISO_DA_POLITICA = `A política de privacidade muda em ${ERROS_VALEM_A_PARTIR.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', timeZone: 'America/Sao_Paulo' })}: a partir desse dia, quando algo der errado, eu guardo o tipo do erro e a tela ou a etapa em que ele aconteceu, ligados à sua conta, por 90 dias. Nunca o texto da sua conversa ou do seu currículo. Apagar os seus dados apaga isso também.`;
+
+export function mostraAvisoDaPolitica(versao: string | null, agora = new Date()): boolean {
+  return versao !== null && !gravaErrosEAtritos(versao, agora);
 }
 
 /** v2 and later name the TypeSafe: the evaluator may run only for them. */
