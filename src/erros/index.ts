@@ -10,7 +10,7 @@
 import { gravarErro, limparErrosVencidos } from '@/db/erros';
 import { modo as modoDoAmbiente, type Modo } from '@/modo';
 
-import { formaDoErro, type OrigemErro } from './forma';
+import { formaDoErro, type FormaDoErro, type OrigemErro } from './forma';
 
 export { formaDoErro, soPermitidos, type FormaDoErro, type OrigemErro } from './forma';
 
@@ -36,10 +36,23 @@ export async function registrarErro(
 ): Promise<void> {
   const { erro } = entrada;
   console.error(entrada.log ?? `${entrada.onde} failed:`, erro instanceof Error ? erro.message : erro);
+  await registrarForma(formaDoErro(entrada), entrada.sessaoId ?? null, opcoes);
+}
+
+/**
+ * Writes a shape already reduced (`registrarErro`, or the browser's post),
+ * unless in `MODO=local`, and runs the 90-day cleanup now and then. A failure
+ * is logged, never thrown.
+ */
+export async function registrarForma(
+  forma: FormaDoErro,
+  sessaoId: string | null,
+  opcoes: { agora?: Date; modo?: Modo } = {},
+): Promise<void> {
   try {
     if ((opcoes.modo ?? modoDoAmbiente()) === 'local') return;
     const agora = opcoes.agora ?? new Date();
-    await gravarErro(formaDoErro(entrada), entrada.sessaoId ?? null, agora);
+    await gravarErro(forma, sessaoId, agora);
     if (Date.now() - ultimaLimpeza >= LIMPEZA_A_CADA_MS) {
       ultimaLimpeza = Date.now();
       await limparErrosVencidos(agora);
