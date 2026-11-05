@@ -67,6 +67,7 @@ import {
   type MapaDeLinhas,
   type Rascunho,
 } from './rascunho';
+import { registrarErro } from '@/erros';
 
 /** Attempts before the best one is delivered for Daniel to review. */
 export const LIMITE_TENTATIVAS = 4;
@@ -653,7 +654,7 @@ export async function gerarCurriculo(sessaoId: string, geracaoId: string, deps: 
     try {
       mapeado = await mapear({ ...ctx, vaga: ctx.vaga }, rascunhoEntregue, selectionEntregue);
     } catch (erro) {
-      console.error(`the map of generation ${geracaoId} failed:`, erro instanceof Error ? erro.message : erro);
+      await registrarErro({ origem: 'servidor', onde: 'mapa_geracao', erro, sessaoId, log: `the map of generation ${geracaoId} failed:` });
     }
   }
 

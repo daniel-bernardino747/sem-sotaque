@@ -7,8 +7,8 @@
  * the shape (`./forma`). In `MODO=local` nothing is written: whoever runs it
  * sees the terminal. Recording never throws into the caller.
  */
-import { gravarErro, limparErrosVencidos } from '@/db/erros';
-import { modo as modoDoAmbiente, type Modo } from '@/modo';
+import { gravarErro, limparErrosVencidos } from '../db/erros';
+import { modo as modoDoAmbiente, type Modo } from '../modo';
 
 import { formaDoErro, type FormaDoErro, type OrigemErro } from './forma';
 

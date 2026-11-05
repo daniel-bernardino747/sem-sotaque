@@ -6,6 +6,7 @@ import Stripe from 'stripe';
 import { cobranca } from '@/assinatura/stripe';
 import { tratarEvento } from '@/assinatura/webhook';
 import { modo } from '@/modo';
+import { registrarErro } from '@/erros';
 
 /**
  * Stripe's webhook (step 21): the only writer of the subscription status. The
@@ -33,7 +34,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     await tratarEvento(evento, cobranca());
   } catch (erro) {
-    console.error(`stripe webhook: ${evento.type} ${evento.id} failed`, erro);
+    await registrarErro({ origem: 'servidor', onde: 'stripe', erro, log: `stripe webhook: ${evento.type} ${evento.id} failed` });
     return new Response(null, { status: 500 });
   }
   return Response.json({ recebido: true });

@@ -15,6 +15,7 @@ import { corpusDaSessao, gravarLeitura, marcarEstagioDaLeitura, vagaDaSessao } f
 import { llm, type ClienteLlm } from '@/llm/cliente';
 
 import { lerVaga } from './leitura';
+import { registrarErro } from '@/erros';
 
 const rodando = new Set<string>();
 
@@ -27,7 +28,7 @@ export async function lerEGravar(sessaoId: string, vagaId: string, cliente: Clie
     await gravarLeitura(vagaId, leitura);
   } catch (erro) {
     // The ids, never the token or the posting.
-    console.error(`reading of vaga ${vagaId} failed for session ${sessaoId}:`, erro instanceof Error ? erro.message : erro);
+    await registrarErro({ origem: 'servidor', onde: 'leitura_vaga', erro, sessaoId, log: `reading of vaga ${vagaId} failed for session ${sessaoId}:` });
     await marcarEstagioDaLeitura(vagaId, 'leitura_falhou');
   }
 }

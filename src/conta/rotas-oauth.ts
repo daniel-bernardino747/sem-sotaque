@@ -9,6 +9,7 @@ import { modo } from '@/modo';
 
 import { COOKIE_CONTA, OPCOES_COOKIE_CONTA, opcoesDoCookie } from './acesso';
 import { COOKIE_OAUTH, iniciar, lerIda, perfilDoRetorno, provedorDaRota, VALIDADE_OAUTH_S } from './oauth';
+import { registrarErro } from '@/erros';
 
 /**
  * The start of a sign-in (`GET /api/auth/<provedor>`, or the v0 link's
@@ -48,7 +49,8 @@ export async function voltarDoProvedor(request: Request, nome: string): Promise<
     const perfil = await perfilDoRetorno(ida, code, url.origin);
     entrada = await entrar(perfil, { vincular: ida.vincular });
   } catch (erro) {
-    console.error(`sign-in with ${ida.provedor} failed:`, erro instanceof Error ? erro.message : erro);
+    // Before the sign-in there is no session: the error is recorded without one.
+    await registrarErro({ origem: 'servidor', onde: 'oauth', erro, log: `sign-in with ${ida.provedor} failed:` });
     redirect('/entrar?erro=1');
   }
   // Signed in to nothing. Another account's link has its own message; one

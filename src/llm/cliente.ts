@@ -24,6 +24,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { BetaMessageStreamParams } from '@anthropic-ai/sdk/resources/beta/messages/messages';
 
 import { gastoDaSessao, registrarChamadaLlm, vagasCriadas } from '../db';
+import { registrarErro, type ErroARegistrar } from '../erros';
 import { modo } from '../modo';
 import type { etapaLlm } from '../db/schema';
 
@@ -144,6 +145,8 @@ export function criarClienteLlm(deps: {
   /** How many Vagas a session created, emptied ones included. Without it, a Vaga adds nothing. */
   vagasCriadas?: (sessaoId: string) => Promise<number>;
   tetoSessaoUsd?: number;
+  /** Where a refused call is recorded (step 26). Without it, only the log. */
+  registrarErro?: (erro: ErroARegistrar) => Promise<void>;
 }) {
   const teto = deps.tetoSessaoUsd ?? TETO_SESSAO_PADRAO_USD;
 
@@ -208,10 +211,14 @@ export function criarClienteLlm(deps: {
           teto + (ETAPAS_DE_GERACAO.has(pedido.etapa) ? MARGEM_GERACAO_USD : 0) + vagas * ORCAMENTO_POR_VAGA_USD;
         if (gasto >= limite) {
           // The session id, never the token: the token is the person's credential.
-          console.error(
-            `spending cap reached for session ${pedido.sessaoId}: US$ ${gasto.toFixed(2)} >= US$ ${limite.toFixed(2)}, ${pedido.etapa} not called`,
-          );
-          throw new ErroLlm('teto', `session spending cap reached (US$ ${limite.toFixed(2)})`);
+          const log = `spending cap reached for session ${pedido.sessaoId}: US$ ${gasto.toFixed(2)} >= US$ ${limite.toFixed(2)}, ${pedido.etapa} not called`;
+          const erro = new ErroLlm('teto', `session spending cap reached (US$ ${limite.toFixed(2)})`);
+          if (deps.registrarErro) {
+            await deps.registrarErro({ origem: 'servidor', onde: pedido.etapa, erro, sessaoId: pedido.sessaoId, log });
+          } else {
+            console.error(log);
+          }
+          throw erro;
         }
       }
       const emitiu = { texto: false };
@@ -269,6 +276,7 @@ export function llm(): ClienteLlm {
     gastoDaSessao,
     vagasCriadas,
     tetoSessaoUsd: tetoDoAmbiente(),
+    registrarErro,
   });
   return padrao;
 }
