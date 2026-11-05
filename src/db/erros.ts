@@ -7,13 +7,13 @@
  * says the session's consent (or the date) allows it. `MODO=local` is the
  * caller's to check (`src/erros`).
  */
-import { and, count, desc, eq, gte, inArray, lt, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, inArray, isNotNull, lt, sql } from 'drizzle-orm';
 
 import { gravaErrosEAtritos } from '../conteudo/consentimento';
 import type { FormaDoErro } from '../erros/forma';
 
 import { db, type Db } from './client';
-import { erros, eventos, renders, sessoes, testers } from './schema';
+import { chamadasLlm, erros, eventos, renders, sessoes, testers } from './schema';
 
 /** How long an error is kept, with or without a session (decision 4). */
 export const ERROS_DURAM_DIAS = 90;
@@ -121,15 +121,17 @@ export interface ErrosEAtritos {
   turnoOcupado: number;
   /** Interrogations that ended at the spending cap, in the window. */
   teto: number;
-  /** Every measured render, in ms; null before the first. */
+  /** The window's measured renders, in ms; null without one. */
   render: { mediana: number; maximo: number; n: number } | null;
+  /** Model calls with an `erro` (a refusal, a price missing) per stage, in the window. */
+  falhasDoModelo: Record<string, number>;
 }
 
 /** The "Erros e atritos" section of `/admin` (step 26). Read-only. */
 export async function errosEAtritos(agora = new Date()): Promise<ErrosEAtritos> {
   const desde = new Date(agora.getTime() - JANELA_DO_PAINEL_DIAS * DIA_MS);
   const naJanela = gte(erros.createdAt, desde);
-  const [grupos, ligados, porSessao, atritos, teto, [render]] = await Promise.all([
+  const [grupos, ligados, porSessao, atritos, teto, [render], falhas] = await Promise.all([
     db()
       .select({
         origem: erros.origem,
@@ -172,7 +174,13 @@ export async function errosEAtritos(agora = new Date()): Promise<ErrosEAtritos> 
         maximo: sql<number | null>`max(${renders.duracaoMs})`,
         n: count(renders.duracaoMs),
       })
-      .from(renders),
+      .from(renders)
+      .where(gte(renders.createdAt, desde)),
+    db()
+      .select({ etapa: chamadasLlm.etapa, n: count() })
+      .from(chamadasLlm)
+      .where(and(isNotNull(chamadasLlm.erro), gte(chamadasLlm.createdAt, desde)))
+      .groupBy(chamadasLlm.etapa),
   ]);
 
   const tentouDeNovo: Record<string, number> = {};
@@ -194,5 +202,6 @@ export async function errosEAtritos(agora = new Date()): Promise<ErrosEAtritos> 
     turnoOcupado,
     teto: teto[0].n,
     render: render.n ? { mediana: Number(render.mediana), maximo: Number(render.maximo), n: render.n } : null,
+    falhasDoModelo: Object.fromEntries(falhas.map((f) => [f.etapa, f.n])),
   };
 }
