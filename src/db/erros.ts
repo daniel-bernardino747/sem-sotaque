@@ -7,13 +7,13 @@
  * says the session's consent (or the date) allows it. `MODO=local` is the
  * caller's to check (`src/erros`).
  */
-import { and, count, eq, gte, lt, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, inArray, lt, sql } from 'drizzle-orm';
 
 import { gravaErrosEAtritos } from '../conteudo/consentimento';
 import type { FormaDoErro } from '../erros/forma';
 
 import { db, type Db } from './client';
-import { erros, eventos, sessoes } from './schema';
+import { erros, eventos, renders, sessoes, testers } from './schema';
 
 /** How long an error is kept, with or without a session (decision 4). */
 export const ERROS_DURAM_DIAS = 90;
@@ -93,4 +93,106 @@ export async function registrarAtrito(
       returning id`);
     return inseridos.length > 0;
   });
+}
+
+// ---- o painel ---------------------------------------------------------------
+
+/** The panel's window for the errors and the frictions. */
+export const JANELA_DO_PAINEL_DIAS = 7;
+
+export interface GrupoDeErros {
+  origem: 'servidor' | 'navegador';
+  onde: string;
+  classe: string;
+  codigo: string | null;
+  n: number;
+  ultima: Date;
+  /** A screen's errors: the server's errors with the same digest, which broke it. */
+  doServidor: { onde: string; classe: string; n: number }[];
+}
+
+export interface ErrosEAtritos {
+  /** The window's errors by origin, place, class and code, most frequent first. */
+  grupos: GrupoDeErros[];
+  /** The sessions with errors in the window, most first. */
+  sessoes: { sessaoId: string; apelido: string | null; n: number }[];
+  /** "Tentar de novo" per screen, in the window. */
+  tentouDeNovo: Record<string, number>;
+  turnoOcupado: number;
+  /** Interrogations that ended at the spending cap, in the window. */
+  teto: number;
+  /** Every measured render, in ms; null before the first. */
+  render: { mediana: number; maximo: number; n: number } | null;
+}
+
+/** The "Erros e atritos" section of `/admin` (step 26). Read-only. */
+export async function errosEAtritos(agora = new Date()): Promise<ErrosEAtritos> {
+  const desde = new Date(agora.getTime() - JANELA_DO_PAINEL_DIAS * DIA_MS);
+  const naJanela = gte(erros.createdAt, desde);
+  const [grupos, ligados, porSessao, atritos, teto, [render]] = await Promise.all([
+    db()
+      .select({
+        origem: erros.origem,
+        onde: erros.onde,
+        classe: erros.classe,
+        codigo: erros.codigo,
+        n: count(),
+        ultima: sql<Date>`max(${erros.createdAt})`.mapWith(erros.createdAt),
+      })
+      .from(erros)
+      .where(naJanela)
+      .groupBy(erros.origem, erros.onde, erros.classe, erros.codigo)
+      .orderBy(desc(count()), desc(sql`max(${erros.createdAt})`)),
+    // A screen's error and the server's that broke it share Next's digest.
+    db().execute<{ onde: string; classe: string; codigo: string | null; s_onde: string; s_classe: string; n: number }>(sql`
+      select n.onde, n.classe, n.codigo, s.onde as s_onde, s.classe as s_classe, count(*)::int as n
+      from ${erros} n join ${erros} s on s.digest = n.digest and s.origem = 'servidor'
+      where n.origem = 'navegador' and n.created_at >= ${desde.toISOString()}::timestamptz
+      group by n.onde, n.classe, n.codigo, s.onde, s.classe`),
+    db()
+      .select({ sessaoId: erros.sessaoId, apelido: testers.apelido, n: count() })
+      .from(erros)
+      .innerJoin(sessoes, eq(sessoes.id, erros.sessaoId))
+      .leftJoin(testers, eq(testers.id, sessoes.testerId))
+      .where(naJanela)
+      .groupBy(erros.sessaoId, testers.apelido)
+      .orderBy(desc(count())),
+    db()
+      .select({ tipo: eventos.tipo, onde: sql<string | null>`${eventos.dados}->>'onde'`, n: count() })
+      .from(eventos)
+      .where(and(inArray(eventos.tipo, [...ATRITOS]), gte(eventos.createdAt, desde)))
+      .groupBy(eventos.tipo, sql`${eventos.dados}->>'onde'`),
+    db()
+      .select({ n: count() })
+      .from(eventos)
+      .where(and(eq(eventos.tipo, 'terminou'), sql`${eventos.dados}->>'por' = 'teto'`, gte(eventos.createdAt, desde))),
+    db()
+      .select({
+        mediana: sql<number | null>`percentile_cont(0.5) within group (order by ${renders.duracaoMs})`,
+        maximo: sql<number | null>`max(${renders.duracaoMs})`,
+        n: count(renders.duracaoMs),
+      })
+      .from(renders),
+  ]);
+
+  const tentouDeNovo: Record<string, number> = {};
+  let turnoOcupado = 0;
+  for (const a of atritos) {
+    if (a.tipo === 'turno_ocupado') turnoOcupado += a.n;
+    else tentouDeNovo[a.onde ?? '?'] = (tentouDeNovo[a.onde ?? '?'] ?? 0) + a.n;
+  }
+
+  return {
+    grupos: grupos.map((g) => ({
+      ...g,
+      doServidor: ligados
+        .filter((l) => l.onde === g.onde && l.classe === g.classe && l.codigo === g.codigo && g.origem === 'navegador')
+        .map((l) => ({ onde: l.s_onde, classe: l.s_classe, n: Number(l.n) })),
+    })),
+    sessoes: porSessao.map((s) => ({ sessaoId: s.sessaoId!, apelido: s.apelido, n: s.n })),
+    tentouDeNovo,
+    turnoOcupado,
+    teto: teto[0].n,
+    render: render.n ? { mediana: Number(render.mediana), maximo: Number(render.maximo), n: render.n } : null,
+  };
 }
