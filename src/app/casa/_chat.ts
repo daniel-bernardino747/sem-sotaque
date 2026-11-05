@@ -7,7 +7,7 @@ import type { OpcaoOferta } from '@/avaliador';
 import type { Progresso } from '@/interrogatorio/estado';
 import { emSerie, ocupada } from '@/interrogatorio/trava';
 import { ErroTurno, turno, type Entrada } from '@/interrogatorio/turno';
-import { registrarErro } from '@/erros';
+import { anotarAtrito, registrarErro } from '@/erros';
 
 /** The interrogation's events, one JSON object per line. */
 export type EventoChat =
@@ -20,7 +20,8 @@ export type EventoChat =
 const corpo = z.discriminatedUnion('tipo', [
   z.object({ tipo: z.literal('resposta'), texto: z.string().trim().min(1).max(4000) }),
   z.object({ tipo: z.literal('pular') }),
-  z.object({ tipo: z.literal('continuar') }),
+  /** `deNovo`: the "Tentar de novo" after a failed turn, counted as a friction (step 26). */
+  z.object({ tipo: z.literal('continuar'), deNovo: z.literal(true).optional() }),
   z.object({ tipo: z.literal('escolher'), id: z.string().uuid() }),
 ]);
 
@@ -34,12 +35,17 @@ const corpo = z.discriminatedUnion('tipo', [
 export async function turnoEmFluxo(request: Request, sessaoId: string, vagaId: string | null = null): Promise<Response> {
   const lido = corpo.safeParse(await request.json().catch(() => null));
   if (!lido.success) return new Response(null, { status: 400 });
-  const entrada: Entrada = lido.data;
+  const { deNovo, ...entrada }: Entrada & { deNovo?: true } = lido.data;
+  if (deNovo) await anotarAtrito(sessaoId, 'tentou_de_novo', { onde: 'chat' });
 
   // One turn per session at a time: a double tap or a second tab gets a 409
   // rather than two answers interleaved. A Vaga's conversation shares the lock,
   // since it writes the same Corpus as the general one.
-  if (ocupada(sessaoId)) return new Response(null, { status: 409 });
+  if (ocupada(sessaoId)) {
+    // The screen reloads on a 409 and asks again: the loop of step 09's findings.
+    await anotarAtrito(sessaoId, 'turno_ocupado');
+    return new Response(null, { status: 409 });
+  }
 
   const codificar = new TextEncoder();
   // The person can leave mid-turn (closed tab, phone locked). The turn goes on

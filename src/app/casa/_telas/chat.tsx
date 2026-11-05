@@ -74,7 +74,8 @@ export function Chat({
   // The question waiting for an answer is set large; everything before it recedes.
   const atual = !ocupado && !repetindo && mensagens.at(-1)?.papel === 'assistente' ? mensagens.length - 1 : -1;
 
-  async function enviar(entrada: Entrada) {
+  /** `deNovo` marks the "Tentar de novo" after a failed turn: the server counts it (step 26). */
+  async function enviar(entrada: Entrada | { tipo: 'continuar'; deNovo: true }) {
     setErro(null);
     setOpcoes([]);
     const fala = entrada.tipo === 'resposta' ? entrada.texto : entrada.tipo === 'escolher' ? opcoes.find((o) => o.id === entrada.id)?.rotulo : null;
@@ -207,7 +208,7 @@ export function Chat({
       {erro && (
         <div role="alert" className="erro">
           <p>{erro}</p>
-          <button type="button" onClick={() => void enviar({ tipo: 'continuar' })}>
+          <button type="button" onClick={() => void enviar({ tipo: 'continuar', deNovo: true })}>
             Tentar de novo
           </button>
         </div>

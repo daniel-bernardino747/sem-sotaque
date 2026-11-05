@@ -43,7 +43,7 @@ import { encerrarInterrogatorio } from '@/interrogatorio/turno';
 import { garantirLeitura } from '@/vaga';
 import { lerConfirmacao, lerVagaColada } from '@/vaga/entrada';
 import { modo } from '@/modo';
-import { registrarErro } from '@/erros';
+import { anotarAtrito, registrarErro } from '@/erros';
 
 /**
  * The signed-in session every action works on, read again on each call (an
@@ -309,6 +309,7 @@ export async function gerarDeNovo(): Promise<void> {
 /** "Tentar de novo" after a generation failed: the same Version runs again. */
 export async function tentarDeNovo(): Promise<void> {
   const sessao = await sessaoDaAcao();
+  await anotarAtrito(sessao.id, 'tentou_de_novo', { onde: 'resultado' });
   await garantirGeracao(sessao.id, { deNovo: true });
   redirect('/casa/curriculo');
 }
@@ -401,6 +402,7 @@ export async function colarVaga(_anterior: EstadoVaga, form: FormData): Promise<
 /** "Tentar de novo" after the reading failed. */
 export async function lerDeNovo(vagaId: string): Promise<void> {
   const sessao = await sessaoDaAcao();
+  await anotarAtrito(sessao.id, 'tentou_de_novo', { onde: 'vaga' });
   await garantirLeitura(sessao.id, vagaId, { deNovo: true });
   redirect(`/casa/vagas/${vagaId}`);
 }
@@ -447,6 +449,7 @@ export async function enviarCabecalhoDaVaga(vagaId: string, _anterior: EstadoCab
 /** "Tentar de novo" after a Vaga's generation failed: the same Version runs again. */
 export async function tentarDeNovoNaVaga(vagaId: string): Promise<void> {
   const sessao = await sessaoDaAcao();
+  await anotarAtrito(sessao.id, 'tentou_de_novo', { onde: 'curriculo_da_vaga' });
   if (await vagaDaSessao(sessao.id, vagaId)) {
     await garantirGeracao(sessao.id, { deNovo: true, vagaId });
   }
