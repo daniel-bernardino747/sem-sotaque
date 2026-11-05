@@ -76,6 +76,33 @@ Quem quiser paga e usa o hospedado; quem quiser roda na própria máquina, gasta
 | Q24 | **O fim para quem paga:** ficam a indicação (sem recompensa) e o depoimento (consentimento separado). As colunas do v0 ficam no banco | |
 | Q25 | **Termos de uso e política de privacidade redigidos a partir do app real** (Anthropic e TypeSafe como operadores, Stripe, os 7 dias, o opt-in), com revisão de advogado depois do lançamento | Gerador não sabe por onde o dado passa |
 
+## Erros e atritos no uso
+
+Decidido num grilling em 2026-11-05 (passo 26). O que quebra e onde a pessoa empaca ficam no banco e aparecem no painel, sem serviço externo: o dado não sai do servidor.
+
+| # | Decisão | Por quê |
+|---|---|---|
+| E1 | **O mapa vem antes do código:** só se registra o que responde a uma pergunta da tabela abaixo. Evento novo entra primeiro na tabela | Log sem pergunta vira ruído e dado guardado sem motivo |
+| E2 | **Do erro, só a forma, nunca o conteúdo:** a origem, a classe (`erro.name`), um código conhecido (o `motivo` do `ErroLlm`, o `codigo` do `ErroImport`, o status HTTP), a etapa ou a tela e o `digest` do Next. Nunca a mensagem nem o stack. Um campo só entra de propósito (`CAMPOS_PERMITIDOS`, em `src/erros/forma.ts`) | A mensagem do zod e a do modelo trazem texto do currículo e da conversa. O `console.error` continua com a mensagem, para o log do container |
+| E3 | **O erro é da sessão e vai com ela:** o `apagarSessao` apaga os erros com um `delete` explícito. Sem sessão (OAuth, Stripe), `sessao_id` nulo | Não vira dado anônimo que sobrevive ao "apagar meus dados" |
+| E4 | **90 dias para todo erro.** A limpeza roda sem cron, uma vez por hora por processo, dentro do `registrarErro` | Basta para ver tendência; sem infraestrutura nova |
+| E5 | **No `MODO=local`, nada é gravado** e `/api/erros` dá 404 | Quem roda o self-host vê o terminal |
+| E6 | **O navegador só grava com sessão:** sem cookie, `/api/erros` responde 204 e descarta; com sessão, até 50 erros por hora. Nenhum IP | A rota não fica aberta para quem não entrou |
+| E7 | **O `digest` liga as duas pontas:** o `onRequestError` grava o erro do servidor com ele, e o `error.tsx` manda o mesmo. No navegador, a tela vai em `onde` e o tipo (`janela`, `promessa`, `limite`) em `codigo` | No painel, a tela quebrada aponta para o erro do servidor; no log, o `digest` leva à mensagem |
+| E8 | **Consentimento v4** (o v3 com os erros no "O que fica guardado"). Quem aceitou antes não reaceita: uma faixa na casa avisa 7 dias antes, e a partir da data (`ERROS_VALEM_A_PARTIR`) toda sessão grava | Mudança pequena e avisada; reaceite custa uma tela a quem paga |
+| E9 | **`turno_ocupado` conta no máximo uma vez a cada 10 s por sessão** | O loop de 409 com reload dispara dezenas de pedidos |
+
+O mapa:
+
+| Evento / dado | Origem | Pergunta que responde |
+|---|---|---|
+| `erros`, origem `servidor` (`import`, `turno`, `geracao`, `mapa_geracao`, `leitura_vaga`, `oauth`, `stripe`, `checkout`, `cancelar_assinatura`, `requisicao`, e a etapa do modelo para o teto de gasto) | o `registrarErro` nos pontos que tinham `console.error`, e o `onRequestError` | Onde quebra em produção, e com que frequência? Quebra sempre na mesma etapa? |
+| `erros`, origem `navegador` (`janela`, `promessa`, `limite`), com a tela e o `digest` | `window` e o `error.tsx` / `global-error.tsx` | Quebra no celular de alguém, e em qual tela? Foi o servidor que derrubou a tela? |
+| `tentou_de_novo`, com `onde` (`chat`, `resultado`, `curriculo_da_vaga`, `vaga`) | os quatro botões "Tentar de novo" | O "Tentar de novo" resolve, ou a pessoa fica presa tocando nele? |
+| `turno_ocupado` | o 409 de quando um turno já está rodando | O loop de 409 com reload acontece com gente de verdade? |
+| `renders.duracao_ms` | o render do PDF | O render fica abaixo de ~10 s em produção? |
+| `terminou` com `por: 'teto'`, `chamadas_llm.erro`, a última pergunta sem resposta há 24 h | já existiam | Quantas batem no teto? Que etapa do modelo falha? Onde a pessoa desiste? |
+
 ## Em aberto
 
 - Edição do Corpus pela pessoa.
