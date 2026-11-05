@@ -14,7 +14,7 @@ import { sessaoAtual } from '@/conta/servidor';
 import { errosDaSessaoDesde } from '@/db/erros';
 import { modo } from '@/modo';
 
-import { TAMANHO_MAXIMO } from './forma';
+import { TAMANHO_MAXIMO, TOKEN } from './forma';
 import { registrarForma } from './index';
 
 export const TIPOS_ERRO_NAVEGADOR = ['janela', 'promessa', 'limite'] as const;
@@ -27,9 +27,10 @@ const corpo = z
   .object({
     tipo: z.enum(TIPOS_ERRO_NAVEGADOR),
     /** The pathname, never the query string. */
-    tela: z.string().regex(/^\/[A-Za-z0-9/_\-[\]]*$/).max(200),
-    classe: z.string().min(1).max(TAMANHO_MAXIMO),
-    digest: z.string().min(1).max(TAMANHO_MAXIMO).optional(),
+    tela: z.string().regex(/^\/[A-Za-z0-9/_.~\-[\]]*$/).max(200),
+    // Tokens, like the server's: a sentence here could carry what the person typed.
+    classe: z.string().regex(TOKEN),
+    digest: z.string().regex(TOKEN).optional(),
   })
   .strict();
 
@@ -56,7 +57,7 @@ export async function receberErroDoNavegador(request: Request): Promise<Response
   const descartado = new Response(null, { status: 204 });
   const sessao = await sessaoAtual();
   if (!sessao) return descartado;
-  if ((await errosDaSessaoDesde(sessao.id, new Date(Date.now() - HORA_MS))) >= LIMITE_POR_HORA) return descartado;
+  if ((await errosDaSessaoDesde(sessao.id, 'navegador', new Date(Date.now() - HORA_MS))) >= LIMITE_POR_HORA) return descartado;
 
   const { tipo, tela, classe, digest } = lido.data;
   await registrarForma(

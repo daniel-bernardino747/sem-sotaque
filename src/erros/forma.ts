@@ -32,7 +32,7 @@ export interface FormaDoErro {
 export const TAMANHO_MAXIMO = 80;
 
 /** A code worth keeping is a short token (`teto`, `23505`, `ECONNREFUSED`), never a sentence. */
-const TOKEN = /^[A-Za-z0-9_.:-]{1,40}$/;
+export const TOKEN = /^[A-Za-z0-9_.:-]{1,40}$/;
 
 function token(valor: unknown): string | null {
   if (typeof valor === 'number' && Number.isInteger(valor)) return String(valor);
