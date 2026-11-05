@@ -7,6 +7,7 @@ import type { OpcaoOferta } from '@/avaliador';
 import type { Progresso } from '@/interrogatorio/estado';
 import { emSerie, ocupada } from '@/interrogatorio/trava';
 import { ErroTurno, turno, type Entrada } from '@/interrogatorio/turno';
+import { registrarErro } from '@/erros';
 
 /** The interrogation's events, one JSON object per line. */
 export type EventoChat =
@@ -67,7 +68,7 @@ export async function turnoEmFluxo(request: Request, sessaoId: string, vagaId: s
       } catch (erro) {
         if (!(erro instanceof ErroTurno)) {
           // The session id, never the token: the token is the person's credential.
-          console.error(`interrogation turn failed for session ${sessaoId}:`, erro instanceof Error ? erro.message : erro);
+          await registrarErro({ origem: 'servidor', onde: 'turno', erro, sessaoId, log: `interrogation turn failed for session ${sessaoId}:` });
         }
         enviar({ t: 'erro', mensagem: 'Não consegui continuar agora. Tente de novo em instantes.' });
       } finally {

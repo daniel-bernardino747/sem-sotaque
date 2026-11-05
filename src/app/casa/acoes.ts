@@ -43,6 +43,7 @@ import { encerrarInterrogatorio } from '@/interrogatorio/turno';
 import { garantirLeitura } from '@/vaga';
 import { lerConfirmacao, lerVagaColada } from '@/vaga/entrada';
 import { modo } from '@/modo';
+import { registrarErro } from '@/erros';
 
 /**
  * The signed-in session every action works on, read again on each call (an
@@ -104,7 +105,7 @@ export async function assinar(_anterior: EstadoAssinar, _form: FormData): Promis
       cliente: assinatura?.stripeCustomerId ?? null,
     });
   } catch (erro) {
-    console.error('assinar: the checkout session failed', erro);
+    await registrarErro({ origem: 'servidor', onde: 'checkout', erro, sessaoId: entrada.sessao?.id, log: 'assinar: the checkout session failed' });
     return { erro: true };
   }
   redirect(url);
@@ -173,7 +174,7 @@ export async function apagarDados(_anterior: EstadoApagar, _form: FormData): Pro
   try {
     await cancelarAntesDeApagar(entrada.conta.id);
   } catch (erro) {
-    console.error('apagar: canceling the subscription failed', erro);
+    await registrarErro({ origem: 'servidor', onde: 'cancelar_assinatura', erro, sessaoId: sessao.id, log: 'apagar: canceling the subscription failed' });
     return { erro: true };
   }
   await apagarSessao(sessao.id);
@@ -216,10 +217,10 @@ export async function enviarCurriculo(
   try {
     await importarCurriculo(sessao.id, entrada);
   } catch (erro) {
-    if (erro instanceof ErroImport) return falhou(erro.message);
     if (!(erro instanceof ErroEstadoSessao)) {
-      console.error(`import failed for session ${sessao.id}:`, erro instanceof Error ? erro.message : erro);
-      return falhou('Não consegui ler seu currículo agora. Tente de novo em alguns minutos.');
+      // A file it cannot read is recorded too: it is where people get stuck (step 26).
+      await registrarErro({ origem: 'servidor', onde: 'import', erro, sessaoId: sessao.id, log: `import failed for session ${sessao.id}:` });
+      return falhou(erro instanceof ErroImport ? erro.message : 'Não consegui ler seu currículo agora. Tente de novo em alguns minutos.');
     }
   }
   redirect('/casa/conversa');

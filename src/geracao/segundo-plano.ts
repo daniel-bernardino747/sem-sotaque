@@ -16,6 +16,7 @@
 import { atualizarGeracao, criarGeracao, ultimaGeracao } from '@/db';
 
 import { gerarCurriculo } from './pipeline';
+import { registrarErro } from '@/erros';
 
 const rodando = new Set<string>();
 const chave = (sessaoId: string, vagaId: string | null) => `${sessaoId}:${vagaId ?? 'geral'}`;
@@ -38,7 +39,13 @@ export async function garantirGeracao(sessaoId: string, opcoes: { deNovo?: boole
     .catch(async (erro) => {
       const mensagem = erro instanceof Error ? erro.message : String(erro);
       // The session id, never the token: the token is the person's credential.
-      console.error(`generation ${geracao.versao}${vagaId ? ` of Vaga ${vagaId}` : ''} failed for session ${sessaoId}:`, mensagem);
+      await registrarErro({
+        origem: 'servidor',
+        onde: 'geracao',
+        erro,
+        sessaoId,
+        log: `generation ${geracao.versao}${vagaId ? ` of Vaga ${vagaId}` : ''} failed for session ${sessaoId}:`,
+      });
       await atualizarGeracao(geracao.id, { erro: mensagem.slice(0, 500), etapa: null }).catch(() => {});
     })
     .finally(() => rodando.delete(k));
