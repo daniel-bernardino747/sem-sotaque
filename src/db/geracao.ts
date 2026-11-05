@@ -152,13 +152,13 @@ export async function proximaTentativa(geracaoId: string): Promise<number> {
 /**
  * One attempt: the Selection (validated by the render's schema, as the step 02
  * notes ask, since the database does not), what was wrong with it, and its
- * PDF with the measure. Only into a generation of this session that has not
+ * PDF with the measure and how long the render took. Only into a generation of this session that has not
  * ended, of a session not erased.
  */
 export async function gravarTentativa(
   sessaoId: string,
   geracaoId: string,
-  dados: { json: unknown; tentativa: number; violacoes: unknown; aprovada: boolean; pdf: Buffer; medida: unknown },
+  dados: { json: unknown; tentativa: number; violacoes: unknown; aprovada: boolean; pdf: Buffer; medida: unknown; duracaoMs?: number },
 ): Promise<string> {
   const json = selectionSchema.parse(dados.json);
   return db().transaction(async (tx) => {
@@ -172,7 +172,7 @@ export async function gravarTentativa(
       .insert(selections)
       .values({ sessaoId, geracaoId, json, tentativa: dados.tentativa, violacoes: dados.violacoes, aprovada: dados.aprovada })
       .returning({ id: selections.id });
-    await tx.insert(renders).values({ selectionId: selection.id, pdf: dados.pdf, medida: dados.medida });
+    await tx.insert(renders).values({ selectionId: selection.id, pdf: dados.pdf, medida: dados.medida, duracaoMs: dados.duracaoMs ?? null });
     return selection.id;
   });
 }
