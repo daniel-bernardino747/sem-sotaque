@@ -7,7 +7,7 @@
  * the shape (`./forma`). In `MODO=local` nothing is written: whoever runs it
  * sees the terminal. Recording never throws into the caller.
  */
-import { gravarErro, limparErrosVencidos } from '../db/erros';
+import { gravarErro, limparErrosVencidos, registrarAtrito, type Atrito } from '../db/erros';
 import { modo as modoDoAmbiente, type Modo } from '../modo';
 
 import { formaDoErro, type FormaDoErro, type OrigemErro } from './forma';
@@ -59,5 +59,18 @@ export async function registrarForma(
     }
   } catch (falha) {
     console.error('recording the error failed:', falha instanceof Error ? falha.message : falha);
+  }
+}
+
+/**
+ * A friction (step 26): "Tentar de novo" with where it was tapped, or the busy
+ * turn's 409. Like an error: nothing in `MODO=local`, never thrown.
+ */
+export async function anotarAtrito(sessaoId: string, tipo: Atrito, dados: Record<string, unknown> = {}): Promise<void> {
+  try {
+    if (modoDoAmbiente() === 'local') return;
+    await registrarAtrito(sessaoId, tipo, dados);
+  } catch (falha) {
+    console.error(`recording ${tipo} failed:`, falha instanceof Error ? falha.message : falha);
   }
 }
