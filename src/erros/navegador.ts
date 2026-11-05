@@ -16,8 +16,8 @@ import { modo } from '@/modo';
 
 import { TAMANHO_MAXIMO, TOKEN } from './forma';
 import { registrarForma } from './index';
+import { TIPOS_RELATO } from './relato';
 
-export const TIPOS_ERRO_NAVEGADOR = ['janela', 'promessa', 'limite'] as const;
 export const LIMITE_POR_HORA = 50;
 /** A body longer than this is not an error report. */
 const CORPO_MAXIMO = 1024;
@@ -25,7 +25,7 @@ const HORA_MS = 60 * 60 * 1000;
 
 const corpo = z
   .object({
-    tipo: z.enum(TIPOS_ERRO_NAVEGADOR),
+    tipo: z.enum(TIPOS_RELATO),
     /** The pathname, never the query string. */
     tela: z.string().regex(/^\/[A-Za-z0-9/_.~\-[\]]*$/).max(200),
     // Tokens, like the server's: a sentence here could carry what the person typed.

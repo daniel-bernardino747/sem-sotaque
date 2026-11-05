@@ -10,7 +10,7 @@
 import { and, count, desc, eq, gte, inArray, isNotNull, lt, sql } from 'drizzle-orm';
 
 import { gravaErrosEAtritos } from '../conteudo/consentimento';
-import type { FormaDoErro } from '../erros/forma';
+import type { FormaDoErro, OrigemErro } from '../erros/forma';
 
 import { db, type Db } from './client';
 import { chamadasLlm, erros, eventos, renders, sessoes, testers } from './schema';
@@ -45,7 +45,7 @@ export async function gravarErro(forma: FormaDoErro, sessaoId: string | null, ag
 }
 
 /** How many errors of `origem` the session has written since `desde`: the browser's limit per hour. */
-export async function errosDaSessaoDesde(sessaoId: string, origem: 'servidor' | 'navegador', desde: Date): Promise<number> {
+export async function errosDaSessaoDesde(sessaoId: string, origem: OrigemErro, desde: Date): Promise<number> {
   const [{ n }] = await db()
     .select({ n: count() })
     .from(erros)
@@ -101,7 +101,7 @@ export async function registrarAtrito(
 export const JANELA_DO_PAINEL_DIAS = 7;
 
 export interface GrupoDeErros {
-  origem: 'servidor' | 'navegador';
+  origem: OrigemErro;
   onde: string;
   classe: string;
   codigo: string | null;

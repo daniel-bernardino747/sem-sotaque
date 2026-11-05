@@ -4,10 +4,10 @@
 import { z } from 'zod';
 
 import type { OpcaoOferta } from '@/avaliador';
+import { anotarAtrito, registrarErro } from '@/erros';
 import type { Progresso } from '@/interrogatorio/estado';
 import { emSerie, ocupada } from '@/interrogatorio/trava';
 import { ErroTurno, turno, type Entrada } from '@/interrogatorio/turno';
-import { anotarAtrito, registrarErro } from '@/erros';
 
 /** The interrogation's events, one JSON object per line. */
 export type EventoChat =

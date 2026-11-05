@@ -8,7 +8,9 @@
  */
 import { TOKEN } from './forma';
 
-export type TipoRelato = 'janela' | 'promessa' | 'limite';
+/** `janela`: the window's `error`; `promessa`: `unhandledrejection`; `limite`: the error boundary. */
+export const TIPOS_RELATO = ['janela', 'promessa', 'limite'] as const;
+export type TipoRelato = (typeof TIPOS_RELATO)[number];
 
 export interface Relato {
   tipo: TipoRelato;

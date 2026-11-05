@@ -53,14 +53,14 @@ export function gravaErrosEAtritos(versao: string | null, agora = new Date()): b
   return agora.getTime() >= ERROS_VALEM_A_PARTIR.getTime();
 }
 
+/** What the banner says. The date is `ERROS_VALEM_A_PARTIR`'s, in Brasília. */
+export const AVISO_DA_POLITICA = `A política de privacidade muda em ${ERROS_VALEM_A_PARTIR.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', timeZone: 'America/Sao_Paulo' })}: a partir desse dia, quando algo der errado, eu guardo o tipo do erro e a tela ou a etapa em que ele aconteceu, ligados à sua conta, por 90 dias. Nunca o texto da sua conversa ou do seu currículo. Apagar os seus dados apaga isso também.`;
+
 /**
  * The banner at the home (step 26, decision 9): a session that accepted a text
  * before v4 is told what changes in the policy, and when, until that date. A
  * v4 session read it in its consent; one that has not accepted yet will.
  */
-/** What the banner says. The date is `ERROS_VALEM_A_PARTIR`'s, in Brasília. */
-export const AVISO_DA_POLITICA = `A política de privacidade muda em ${ERROS_VALEM_A_PARTIR.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', timeZone: 'America/Sao_Paulo' })}: a partir desse dia, quando algo der errado, eu guardo o tipo do erro e a tela ou a etapa em que ele aconteceu, ligados à sua conta, por 90 dias. Nunca o texto da sua conversa ou do seu currículo. Apagar os seus dados apaga isso também.`;
-
 export function mostraAvisoDaPolitica(versao: string | null, agora = new Date()): boolean {
   return versao !== null && !gravaErrosEAtritos(versao, agora);
 }
