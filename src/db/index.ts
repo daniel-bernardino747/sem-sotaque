@@ -19,6 +19,7 @@ import {
   chamadasLlm,
   contas,
   decisoesAvaliador,
+  erros,
   eventos,
   fechamento,
   geracoes,
@@ -432,7 +433,7 @@ export async function registrarChamadaLlm(
 
 /**
  * Erases everything the person gave: the Corpus, the log, the imports, the
- * resumes, the closing answers and the Tester row with its token. What stays
+ * resumes, the closing answers, the errors and the Tester row with its token. What stays
  * has no content, so the funnel does not lie: the `sessoes` row (state and
  * dates, `apagada_em` set, the token's SHA-256 so the link can still say
  * "erased"), one `apagou` event with the state they were in and the funnel
@@ -481,6 +482,8 @@ export async function apagarSessao(sessaoId: string): Promise<void> {
       indicacoes,
       plano,
       decisoesAvaliador,
+      // The session row is never deleted, so its errors' cascade never fires: they go here (step 26).
+      erros,
     ]) {
       await tx.delete(tabela).where(eq(tabela.sessaoId, sessaoId));
     }
