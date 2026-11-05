@@ -21,7 +21,12 @@ O hospedado no domínio próprio, com Stripe em modo real e OAuth de produção,
 2. **OAuth de produção:** os apps do GitHub e do Google com o domínio, o link da política e dos termos (o Google pede), e as variáveis no Coolify.
 3. **Stripe em modo real:** o Price de R$ 99/trimestre, o webhook do domínio, o Customer Portal configurado (cancelar no fim do período, trocar cartão, faturas), e os termos e a política na conta.
 4. **A página de venda** na `/` do `hospedado`. O texto vai para o Daniel antes de aplicar.
-5. **Ensaio em produção, com o Daniel:** uma assinatura real com cartão dele, uma sessão até o PDF, uma vaga, cancelar no portal, reembolsar no dashboard, apagar a conta. Anote tempos e o que quebrou.
+5. **Ensaio em produção, com o Daniel:** uma assinatura real com cartão dele, uma sessão até o PDF, uma vaga, cancelar no portal, reembolsar no dashboard, apagar a conta. Anote tempos e o que quebrou. Ele fecha também o ensaio do 09, e vem depois do passo 26, para os erros e os atritos ficarem gravados. Escreva antes o roteiro em `docs/ensaio.md`:
+   - **Quem e em que ordem:** o Daniel, pelo celular, com um currículo antigo dele (de antes do `career`); depois uma pessoa próxima, sem ajuda, do jeito que ela faria sozinha.
+   - **As etapas**, cada uma com o que conferir no painel logo depois: entrar, assinar, o import, o interrogatório até o fim, o PDF, uma vaga até o currículo da vaga, cancelar no portal, reembolsar no dashboard, apagar a conta.
+   - **No painel, depois de cada etapa:** a seção "Erros e atritos" (erros novos, `tentou_de_novo`, `turno_ocupado`), o custo da sessão e, depois do PDF, o tempo de render.
+   - **Depois do apagar:** a conta, a conversa e os erros da sessão sumiram; ficaram só as etapas do funil e o custo.
+   - **O que anotar:** onde a pessoa hesitou ou perguntou algo (o que o painel não vê), o tempo total e o que quebrou. Bug de fluxo é correção; ideia de feature vai para "Achados".
 6. **Os links antigos:** os testers do v0 recebem a mensagem de que o link agora pede login. O texto vai para o Daniel.
 
 ## Fora do escopo
