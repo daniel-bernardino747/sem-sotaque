@@ -40,7 +40,7 @@ O repo público, a licença e o CLA (passo 24). Multiusuário no `local`.
 
 ## Notas de implementação
 
-**Feito, com duas pendências que dependem de chave** (no fim). O item 2 entrou depois do merge do passo 20 (#10), com rebase no `main`.
+**Feito.** As pendências do fim fecharam em 2026-11-05. O item 2 entrou depois do merge do passo 20 (#10), com rebase no `main`.
 
 **Item 2, o `local` depois das contas:**
 
@@ -108,7 +108,7 @@ O repo público, a licença e o CLA (passo 24). Multiusuário no `local`.
 
 **Pendência 1 fechada em 2026-11-05**, no clone do repo público (`main` em `e4bce05`): `cp .env.example .env` só com a `ANTHROPIC_API_KEY` (sem a da TypeSafe), `docker compose -f docker-compose.local.yml up -d --build` (3,5 min de build). `/` e `/entrar` dão 307 para `/casa`, `/admin` 404, `/casa` 200 sem login. Pela tela, com o Playwright: o import do `pleno.txt` (4 experiências, 8 registros, 15 s), "Começar as perguntas", a primeira pergunta em 27 s ("Um recrutador em Toronto não sabe o que é boleto…"), uma resposta do Rodrigo e a pergunta seguinte em 6 s. O avaliador decidiu duas vezes pelas regras fixas, sem erro. Custo: US$ 0,12 em 4 chamadas, nenhuma com erro. Não foi até o PDF (o PDF sem o Jev já tinha sido medido acima, pelo caminho nativo).
 
-**Pendência 2 fechada em 2026-11-05** (a rodada com o Jev, acima). **Pendência que resta (depende do Daniel):** (3) a decisão sobre a assinatura no Docker.
+**Pendência 2 fechada em 2026-11-05** (a rodada com o Jev, acima). **Pendência 3 fechada em 2026-11-05:** o Daniel decidiu que a assinatura fica fora do Docker. O Docker usa só a chave da API; quem quiser a assinatura do Claude roda pelo caminho nativo (`MODO=local LLM_BACKEND=assinatura npm run dev`), já descrito no README com o parágrafo sobre a política da Anthropic.
 
 ## Achados
 
