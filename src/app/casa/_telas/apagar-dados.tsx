@@ -9,6 +9,21 @@ import type { EstadoApagar } from '../acoes';
 import { BotaoEnviar } from './botao-enviar';
 
 /**
+ * What the confirmation says. `comConta`: hosted, where the account goes with
+ * the data; MODO=local has no account to speak of (step 23).
+ */
+export function avisoDeApagar({ comConta, cancelaAssinatura }: { comConta: boolean; cancelaAssinatura: boolean }): string {
+  return [
+    `O seu currículo, as respostas e o currículo gerado somem para sempre${comConta ? ', e a sua conta sai junto' : ''}.`,
+    cancelaAssinatura &&
+      'A assinatura é cancelada na hora, e o resto do trimestre não volta: o reembolso só vale nos 7 dias depois de assinar.',
+    'Não dá para desfazer.',
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+/**
  * "Apagar meus dados", in two steps on the page itself (no browser dialog): the
  * first tap only says what will happen, the second erases. With a live
  * subscription, it says first that the subscription is canceled now (decision 5).
@@ -16,9 +31,11 @@ import { BotaoEnviar } from './botao-enviar';
 export function ApagarDados({
   apagar,
   cancelaAssinatura,
+  comConta,
 }: {
   apagar: (anterior: EstadoApagar, form: FormData) => Promise<EstadoApagar>;
   cancelaAssinatura: boolean;
+  comConta: boolean;
 }) {
   const [confirmando, setConfirmando] = useState(false);
   const [estado, acao] = useActionState(apagar, { erro: false });
@@ -34,11 +51,7 @@ export function ApagarDados({
   return (
     <form action={acao} className="confirmar-apagar" role="alertdialog" aria-labelledby="apagar-titulo">
       <p id="apagar-titulo">
-        <strong>Apagar tudo?</strong> O seu currículo, as respostas e o currículo gerado somem para
-        sempre, e a sua conta sai junto.
-        {cancelaAssinatura &&
-          ' A assinatura é cancelada na hora, e o resto do trimestre não volta: o reembolso só vale nos 7 dias depois de assinar.'}{' '}
-        Não dá para desfazer.
+        <strong>Apagar tudo?</strong> {avisoDeApagar({ comConta, cancelaAssinatura })}
       </p>
       {estado.erro && (
         <p className="erro" role="alert">
