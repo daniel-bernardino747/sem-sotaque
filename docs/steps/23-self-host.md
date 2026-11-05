@@ -76,7 +76,19 @@ O repo público, a licença e o CLA (passo 24). Multiusuário no `local`.
 
 - `npm test`: 415 passaram, 4 pularam. `npm run typecheck` limpo. O Postgres da 5432 era o do worktree do passo 20: para não cruzar migrações, usei um Postgres próprio na 5433 (`TEST_DATABASE_URL`, `DATABASE_URL`).
 - **Item 4, sem o Jev** (`MODO=local LLM_BACKEND=assinatura ANTHROPIC_API_KEY= npm run simular -- nao-sei --sem-jev`): 16 turnos, 9 de 9 registros fechados, cobertura 100%, 8 de 8 checagens OK, 3,9 min. `storage/simulacoes/nao-sei-2026-11-03T12-18-07-053Z.md`.
-- **Item 4, com o Jev: não medido.** A `TYPESAFE_API_KEY` do `.env` dá **401** ("Cannot authenticate"): a rodada "com o Jev" (8 turnos, 7 de 7, 8 de 8 OK) caiu na reserva em todo checkpoint e não vale como comparação. Falta uma chave válida e uma nova rodada com `npm run simular -- nao-sei` (o mesmo comando, sem `--sem-jev`).
+- **Item 4, com e sem o Jev, lado a lado (2026-11-05, pendência 2 fechada):** as duas rodadas no mesmo dia e no mesmo código (`main` em `faaf082`), pela assinatura, com `npm run simular -- nao-sei` e com `--sem-jev`. A chave nova da TypeSafe autentica: 13 de 13 checkpoints decididos pelo Jev, nenhum na reserva.
+
+  | | Com o Jev | Sem o Jev |
+  |---|---|---|
+  | Turnos | 16 | 9 |
+  | Registros fechados | 9 de 9 | 7 de 7 |
+  | Checagens | 8 de 8 | 8 de 8 |
+  | Tempo | 3,3 min | 2,1 min |
+  | Checkpoints | 13 | 6 |
+  | Custo do avaliador | US$ 0,0005 | 0 |
+
+  Os dois fecharam os mesmos dois registros com resultado (o catálogo e o Lighthouse) e pularam o resto. O que o Jev fez a mais: deu a força de cada registro (`medio`, `fraco`; as regras fixas deixam `?`), ofereceu o fim aos 80% de cobertura, e, quando a persona seguiu, abriu um registro novo do TCC (o salão da tia que usa até hoje), que ela depois pulou. Sem o Jev, a conversa é mais curta e chega ao mesmo resultado para esta persona. É uma rodada de cada lado, e esta persona nunca diz número: não vale como medida de qualidade, só como "o local sem o Jev não perde o essencial". Transcrições em `storage/simulacoes/nao-sei-2026-11-05T12-49-56-691Z.md` (com) e `nao-sei-2026-11-05T12-54-36-763Z.md` (sem), fora do git.
+- **Item 4, com o Jev, em 2026-11-03: não medido.** A `TYPESAFE_API_KEY` do `.env` dá **401** ("Cannot authenticate"): a rodada "com o Jev" (8 turnos, 7 de 7, 8 de 8 OK) caiu na reserva em todo checkpoint e não vale como comparação. Falta uma chave válida e uma nova rodada com `npm run simular -- nao-sei` (o mesmo comando, sem `--sem-jev`).
 - **Sem o Jev até o PDF** (`npm run gerar -- nao-sei`, pela assinatura, sem a chave): PDF gerado, "revisar" depois de 4 tentativas (uma empresa com 2 bullets, preenchimento 48%), em 126 s. O mesmo padrão do passo 12 nessa persona. `storage/geracoes/nao-sei-2026-11-03T12-18-23-245Z.*`.
 - **Pasta limpa** (clone da branch, `cp .env.example .env`, só a `ANTHROPIC_API_KEY`, `docker compose -f docker-compose.local.yml up -d`): migrações na subida, `MODO=local` com `NODE_ENV=production`, `/health` 200, `token:new` dentro do container, e o link abre na tela de consentimento (o item 2 ainda não tirou). **O interrogatório não foi testado no Docker:** a `ANTHROPIC_API_KEY` do `.env` também dá 401 (em `/v1/models`, que não cobra).
 
@@ -96,7 +108,7 @@ O repo público, a licença e o CLA (passo 24). Multiusuário no `local`.
 
 **Pendência 1 fechada em 2026-11-05**, no clone do repo público (`main` em `e4bce05`): `cp .env.example .env` só com a `ANTHROPIC_API_KEY` (sem a da TypeSafe), `docker compose -f docker-compose.local.yml up -d --build` (3,5 min de build). `/` e `/entrar` dão 307 para `/casa`, `/admin` 404, `/casa` 200 sem login. Pela tela, com o Playwright: o import do `pleno.txt` (4 experiências, 8 registros, 15 s), "Começar as perguntas", a primeira pergunta em 27 s ("Um recrutador em Toronto não sabe o que é boleto…"), uma resposta do Rodrigo e a pergunta seguinte em 6 s. O avaliador decidiu duas vezes pelas regras fixas, sem erro. Custo: US$ 0,12 em 4 chamadas, nenhuma com erro. Não foi até o PDF (o PDF sem o Jev já tinha sido medido acima, pelo caminho nativo).
 
-**Pendências que restam (dependem do Daniel):** (2) uma `TYPESAFE_API_KEY` válida, para a rodada com o Jev do item 4 (`MODO=local LLM_BACKEND=assinatura ANTHROPIC_API_KEY= npm run simular -- nao-sei`) e a comparação com a sem o Jev acima; (3) a decisão sobre a assinatura no Docker.
+**Pendência 2 fechada em 2026-11-05** (a rodada com o Jev, acima). **Pendência que resta (depende do Daniel):** (3) a decisão sobre a assinatura no Docker.
 
 ## Achados
 
