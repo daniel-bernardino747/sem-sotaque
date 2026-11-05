@@ -44,12 +44,12 @@ export async function gravarErro(forma: FormaDoErro, sessaoId: string | null, ag
   });
 }
 
-/** How many errors the session has written since `desde`: the browser's limit per hour. */
-export async function errosDaSessaoDesde(sessaoId: string, desde: Date): Promise<number> {
+/** How many errors of `origem` the session has written since `desde`: the browser's limit per hour. */
+export async function errosDaSessaoDesde(sessaoId: string, origem: 'servidor' | 'navegador', desde: Date): Promise<number> {
   const [{ n }] = await db()
     .select({ n: count() })
     .from(erros)
-    .where(and(eq(erros.sessaoId, sessaoId), gte(erros.createdAt, desde)));
+    .where(and(eq(erros.sessaoId, sessaoId), eq(erros.origem, origem), gte(erros.createdAt, desde)));
   return n;
 }
 

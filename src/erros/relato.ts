@@ -6,6 +6,8 @@
  * kind, the path of the screen, the class and Next's digest. Never the
  * message, which can carry what the person typed. Safe for the client bundle.
  */
+import { TOKEN } from './forma';
+
 export type TipoRelato = 'janela' | 'promessa' | 'limite';
 
 export interface Relato {
@@ -16,10 +18,12 @@ export interface Relato {
 }
 
 export function relatoDoNavegador(tipo: TipoRelato, erro: unknown, caminho: string): Relato {
-  const classe = erro instanceof Error ? erro.name || 'Error' : erro === null ? 'null' : typeof erro;
+  const nome = erro instanceof Error ? erro.name : erro === null ? 'null' : typeof erro;
+  // The route takes only tokens: a custom name that is a sentence goes as "Error".
+  const classe = TOKEN.test(nome) ? nome : 'Error';
   const digest = typeof erro === 'object' && erro !== null ? (erro as { digest?: unknown }).digest : undefined;
   const tela = caminho.split(/[?#]/)[0] || '/';
-  return { tipo, tela, classe: classe.slice(0, 80), ...(typeof digest === 'string' ? { digest: digest.slice(0, 80) } : {}) };
+  return { tipo, tela, classe, ...(typeof digest === 'string' && TOKEN.test(digest) ? { digest } : {}) };
 }
 
 /** At most this many reports per page load: a loop that throws does not flood the route. */
