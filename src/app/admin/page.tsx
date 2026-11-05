@@ -6,7 +6,15 @@ import Link from 'next/link';
 import { duracao, ETAPAS_FUNIL, NOME_DA_ETAPA } from '@/admin/funil';
 import { montarPainel } from '@/admin/painel';
 import { exigirAdmin } from '@/admin/servidor';
-import { ancorasMaisUsadas, custoSemSessao, sessoesDoPainel, testersAtivos, ultimasPerguntasDasParadas } from '@/db';
+import {
+  ancorasMaisUsadas,
+  custoSemSessao,
+  errosEAtritos,
+  JANELA_DO_PAINEL_DIAS,
+  sessoesDoPainel,
+  testersAtivos,
+  ultimasPerguntasDasParadas,
+} from '@/db';
 
 import { gerarToken, sair } from './acoes';
 import { FormularioToken } from './_formularios';
@@ -16,12 +24,13 @@ export const dynamic = 'force-dynamic';
 
 export default async function Painel() {
   await exigirAdmin();
-  const [linhas, semSessao, ancoras, paradas, ativos] = await Promise.all([
+  const [linhas, semSessao, ancoras, paradas, ativos, erros] = await Promise.all([
     sessoesDoPainel(),
     custoSemSessao(),
     ancorasMaisUsadas(),
     ultimasPerguntasDasParadas(),
     testersAtivos(),
+    errosEAtritos(),
   ]);
   const p = montarPainel(linhas);
   const { criterio: c, funil } = p;
@@ -241,6 +250,8 @@ export default async function Painel() {
         )}
       </section>
 
+      <ErrosEAtritos e={erros} />
+
       <section aria-labelledby="token">
         <h2 id="token">Gerar link de tester</h2>
         <p className="suave">O mesmo que <code>npm run token:new</code>. O link aparece uma vez só.</p>
@@ -275,6 +286,91 @@ function Quem<S extends { id: string }>({ sessoes, nome }: { sessoes: S[]; nome:
         </span>
       ))}
     </span>
+  );
+}
+
+/** Step 26: what broke and where people got stuck, from the shapes only. */
+function ErrosEAtritos({ e }: { e: Awaited<ReturnType<typeof errosEAtritos>> }) {
+  const NOME_DA_TELA: Record<string, string> = { chat: 'conversa', resultado: 'currículo', curriculo_da_vaga: 'currículo da vaga', vaga: 'leitura da vaga' };
+  const tentou = Object.entries(e.tentouDeNovo).sort((a, b) => b[1] - a[1]);
+  return (
+    <section aria-labelledby="erros">
+      <h2 id="erros">Erros e atritos</h2>
+      <p className="suave">
+        Últimos {JANELA_DO_PAINEL_DIAS} dias. Do erro, só a forma: a mensagem fica no log do container, que o <code>digest</code> encontra
+        enquanto existir.
+      </p>
+      <div className="cartoes">
+        <div className="cartao">
+          <span className="rotulo">&quot;Tentar de novo&quot;</span>
+          <strong>{tentou.reduce((soma, [, n]) => soma + n, 0)}</strong>
+          <span className="pequeno">{tentou.map(([onde, n]) => `${NOME_DA_TELA[onde] ?? onde}: ${n}`).join(' · ') || '—'}</span>
+        </div>
+        <div className="cartao">
+          <span className="rotulo">Turno ocupado (409)</span>
+          <strong>{e.turnoOcupado}</strong>
+          <span className="pequeno">no máximo um a cada 10 s por sessão</span>
+        </div>
+        <div className="cartao">
+          <span className="rotulo">Bateram no teto de gasto</span>
+          <strong>{e.teto}</strong>
+        </div>
+        <div className="cartao">
+          <span className="rotulo">Render do PDF</span>
+          <strong>{e.render ? `${(e.render.mediana / 1000).toFixed(1)} s` : '—'}</strong>
+          <span className="pequeno">{e.render ? `mediana de ${e.render.n} · máximo ${(e.render.maximo / 1000).toFixed(1)} s` : 'nenhum medido ainda'}</span>
+        </div>
+      </div>
+
+      <h3>O que quebrou</h3>
+      {e.grupos.length === 0 ? (
+        <p className="suave">Nenhum erro na janela.</p>
+      ) : (
+        <div className="tabela">
+          <table>
+            <thead>
+              <tr>
+                <th>Origem</th>
+                <th>Onde</th>
+                <th>Classe</th>
+                <th>Código</th>
+                <th>Vezes</th>
+                <th>Última</th>
+                <th>Do servidor (pelo digest)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {e.grupos.map((g) => (
+                <tr key={`${g.origem}|${g.onde}|${g.classe}|${g.codigo ?? ''}`}>
+                  <td>{g.origem}</td>
+                  <td>
+                    <code>{g.onde}</code>
+                  </td>
+                  <td>{g.classe}</td>
+                  <td>{g.codigo ?? '—'}</td>
+                  <td>{g.n}</td>
+                  <td>{dataHora(g.ultima)}</td>
+                  <td>{g.doServidor.map((s) => `${s.onde} · ${s.classe} (${s.n})`).join('; ') || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <h3>Sessões com mais erros</h3>
+      {e.sessoes.length === 0 ? (
+        <p className="suave">Nenhuma.</p>
+      ) : (
+        <ul>
+          {e.sessoes.slice(0, 10).map((s) => (
+            <li key={s.sessaoId}>
+              <Link href={`/admin/sessoes/${s.sessaoId}`}>{s.apelido ?? '(apagada)'}</Link>: {s.n}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
