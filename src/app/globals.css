@@ -1257,6 +1257,15 @@ main:has(> .chat) {
   }
 }
 
+/* The policy's change, announced at the home before it applies (step 26). */
+.aviso-politica {
+  margin: 0 0 var(--e-4);
+  padding: var(--e-3) var(--e-4);
+  border: 1px solid var(--ocre);
+  color: var(--suave);
+  font-size: var(--t-pequeno);
+}
+
 /* ---- o resultado ---- */
 
 .aviso-teste {

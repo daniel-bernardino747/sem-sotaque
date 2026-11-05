@@ -57,7 +57,7 @@ describe.skipIf(semBanco)('o opt-in de leitura', () => {
     expect(await destino(aceitarConsentimento(formulario({ aceito: 'sim' })))).toBe('redirect /casa');
     const sessao = await sessaoDaConta(conta.id);
     expect(sessao?.estado).toBe('consentiu');
-    expect(sessao?.textoConsentimentoVersao).toBe('v3');
+    expect(sessao?.textoConsentimentoVersao).toBe('v4');
     expect(sessao?.podeLerEm).toBeNull();
   });
 

@@ -1,6 +1,6 @@
 # Política de privacidade
 
-Última atualização: 3 de novembro de 2026.
+Última atualização: 5 de novembro de 2026.
 
 **Antes de tudo:** eu escrevi este texto a partir do que o sem-sotaque faz de verdade, mas ele ainda não passou por um advogado. Se algo aqui não bater com o que o app faz, vale o que for mais protetor para você, e eu corrijo o texto.
 
@@ -18,6 +18,7 @@ O sem-sotaque é feito pelo Daniel, dev, e mantido pela DB Software Solutions LT
 - **As vagas,** só se você aceitar o aceite das vagas: o texto que você colar, a empresa, o cargo, o link (que eu guardo e nunca abro), os requisitos e o que você marcar em cada um.
 - **O que você mandar no fim, se quiser:** o nome e o contato de quem você indicar, o seu depoimento e o que deu errado.
 - **Para medir o produto:** as etapas por onde você passou (entrou, enviou o currículo, terminou, baixou o PDF) e quanto custou cada chamada ao modelo.
+- **Para achar o que quebra:** quando algo dá errado, o tipo do erro e a tela ou a etapa em que ele aconteceu, ligados à sua sessão, por 90 dias. E quando você toca em "Tentar de novo". Nunca o texto da sua conversa ou do seu currículo.
 - **Da assinatura:** os identificadores do Stripe, a situação da assinatura e o período pago. O número do cartão fica no Stripe: eu nunca vejo.
 - **Cookies:** um cookie de login, que dura 30 dias, e um de 10 minutos durante a entrada pelo GitHub ou pelo Google. Não uso cookie de anúncio nem de análise.
 
@@ -46,7 +47,7 @@ Anthropic, TypeSafe e Stripe ficam fora do Brasil, então os seus dados saem do 
 
 ## Por quanto tempo
 
-Enquanto a sua conta existir. "Apagar meus dados", no rodapé de toda tela, apaga na hora a conta, a conversa, os currículos, as vagas, o cabeçalho, as indicações e o depoimento, e cancela a assinatura. Ficam, sem nada que identifique você: as etapas por onde a conta passou, as datas dos aceites, a contagem das vagas e o custo das chamadas ao modelo. O Stripe guarda o histórico de cobrança, que a lei manda guardar. O que já foi para a TypeSafe não é apagado daqui. O servidor tem uma cópia de segurança semanal, guardada pela Hostinger no Brasil: um dado apagado pode continuar nela por até 14 dias, até a cópia ser substituída. Se um dia eu precisar restaurar uma cópia, apago de novo o que você já tinha apagado.
+Enquanto a sua conta existir. "Apagar meus dados", no rodapé de toda tela, apaga na hora a conta, a conversa, os currículos, as vagas, o cabeçalho, as indicações, o depoimento e os erros, e cancela a assinatura. Ficam, sem nada que identifique você: as etapas por onde a conta passou, as datas dos aceites, a contagem das vagas e o custo das chamadas ao modelo. O Stripe guarda o histórico de cobrança, que a lei manda guardar. O que já foi para a TypeSafe não é apagado daqui. O servidor tem uma cópia de segurança semanal, guardada pela Hostinger no Brasil: um dado apagado pode continuar nela por até 14 dias, até a cópia ser substituída. Se um dia eu precisar restaurar uma cópia, apago de novo o que você já tinha apagado.
 
 ## Os seus direitos
 

@@ -16,6 +16,7 @@ import {
   type Vaga,
 } from '@/db';
 
+import { AVISO_DA_POLITICA, mostraAvisoDaPolitica } from '@/conteudo/consentimento';
 import { modo } from '@/modo';
 
 import { contarAlgo, continuarConversa, gerarDeNovo, mudarLeitura } from '../acoes';
@@ -66,6 +67,12 @@ export async function Casa({ sessao }: { sessao: Sessao }) {
 
   return (
     <div className="casa">
+      {/* The hosted policy changed (step 26): MODO=local has no policy. */}
+      {modo() !== 'local' && mostraAvisoDaPolitica(sessao.textoConsentimentoVersao) && (
+        <p className="aviso-politica" role="note">
+          {AVISO_DA_POLITICA} <a href="/privacidade">Ler a política</a>
+        </p>
+      )}
       <section className="casa-abertura placa" aria-labelledby="casa-titulo">
         <Cantoneiras />
         <h1 id="casa-titulo">Sua carreira, em inglês</h1>
