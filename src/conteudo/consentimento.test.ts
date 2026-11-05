@@ -9,6 +9,7 @@ import {
   CONSENTIMENTO_VERSAO,
   ERROS_VALEM_A_PARTIR,
   gravaErrosEAtritos,
+  mostraAvisoDaPolitica,
   MUDOU_NO_V2,
   paragrafos,
   textoDoConsentimento,
@@ -41,7 +42,7 @@ describe('textoDoConsentimento', () => {
   });
 
   it('the current version says nobody reads without the box, and where the data goes (step 22)', () => {
-    expect(CONSENTIMENTO_VERSAO).toBe('v3');
+    expect(CONSENTIMENTO_VERSAO).toBe('v4');
     for (const trecho of ['currículo', 'respostas', 'tempo', 'ninguém', 'Pode ler', 'só números', 'Anthropic', 'divulgação', 'Apagar meus dados', 'hello@teamdbsolutions.com', 'cancela a assinatura']) {
       expect(lido()).toContain(trecho);
     }
@@ -63,6 +64,20 @@ describe('textoDoConsentimento', () => {
     }
   });
 
+  it('v4 is v3 with the errors in what is kept, by their kind and screen, never the text (step 26)', () => {
+    const v3 = lido('v3');
+    const v4 = lido('v4');
+    for (const trecho of ['tipo do erro', 'tela', 'nunca', '90 dias']) expect(v4).toContain(trecho);
+    expect(v3).not.toContain('tipo do erro');
+    // Every other paragraph stays as v3 said it.
+    const outros = (versao: string) =>
+      textoDoConsentimento(versao)
+        .map((p) => p.map((t) => t.texto).join(''))
+        .filter((p) => !p.startsWith('O que fica guardado:'));
+    expect(outros('v4')).toEqual(outros('v3'));
+    expect(outros('v4')).toHaveLength(textoDoConsentimento('v3').length - 1);
+  });
+
   it('keeps v1 as it was accepted', () => {
     expect(lido('v1')).not.toContain('TypeSafe');
   });
@@ -71,6 +86,22 @@ describe('textoDoConsentimento', () => {
 describe('aceitouAvaliador', () => {
   it('lets the evaluator run only from v2 on', () => {
     expect([null, 'v1', 'v2', 'v3'].map(aceitouAvaliador)).toEqual([false, false, true, true]);
+  });
+});
+
+describe('mostraAvisoDaPolitica', () => {
+  const antes = new Date(ERROS_VALEM_A_PARTIR.getTime() - 1);
+
+  it('warns a session of an older text until the date, and nobody after it', () => {
+    for (const versao of ['v1', 'v2', 'v3']) {
+      expect(mostraAvisoDaPolitica(versao, antes)).toBe(true);
+      expect(mostraAvisoDaPolitica(versao, ERROS_VALEM_A_PARTIR)).toBe(false);
+    }
+  });
+
+  it('never warns a session that accepted v4, or one that has not accepted anything yet', () => {
+    expect(mostraAvisoDaPolitica('v4', antes)).toBe(false);
+    expect(mostraAvisoDaPolitica(null, antes)).toBe(false);
   });
 });
 
