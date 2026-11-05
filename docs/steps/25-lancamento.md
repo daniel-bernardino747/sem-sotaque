@@ -37,7 +37,23 @@ Anúncio nas redes (o Daniel faz). Candidaturas (18) e o painel das vagas (19), 
 
 ## Notas de implementação
 
-(preencher ao terminar)
+**Estado em 2026-11-04** (o passo segue em andamento; o resto é trabalho de console do Daniel):
+
+- **Item 1, o domínio:** feito. `https://semsotaque.teamdbsolutions.com/health` dá 200 com certificado válido.
+- **Item 2, OAuth de produção:** feito em 2026-11-04. Um OAuth App do GitHub próprio de produção (o "sem-sotaque (dev)" continua para `localhost`) e um cliente Web do Google, com a tela de consentimento publicada. Conferido de fora: o `/entrar` mostra os dois botões, e os dois provedores aceitam o client id e o `redirect_uri` (o Google vai para a escolha de conta, sem `redirect_uri_mismatch`). A volta, a troca do code pela conta, só se testa entrando de verdade (ensaio). **Pegadinha do Coolify:** variável nova só vale depois de um redeploy e marcada para runtime; antes disso, `/api/auth/<provedor>` volta para `/entrar?erro=1`.
+- **Item 3, Stripe em modo real:** feito em 2026-11-04 (o Price, o Portal, `STRIPE_*` no Coolify, e o webhook como "event destination" com os 7 eventos de `docs/deploy.md`). Conferido de fora: um evento sem assinatura válida recebe 400 (sem o `STRIPE_WEBHOOK_SECRET`, seria 500). O Checkout de verdade só se testa logado (ensaio).
+- **`CONTATO_WHATSAPP`:** conferir no Coolify. Sem ela, o link de "mais versões" da vaga abre um e-mail.
+- **Item 4, a página de venda:** feita, com o texto aprovado pelo Daniel em 2026-11-04 (`src/app/page.tsx`, `src/app/pagina-de-venda.test.ts`).
+  - O "antes × depois" é do Rodrigo, a persona inventada (`scripts/personas.ts`, `sabe-os-numeros`). O "antes" vem do `src/llm/__fixtures__/pleno.txt`; o "depois" é a saída real de `npm run gerar -- sabe-os-numeros` de 2026-10-14, sem edição. Saíram as linhas do currículo do Daniel.
+  - Saíram o convite, o "teste fechado e grátis" e o "perdi o meu link". O selo e a barra fixa (`BarraConvite` virou `BarraAssinar`, em `src/app/barra-assinar.tsx`) mandam para `/entrar`, e o paywall fica na casa, depois do login. O `Balao`, o ícone do WhatsApp, deixou de ser usado e saiu.
+  - A página saiu do `noindex`: o beta é público. Se a ideia for segurar a busca até o anúncio, basta pôr de volta o `robots: { index: false, follow: false }` no `metadata`.
+  - Conferida a 360 e a 390 px (Playwright, com o Chrome do sistema): sem rolagem horizontal. O `next dev` com Turbopack quebra no Windows com o `next/font/google` ("queries have exactly one entry"); para ver localmente, use `next dev --webpack`.
+- **Item 6, a mensagem para os testers do v0:** o rascunho aprovado dizia que o link antigo levava tudo para a conta, e isso é verdade, mas a conta sem assinatura cai no paywall (`temAcesso`, `src/assinatura/acesso.ts`): os testers também pagam. **Decidido pelo Daniel em 2026-11-04:** os testers do v0 pagam como todo mundo, sem acesso de cortesia e sem mudança de código. O texto aprovado, que o Daniel manda:
+
+  > Oi! O sem-sotaque mudou: agora ele tem login com GitHub ou Google, e saiu do teste grátis para um beta pago (R$ 99 por trimestre, 7 dias para desistir). O seu link antigo vale uma vez: abra, entre com uma das duas contas, e o que você já fez fica guardado na sua conta. Depois, é só entrar por semsotaque.teamdbsolutions.com. Valeu por ter testado no começo!
+
+- **Item 5, o ensaio em produção:** depende dos itens 2 e 3.
+- **O passo 09** segue em andamento. O ensaio que falta nele (sessões até o PDF, apagar, o tempo de render) cabe dentro do ensaio do item 5.
 
 ## Achados
 

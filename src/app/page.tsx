@@ -7,34 +7,36 @@ import { connection } from 'next/server';
 
 import { modo } from '@/modo';
 
-import { LinksLegais } from './_documento';
+import { CODIGO_FONTE, LinksLegais } from './_documento';
+import { BarraAssinar } from './barra-assinar';
 import { Numeros } from './casa/_telas/resultado';
-import { BarraConvite } from './barra-convite';
 import { Capa } from './capa';
-import { Balao, Onda } from './ornamentos';
-import { linkDeContato } from './contato';
+import { Onda } from './ornamentos';
 
 const DESCRICAO = 'Currículo em inglês para dev brasileiro, sem inventar nenhum número. Por Daniel Bernardino.';
 
-// Kept out of search during the v0: the link reaches people by invitation.
 export const metadata: Metadata = {
   title: 'sem-sotaque',
   description: DESCRICAO,
   openGraph: { title: 'sem-sotaque', description: DESCRICAO, locale: 'pt_BR', type: 'website' },
-  robots: { index: false, follow: false },
 };
 
-/** Daniel's own lines, from his résumé: the same facts, before and after the questions. */
+/**
+ * Rodrigo, the invented persona of `scripts/personas.ts`: "antes" is his
+ * résumé (`src/llm/__fixtures__/pleno.txt`), "depois" is what the real
+ * interrogation and generation wrote for him (`npm run gerar --
+ * sabe-os-numeros`, 2026-10-14), unedited. Never a real person's lines.
+ */
 const PARES = [
   {
-    antes: 'Implementei testes automatizados com Jest e Playwright e um pipeline de CI no GitHub Actions.',
+    antes: 'Implementei a idempotência na API de cobranças, eliminando cobranças duplicadas.',
     depois:
-      "Eliminated regressions in delivered screens (from ~2–3 a month to 0) by introducing the team's first Jest and Playwright tests and a GitHub Actions gate that blocked merges to main below 80% coverage.",
+      'Ended ~30 support tickets a month about duplicate charges, with none in the following 3 months, by making the charges API idempotent.',
   },
   {
-    antes: 'Refiz o módulo de vida útil de ferramentas, com um serviço em Python lendo os sensores da fábrica.',
+    antes: 'Automatizei a geração de relatórios de frete que o financeiro fazia em planilha.',
     depois:
-      "Brought tool-breakage stoppages (~20 min of halted production each) to 0 over ~7 months by redesigning the tool-life module to warn before a tool wears out, fed by a Python service syncing the plant's radio-frequency sensors.",
+      'Cut freight reporting from ~2 days a month of manual spreadsheet work to one click by automating report generation for the finance team.',
   },
 ];
 
@@ -51,12 +53,13 @@ const PASSOS = [
 const ROMANOS = ['I', 'II', 'III'];
 
 /**
- * The door for whoever reaches the domain without a Tester link: the engraved
- * cover (what this is, who makes it), then full-bleed bands parted by a strip
- * of guilloché: how it works, one invented question to show the mechanism, and
- * Daniel's own before × after, and the seal that asks for an invitation
- * on WhatsApp, which a bar pinned to the bottom offers until the seal is in view.
- * No sign-up: links are handed out by invitation.
+ * The sales page (step 25, Q16): the engraved cover (what this is, who makes
+ * it), then full-bleed bands parted by a strip of guilloché: how it works, one
+ * invented question to show the mechanism, an invented person's before ×
+ * after, the beta price, and the free way: the open code on your own machine.
+ * The seal at the foot sends to sign in and subscribe (the paywall is in the
+ * home, after the login), and a bar pinned to the bottom offers the same until
+ * the seal is in view.
  */
 export default async function Home() {
   // MODO=local: one person, on their own machine, has nothing to be sold. Read
@@ -64,8 +67,6 @@ export default async function Home() {
   // and the same image runs both modes.
   await connection();
   if (modo() === 'local') redirect('/casa');
-  const convite = linkDeContato('Oi, Daniel! Vim pelo sem-sotaque e quero um convite para o teste.');
-  const perdiOLink = linkDeContato('Oi, Daniel! Vim pelo sem-sotaque. Perdi o meu link.');
   return (
     <div className="cedula">
       <Capa />
@@ -76,7 +77,7 @@ export default async function Home() {
             referência, e sai com ~. Eu pergunto em português e escrevo em inglês.
           </p>
           <ul className="garantias">
-            <li>Teste fechado e grátis · por convite</li>
+            <li>Beta · R$ 99 por trimestre</li>
           </ul>
         </section>
 
@@ -127,9 +128,10 @@ export default async function Home() {
         <Onda />
         <section aria-labelledby="no-curriculo" className="inicio-faixa">
           <div className="inicio-dentro">
-            <h2 id="no-curriculo">No currículo do Daniel</h2>
+            <h2 id="no-curriculo">Um currículo de verdade, de uma pessoa inventada</h2>
             <p className="dados-intro">
-              Antes: como a gente costuma escrever. Depois: o que saiu das perguntas, com os mesmos fatos.
+              O Rodrigo não existe: é a persona que a gente usa nos testes. As frases do &ldquo;antes&rdquo; são do
+              currículo dele; as do &ldquo;depois&rdquo; saíram da conversa e da geração reais, sem edição.
             </p>
             <ol className="inicio-pares">
               {PARES.map((par) => (
@@ -150,11 +152,36 @@ export default async function Home() {
             </ol>
           </div>
         </section>
+
+        <Onda />
+        <section aria-labelledby="preco" className="inicio-faixa escura">
+          <div className="inicio-dentro inicio-dividida">
+            <div>
+              <h2 id="preco">R$ 99 por trimestre</h2>
+              <p>É o preço do beta, e ele fica travado enquanto a sua assinatura estiver ativa.</p>
+              <ul className="inicio-lista">
+                <li>15 vagas por trimestre, cada uma com até 3 versões</li>
+                <li>Cancela quando quiser: o acesso vai até o fim do trimestre pago</li>
+                <li>Não gostou em 7 dias? Devolvo tudo.</li>
+              </ul>
+            </div>
+            <div className="inicio-resultado">
+              <h2 id="local">Ou rode na sua máquina</h2>
+              <p className="inicio-local">
+                O código é aberto (AGPL-3.0). Com Docker e uma chave da API da Anthropic, roda de graça, só para você,
+                e o gasto com o modelo é seu (perto de US$ 1,15 por currículo).
+              </p>
+              <a className="inicio-codigo" href={CODIGO_FONTE}>
+                Ver o código no GitHub
+              </a>
+            </div>
+          </div>
+        </section>
         <Onda />
       </main>
-      <section id="selo" aria-labelledby="quer-testar" className="selo">
-        <h2 id="quer-testar">Quer fazer o teste?</h2>
-        <a className="selo-botao" href={convite}>
+      <section id="selo" aria-labelledby="assinar" className="selo">
+        <h2 id="assinar">Entrar e assinar</h2>
+        <a className="selo-botao" href="/entrar">
           <svg className="selo-aro" viewBox="0 0 200 200" aria-hidden="true">
             <defs>
               <path id="selo-aro" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" />
@@ -163,24 +190,21 @@ export default async function Home() {
             <circle cx="100" cy="100" r="66" />
             <text>
               <textPath href="#selo-aro" textLength="496" lengthAdjust="spacing">
-                TESTE FECHADO · GRÁTIS · POR CONVITE · TESTE FECHADO · GRÁTIS · POR CONVITE ·
+                BETA · R$ 99 POR TRIMESTRE · 7 DIAS PARA DESISTIR ·
               </textPath>
             </text>
           </svg>
-          <span className="selo-miolo">
-            <Balao />
-            Pedir convite
-          </span>
+          <span className="selo-miolo">Assinar</span>
         </a>
-        <p className="selo-sub">Pelo WhatsApp, direto com o Daniel.</p>
+        <p className="selo-sub">Com o GitHub ou o Google. Sem senha.</p>
       </section>
       <footer>
         <p className="contato">
-          Já tinha um link e perdeu? <a href={perdiOLink}>Me avisa no WhatsApp</a>
+          Já tem conta? <a href="/entrar">Entrar</a>
         </p>
         <LinksLegais />
       </footer>
-      <BarraConvite href={convite} selo="selo" />
+      <BarraAssinar href="/entrar" selo="selo" />
     </div>
   );
 }
