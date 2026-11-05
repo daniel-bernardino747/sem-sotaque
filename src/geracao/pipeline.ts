@@ -589,7 +589,9 @@ export async function gerarCurriculo(sessaoId: string, geracaoId: string, deps: 
     const checagens: Problema[] = checado.violacoes.map((v) => ({ id: idDe(v.onde), origem: 'checagem', regra: v.regra, mensagem: v.mensagem }));
 
     await etapa('render');
+    const inicioRender = performance.now();
     const { pdf, medida } = await renderizar(selection);
+    const duracaoRenderMs = Math.round(performance.now() - inicioRender);
     const usados = new Set(selection.sections.flatMap((s) => s.groups.flatMap((g) => g.entries.map((e) => e.source))));
     const semUso = registrosSemUso(corpus, refs, usados);
     const daMedida = problemasDaMedida(medida, selection, linhas, { semUso, aceitarCurto });
@@ -613,7 +615,7 @@ export async function gerarCurriculo(sessaoId: string, geracaoId: string, deps: 
       ...(mantidas.size ? { mantidas: Object.fromEntries(mantidas) } : {}),
     };
     const aprovada = !bloqueia(violacoes);
-    const selectionId = await gravarTentativa(sessaoId, geracaoId, { json: selection, tentativa, violacoes, aprovada, pdf, medida });
+    const selectionId = await gravarTentativa(sessaoId, geracaoId, { json: selection, tentativa, violacoes, aprovada, pdf, medida, duracaoMs: duracaoRenderMs });
     const resultado: ResultadoGeracao = { selectionId, tentativas: n + 1, aprovada, violacoes };
     if (!melhor || peso(violacoes) < peso(melhor.violacoes)) melhor = { ...resultado, rascunho, selection };
     if (aprovada || n === LIMITE_TENTATIVAS - 1) break;
