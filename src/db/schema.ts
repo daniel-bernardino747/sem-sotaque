@@ -17,6 +17,7 @@ import {
   boolean,
   check,
   customType,
+  index,
   integer,
   jsonb,
   numeric,
@@ -512,6 +513,8 @@ export const renders = pgTable('renders', {
   /** The `measure-resume` output. */
   medida: jsonb('medida').notNull(),
   baixadoEm: timestamp('baixado_em', { withTimezone: true }),
+  /** How long the render took (step 26). Null for the renders before it was measured. */
+  duracaoMs: integer('duracao_ms'),
   createdAt: createdAt(),
 });
 
@@ -724,4 +727,31 @@ export const eventos = pgTable(
       .on(t.sessaoId)
       .where(sql`${t.tipo} = 'link_aberto'`),
   ],
+);
+
+// ---- os erros (passo 26) ----------------------------------------------------
+
+export const origemErro = pgEnum('origem_erro', ['servidor', 'navegador']);
+
+/**
+ * What broke, by its shape only (`src/erros/forma.ts`): never the message nor
+ * the stack, which carry the person's text. Linked to the session and erased
+ * with it by an explicit delete in `apagarSessao` (the session row is never
+ * deleted, so a cascade would not do); null for an error with no session
+ * (OAuth before the sign-in, the Stripe webhook). Every row goes after 90 days.
+ */
+export const erros = pgTable(
+  'erros',
+  {
+    id: id(),
+    sessaoId: uuid('sessao_id').references(() => sessoes.id, { onDelete: 'cascade' }),
+    origem: origemErro('origem').notNull(),
+    /** The stage on the server (`import`, `turno`…), the screen in the browser. */
+    onde: text('onde').notNull(),
+    classe: text('classe').notNull(),
+    codigo: text('codigo'),
+    digest: text('digest'),
+    createdAt: createdAt(),
+  },
+  (t) => [index('erros_created_at').on(t.createdAt)],
 );
