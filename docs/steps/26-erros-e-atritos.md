@@ -62,21 +62,37 @@ Sentry ou qualquer serviço externo de erros: o dado não sai do servidor. Alert
 
 ## Pronto quando
 
-- [ ] Um teste prova que o `registrarErro` descarta a mensagem, o stack e todo campo fora da lista, mesmo com um erro cuja mensagem traz texto de currículo inventado.
-- [ ] Um teste prova que o `apagarSessao` apaga os erros da sessão.
-- [ ] Um teste prova que, no `local`, nada é gravado e `/api/erros` dá 404.
-- [ ] Um teste prova que uma sessão v3 não grava antes da data e grava depois dela, e que uma sessão v4 grava desde o aceite.
-- [ ] `POST /api/erros` recusa um corpo fora do formato, descarta sem sessão e para de gravar depois do limite.
-- [ ] Um erro com mais de 90 dias some na limpeza.
+- [x] Um teste prova que o `registrarErro` descarta a mensagem, o stack e todo campo fora da lista, mesmo com um erro cuja mensagem traz texto de currículo inventado.
+- [x] Um teste prova que o `apagarSessao` apaga os erros da sessão.
+- [x] Um teste prova que, no `local`, nada é gravado e `/api/erros` dá 404.
+- [x] Um teste prova que uma sessão v3 não grava antes da data e grava depois dela, e que uma sessão v4 grava desde o aceite.
+- [x] `POST /api/erros` recusa um corpo fora do formato, descarta sem sessão e para de gravar depois do limite.
+- [x] Um erro com mais de 90 dias some na limpeza.
 - [ ] Forçar um erro no servidor (o import com um arquivo estragado) e outro no navegador faz os dois aparecerem no painel, com a origem, a tela e, quando houver, o mesmo `digest`.
-- [ ] Um render novo grava `duracao_ms`, e o painel mostra a mediana.
+- [x] Um render novo grava `duracao_ms`, e o painel mostra a mediana.
 - [ ] A política, o v4 e a faixa estão no ar com os textos aprovados pelo Daniel, e a data da faixa está anotada nas notas deste passo.
-- [ ] `npm run typecheck` e `npm test` passam.
+- [x] `npm run typecheck` e `npm test` passam.
 
 ## Notas de implementação
 
-(preencher ao terminar)
+**Em andamento: falta o Daniel.** O código está pronto e testado; faltam dois itens do "Pronto quando":
+
+1. **Os textos** (rascunhos, a aprovar antes do deploy): o parágrafo novo do `consentimento-v4.md` ("O que fica guardado"), a faixa (`AVISO_DA_POLITICA` em `src/conteudo/consentimento.ts`) e as duas mudanças em `src/conteudo/privacidade.md` ("Para achar o que quebra" e "os erros" no "Apagar meus dados"). A política também cita o "Tentar de novo"; o v4 e a faixa, não. Decidir se citam.
+2. **A data da faixa:** `ERROS_VALEM_A_PARTIR = 2026-11-13T03:00Z` (13 de novembro, meia-noite de Brasília) supõe deploy em 6/11. Se o deploy atrasar, mover a data para o deploy + 7 dias **antes** de subir, e anotar aqui.
+3. **A prova de ponta a ponta,** em produção: o import com um arquivo que não é PDF e um erro forçado no navegador aparecem no `/admin`, em "Erros e atritos". No `MODO=local` nada é gravado (de propósito), e no dev o login pede o OAuth.
+
+Como ficou:
+
+- **Módulos:** `src/erros/forma.ts` (pura: o erro vira `origem`, `onde`, `classe`, `codigo`, `digest`; `TOKEN` limita classe, código e digest a um token curto), `src/erros/index.ts` (`registrarErro`, que faz o `console.error` com a mensagem e grava só a forma; `registrarForma`; `anotarAtrito`), `src/erros/navegador.ts` (o corpo do `POST /api/erros`), `src/erros/relato.ts` (o lado do navegador, sem import de servidor), `src/erros/requisicao.ts` (o `onRequestError`, chamado de `src/instrumentation.ts` só no runtime `nodejs`) e `src/db/erros.ts` (gravar, limpar, atritos, e o `errosEAtritos` do painel).
+- **Quem grava:** `gravaErrosEAtritos(versao, agora)`: o v4 desde o aceite; v1–v3 (e quem ainda não aceitou) a partir de `ERROS_VALEM_A_PARTIR`. A checagem e o insert rodam numa transação com `for share` na sessão, então nada grava depois do `apagarSessao`.
+- **Navegador:** a tela vai em `onde` (com o UUID trocado por `[id]`) e o tipo (`janela`, `promessa`, `limite`) em `codigo`. O limite de 50 por hora conta só os erros do navegador. O cliente manda no máximo 10 por carga de página. O listener está na `Moldura` (o layout de fato de `/casa`).
+- **`ErroImport` também é gravado** (com o `codigo`: `nao_e_pdf`, `sem_texto`...): é onde a pessoa empaca, e é o "arquivo estragado" do "Pronto quando".
+- **O teto de gasto** é gravado pelo cliente do modelo, com `onde` = a etapa e `codigo: 'teto'`; a geração não grava de novo.
+- **Chat:** o "Tentar de novo" manda `{ tipo: 'continuar', deNovo: true }`; o 409 de turno ocupado vira `turno_ocupado` (um a cada 10 s, conferido no banco).
+- **Painel:** os cartões ("Tentar de novo" por tela, turno ocupado, teto, chamadas do modelo com erro por etapa, render com mediana e máximo), os erros agrupados com o erro do servidor de mesmo `digest`, e as sessões com mais erros. Tudo nos últimos 7 dias.
+- **Migrações:** `0017_erros` (tabela, enum `origem_erro`, `renders.duracao_ms`) e `0018_atritos` (os dois valores novos de `tipo_evento`).
 
 ## Achados
 
-(o que aparecer fora do escopo)
+- O `registrarAtrito` e o limite de 50/h checam e depois inserem: dois pedidos simultâneos podem passar os dois. O efeito é contar um a mais; não vale um lock.
+- `src/db/assinaturas.ts` tem um `console.error` (duas assinaturas vivas na mesma conta) fora da lista do item 3: ficou só no log.
