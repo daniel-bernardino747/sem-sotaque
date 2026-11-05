@@ -75,10 +75,10 @@ Sentry ou qualquer serviço externo de erros: o dado não sai do servidor. Alert
 
 ## Notas de implementação
 
-**Em andamento: falta o Daniel.** O código está pronto e testado; faltam dois itens do "Pronto quando":
+**Em andamento: falta a prova em produção.** Os textos e a data foram aprovados pelo Daniel em 2026-11-05, como estão no PR #8, e o merge é do mesmo dia. **Data da faixa: 13 de novembro de 2026** (`ERROS_VALEM_A_PARTIR`, meia-noite de Brasília).
 
-1. **Os textos** (rascunhos, a aprovar antes do deploy): o parágrafo novo do `consentimento-v4.md` ("O que fica guardado"), a faixa (`AVISO_DA_POLITICA` em `src/conteudo/consentimento.ts`) e as duas mudanças em `src/conteudo/privacidade.md` ("Para achar o que quebra" e "os erros" no "Apagar meus dados"). A política também cita o "Tentar de novo"; o v4 e a faixa, não. Decidir se citam.
-2. **A data da faixa:** `ERROS_VALEM_A_PARTIR = 2026-11-13T03:00Z` (13 de novembro, meia-noite de Brasília) supõe deploy em 6/11. Se o deploy atrasar, mover a data para o deploy + 7 dias **antes** de subir, e anotar aqui.
+1. **Os textos** (aprovados): o parágrafo novo do `consentimento-v4.md` ("O que fica guardado"), a faixa (`AVISO_DA_POLITICA` em `src/conteudo/consentimento.ts`) e as duas mudanças em `src/conteudo/privacidade.md` ("Para achar o que quebra" e "os erros" no "Apagar meus dados"). A política também cita o "Tentar de novo"; o v4 e a faixa, não. Decidir se citam.
+2. **A data da faixa:** `ERROS_VALEM_A_PARTIR = 2026-11-13T03:00Z`, com o deploy em 5/11: 8 dias de aviso.
 3. **A prova de ponta a ponta,** em produção: o import com um arquivo que não é PDF e um erro forçado no navegador aparecem no `/admin`, em "Erros e atritos". No `MODO=local` nada é gravado (de propósito), e no dev o login pede o OAuth.
 
 Como ficou:
