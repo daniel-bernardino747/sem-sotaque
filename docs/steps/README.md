@@ -34,7 +34,7 @@ Um passo por janela. Cada arquivo é autossuficiente: objetivo, o que ler antes,
 | # | Passo | Depende de | Status |
 |---|---|---|---|
 | 20 | [Contas](20-contas.md) | 17 | feito |
-| 21 | [Assinatura](21-assinatura.md) | 20 | feito (com pendência) |
+| 21 | [Assinatura](21-assinatura.md) | 20 | feito |
 | 22 | [Privacidade, termos e o fim para quem paga](22-privacidade.md) | 21 | feito |
 | 23 | [Self-host (`MODO=local`)](23-self-host.md) | 20 | feito (com pendência) |
 | 24 | [O código aberto](24-codigo-aberto.md) | 22, 23 | feito |
