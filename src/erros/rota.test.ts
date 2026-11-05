@@ -19,7 +19,8 @@ vi.mock('next/headers', () => ({
 vi.mock('next/server', async (original) => ({ ...(await original<object>()), connection: async () => {} }));
 
 const { COOKIE_CONTA } = await import('@/conta/acesso');
-const { POST, LIMITE_POR_HORA } = await import('@/app/api/erros/route');
+const { POST } = await import('@/app/api/erros/route');
+const { LIMITE_POR_HORA } = await import('./navegador');
 
 const semBanco = !inject('bancoDisponivel');
 afterAll(fecharDb);
@@ -86,7 +87,7 @@ describe('POST /api/erros', () => {
     ]);
   });
 
-  it.skipIf(semBanco)(`stops recording after ${50} errors in an hour`, async () => {
+  it.skipIf(semBanco)('stops recording after the limit of errors in an hour', async () => {
     const sessaoId = await entrou();
     await db()
       .insert(t.erros)
