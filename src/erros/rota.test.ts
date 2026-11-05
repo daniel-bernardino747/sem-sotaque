@@ -65,6 +65,9 @@ describe('POST /api/erros', () => {
       { ...valido, tela: 'casa' },
       { ...valido, tela: `/${'x'.repeat(300)}` },
       { ...valido, mensagem: 'texto do currículo' },
+      // A class or digest is a token, never a sentence: free text could carry what the person typed.
+      { ...valido, classe: 'Reduzi o fechamento da Padaria' },
+      { ...valido, digest: 'texto do currículo' },
       JSON.stringify({ ...valido, digest: 'x'.repeat(5000) }),
     ]) {
       expect((await POST(pedido(corpo))).status, JSON.stringify(corpo).slice(0, 60)).toBe(400);
@@ -85,6 +88,16 @@ describe('POST /api/erros', () => {
     expect(await errosDa(sessaoId)).toMatchObject([
       { origem: 'navegador', onde: '/casa/vagas/[id]', classe: 'Error', codigo: 'limite', digest: '123456' },
     ]);
+  });
+
+  it.skipIf(semBanco)("the server's errors of the session do not use up the browser's limit", async () => {
+    const sessaoId = await entrou();
+    await db()
+      .insert(t.erros)
+      .values(Array.from({ length: LIMITE_POR_HORA }, () => ({ sessaoId, origem: 'servidor' as const, onde: 'turno', classe: 'Error' })));
+
+    expect((await POST(pedido(valido))).status).toBe(204);
+    expect(await errosDa(sessaoId)).toHaveLength(LIMITE_POR_HORA + 1);
   });
 
   it.skipIf(semBanco)('stops recording after the limit of errors in an hour', async () => {
