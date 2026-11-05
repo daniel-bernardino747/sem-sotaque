@@ -14,9 +14,10 @@
  * novo" (step 14) is a new generation, the next Version.
  */
 import { atualizarGeracao, criarGeracao, ultimaGeracao } from '@/db';
+import { registrarErro } from '@/erros';
+import { ErroLlm } from '@/llm/cliente';
 
 import { gerarCurriculo } from './pipeline';
-import { registrarErro } from '@/erros';
 
 const rodando = new Set<string>();
 const chave = (sessaoId: string, vagaId: string | null) => `${sessaoId}:${vagaId ?? 'geral'}`;
@@ -39,13 +40,10 @@ export async function garantirGeracao(sessaoId: string, opcoes: { deNovo?: boole
     .catch(async (erro) => {
       const mensagem = erro instanceof Error ? erro.message : String(erro);
       // The session id, never the token: the token is the person's credential.
-      await registrarErro({
-        origem: 'servidor',
-        onde: 'geracao',
-        erro,
-        sessaoId,
-        log: `generation ${geracao.versao}${vagaId ? ` of Vaga ${vagaId}` : ''} failed for session ${sessaoId}:`,
-      });
+      const log = `generation ${geracao.versao}${vagaId ? ` of Vaga ${vagaId}` : ''} failed for session ${sessaoId}:`;
+      // The spending cap was recorded by the model client already, at its stage: once is enough.
+      if (erro instanceof ErroLlm && erro.motivo === 'teto') console.error(log, mensagem);
+      else await registrarErro({ origem: 'servidor', onde: 'geracao', erro, sessaoId, log });
       await atualizarGeracao(geracao.id, { erro: mensagem.slice(0, 500), etapa: null }).catch(() => {});
     })
     .finally(() => rodando.delete(k));
