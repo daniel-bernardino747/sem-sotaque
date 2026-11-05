@@ -4,6 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
+import { ErroImport } from '@/import/texto';
 import { ErroLlm } from '@/llm/cliente';
 
 import { CAMPOS_PERMITIDOS, formaDoErro, soPermitidos } from './forma';
@@ -31,6 +32,10 @@ describe('formaDoErro', () => {
   it("keeps the ErroLlm's motivo as the code", () => {
     const erro = new ErroLlm('teto', `session spending cap reached; ${CURRICULO}`);
     expect(formaDoErro({ origem: 'servidor', onde: 'turno', erro })).toMatchObject({ classe: 'ErroLlm', codigo: 'teto' });
+  });
+
+  it("keeps the ErroImport's codigo: what the person sent, never the text", () => {
+    expect(formaDoErro({ origem: 'servidor', onde: 'import', erro: new ErroImport('sem_texto') })).toMatchObject({ classe: 'ErroImport', codigo: 'sem_texto' });
   });
 
   it('keeps an HTTP status, and a short code such as Postgres or Node give', () => {
