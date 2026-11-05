@@ -7,13 +7,13 @@
  * says the session's consent (or the date) allows it. `MODO=local` is the
  * caller's to check (`src/erros`).
  */
-import { and, count, eq, gte, lt } from 'drizzle-orm';
+import { and, count, eq, gte, lt, sql } from 'drizzle-orm';
 
 import { gravaErrosEAtritos } from '../conteudo/consentimento';
 import type { FormaDoErro } from '../erros/forma';
 
 import { db, type Db } from './client';
-import { erros, sessoes } from './schema';
+import { erros, eventos, sessoes } from './schema';
 
 /** How long an error is kept, with or without a session (decision 4). */
 export const ERROS_DURAM_DIAS = 90;
@@ -58,4 +58,39 @@ export async function limparErrosVencidos(agora = new Date()): Promise<void> {
   await db()
     .delete(erros)
     .where(lt(erros.createdAt, new Date(agora.getTime() - ERROS_DURAM_DIAS * DIA_MS)));
+}
+
+export const ATRITOS = ['tentou_de_novo', 'turno_ocupado'] as const;
+export type Atrito = (typeof ATRITOS)[number];
+
+/** `turno_ocupado` counts at most once per this window per session (decision 10): the 409 loop fires dozens. */
+export const TURNO_OCUPADO_JANELA_MS = 10_000;
+
+/**
+ * A friction event (step 26): written as the errors are, under the session's
+ * consent and the date, and `turno_ocupado` at most once per
+ * `TURNO_OCUPADO_JANELA_MS`.
+ */
+export async function registrarAtrito(
+  sessaoId: string,
+  tipo: Atrito,
+  dados: Record<string, unknown> = {},
+  agora = new Date(),
+): Promise<boolean> {
+  return db().transaction(async (tx) => {
+    if (!(await sessaoGravaErros(tx, sessaoId, agora))) return false;
+    if (tipo !== 'turno_ocupado') {
+      await tx.insert(eventos).values({ sessaoId, tipo, dados, createdAt: agora });
+      return true;
+    }
+    const desde = new Date(agora.getTime() - TURNO_OCUPADO_JANELA_MS);
+    const inseridos = await tx.execute(sql`
+      insert into ${eventos} (sessao_id, tipo, dados, created_at)
+      select ${sessaoId}, ${tipo}, ${JSON.stringify(dados)}::jsonb, ${agora.toISOString()}::timestamptz
+      where not exists (
+        select 1 from ${eventos}
+        where ${eventos.sessaoId} = ${sessaoId} and ${eventos.tipo} = ${tipo} and ${eventos.createdAt} > ${desde.toISOString()}::timestamptz)
+      returning id`);
+    return inseridos.length > 0;
+  });
 }
