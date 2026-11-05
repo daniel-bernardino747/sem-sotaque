@@ -278,6 +278,7 @@ describe.skipIf(semBanco)('banco', () => {
         .returning();
       await db().insert(t.fechamento).values({ sessaoId, fundador: true, email: 'a@exemplo.com' });
       await db().insert(t.indicacoes).values({ sessaoId, nome: 'Amigo', contato: '11 9999-0000' });
+      await db().insert(t.erros).values({ sessaoId, origem: 'navegador', onde: '/casa', classe: 'TypeError', digest: 'd1' });
       const [vaga] = await db()
         .insert(t.vagas)
         .values({ sessaoId, texto: 'A vaga colada', empresa: 'Acme', cargo: 'Dev', link: 'https://exemplo.com/v', rascunhos: [] })
@@ -338,6 +339,7 @@ describe.skipIf(semBanco)('banco', () => {
         'affiliations',
         'cabecalhos',
         'chamadas_llm',
+        'erros',
         'eventos',
         'fechamento',
         'geracoes',
