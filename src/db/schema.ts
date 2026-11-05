@@ -145,6 +145,9 @@ export const TIPOS_EVENTO = [
   'vaga_criada',
   'vaga_apagada',
   'vaga_gerada',
+  // Frictions (step 26): `{ onde }` for the first; the second at most once per 10 s per session.
+  'tentou_de_novo',
+  'turno_ocupado',
 ] as const;
 export const tipoEvento = pgEnum('tipo_evento', TIPOS_EVENTO);
 export type TipoEvento = (typeof TIPOS_EVENTO)[number];
