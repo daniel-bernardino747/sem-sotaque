@@ -103,6 +103,21 @@ O mapa:
 | `renders.duracao_ms` | o render do PDF | O render fica abaixo de ~10 s em produção? |
 | `terminou` com `por: 'teto'`, `chamadas_llm.erro`, a última pergunta sem resposta há 24 h | já existiam | Quantas batem no teto? Que etapa do modelo falha? Onde a pessoa desiste? |
 
+## Exportar e importar o Corpus
+
+Decidido num grilling em 2026-11-08 (passo 27). A pessoa leva o próprio Corpus num arquivo, para outra instância ou para quem ela quiser mostrar.
+
+| # | Decisão | Por quê |
+|---|---|---|
+| C1 | **A pessoa exporta e importa o próprio Corpus.** Passar o Corpus a outra pessoa é ela exportar e mandar. O painel não exporta | Mantém a Leitura (Q19): ninguém tira o Corpus de uma Sessão sem a dona |
+| C2 | **No arquivo:** Affiliations, Accomplishments, Metrics, Linhas Originais, o cabeçalho e o estado de cada registro (`forca`, `pulado`, `adiado`, `periodo_confirmado`). **Fora:** Anotações, transcrição, texto do import, Vagas, gerações. Refs no lugar dos ids | Sem a `forca`, a Cobertura volta a zero e o Avaliador roda de novo. A transcrição é o dado mais sensível e não é fonte de nada; Vagas e gerações se refazem a partir do Corpus |
+| C3 | **Só em Corpus vazio**, como uma terceira porta da tela de importar | Substituir deixaria Vagas e Versões apontando para registros apagados; mesclar exige deduplicar |
+| C4 | **Um JSON versionado** (`formato: "sem-sotaque/corpus"`, `versao`), validado por zod com as regras do banco; inválido é recusado inteiro | Como a Selection (`SELECTION_VERSION`): uma forma conferida, lida também fora do app |
+| C5 | **O arquivo é aceito como está; a procedência fica em `importacoes`** (`formato = 'corpus'`, o arquivo inteiro) | Assinar o arquivo não funciona entre instâncias com chaves diferentes; editar o JSON é o mesmo que mentir na conversa |
+| C6 | **Exportar não depende da Assinatura**, e "Apagar meus dados" oferece baixar antes. Importar fica atrás do `temAcesso` | Portabilidade (LGPD, art. 18, V), e "rode local quando quiser" vale para o que a pessoa já contou |
+| C7 | **Depois de importar:** consentimento antes, Sessão em `importou`, a conversa retoma a Fila aberta; o cabeçalho do arquivo entra se não houver um | O mesmo caminho do PDF, sem estado novo |
+| C8 | **O nome real das confidenciais vai no arquivo**, com um aviso na tela de exportar | Sem ele o Corpus não volta inteiro; omitir criaria um segundo formato |
+
 ## Em aberto
 
 - Edição do Corpus pela pessoa.
