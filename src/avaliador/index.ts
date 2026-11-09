@@ -24,6 +24,7 @@ import { randomUUID } from 'node:crypto';
 import {
   atualizarAccomplishment,
   atualizarCobertura,
+  cabecalhoDaSessao,
   corpusDaSessao,
   decisoesDaSessao,
   gravarPlano,
@@ -451,7 +452,7 @@ export const emRetomada = (estado: EstadoSessao | undefined) =>
   estado !== undefined && ESTADOS_SESSAO.indexOf(estado) > ESTADOS_SESSAO.indexOf('interrogando');
 
 async function carregar(sessaoId: string, vagaId: string | null = null) {
-  const [corpus, mensagens, linhas, texto, estado, sessao, vagaLida] = await Promise.all([
+  const [corpus, mensagens, linhas, texto, estado, sessao, vagaLida, cabecalho] = await Promise.all([
     corpusDaSessao(sessaoId),
     mensagensDaSessao(sessaoId, vagaId),
     linhasDaSessao(sessaoId),
@@ -459,9 +460,10 @@ async function carregar(sessaoId: string, vagaId: string | null = null) {
     estadoDoPlano(sessaoId, vagaId),
     sessaoPorId(sessaoId),
     vagaId ? vagaDaSessao(sessaoId, vagaId) : null,
+    cabecalhoDaSessao(sessaoId),
   ]);
   if (vagaId && !vagaLida) throw new Error(`no live Vaga ${vagaId} in this session`);
-  const lista = protegidos({ curriculo: texto, organizacoes: corpus.affiliations.map((a) => a.organizacao), vaga: vagaLida?.empresa });
+  const lista = protegidos({ curriculo: texto, nome: cabecalho?.nome, organizacoes: corpus.affiliations.map((a) => a.organizacao), vaga: vagaLida?.empresa });
   const experiente = mesesDeExperiencia(corpus.affiliations) >= MESES_PARA_IGNORAR_FORMACAO;
   // A Vaga's conversation reads like a retomada: what it opened does not come back in it.
   const retomada = emRetomada(sessao?.estado) || Boolean(vagaId);
