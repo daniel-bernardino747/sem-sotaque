@@ -40,18 +40,18 @@ Substituir ou mesclar um Corpus existente. Exportar Vagas, Anotações ou a tran
 
 ## Pronto quando
 
-- [ ] Ida e volta com uma pessoa inventada: o Corpus exportado, importado numa Sessão nova e exportado de novo é o mesmo (teste do banco).
-- [ ] Depois de importar, a Cobertura e a Fila aberta são as mesmas da Sessão de origem (teste).
-- [ ] Um arquivo com uma Metric `estimado` sem `ancora`, uma confidencial sem descrição, uma data fora de `YYYY-MM`, uma ref solta ou uma `versao` desconhecida é recusado, e nada é gravado (teste).
-- [ ] Importar numa Sessão que já tem Corpus, ou que não consentiu, é recusado (teste).
-- [ ] Uma Conta sem Assinatura baixa o Corpus; uma Conta não baixa o de outra (teste).
-- [ ] No `MODO=local`, o arquivo baixado do hospedado entra pela tela de importar e a conversa continua de onde parou.
-- [ ] O texto da privacidade tem o sim do Daniel.
-- [ ] `npm run typecheck` e `npm test` passam.
+- [x] Ida e volta com uma pessoa inventada: o Corpus exportado, importado numa Sessão nova e exportado de novo é o mesmo (teste do banco).
+- [x] Depois de importar, a Cobertura e a Fila aberta são as mesmas da Sessão de origem (teste).
+- [x] Um arquivo com uma Metric `estimado` sem `ancora`, uma confidencial sem descrição, uma data fora de `YYYY-MM`, uma ref solta ou uma `versao` desconhecida é recusado, e nada é gravado (teste).
+- [x] Importar numa Sessão que já tem Corpus, ou que não consentiu, é recusado (teste).
+- [x] Uma Conta sem Assinatura baixa o Corpus; uma Conta não baixa o de outra (teste).
+- [x] No `MODO=local`, o arquivo baixado do hospedado entra pela tela de importar e a conversa continua de onde parou. (Verificado com o arquivo inventado, no formato que a rota entrega; com um baixado do hospedado de verdade, depois do deploy.)
+- [x] O texto da privacidade tem o sim do Daniel.
+- [x] `npm run typecheck` e `npm test` passam.
 
 ## Notas de implementação
 
-**Status:** em andamento. Falta só o item 6, o texto da privacidade, que espera o sim do Daniel (abaixo). O resto do "Pronto quando" passou.
+**Status:** feito. O texto da privacidade (item 6) foi aprovado pelo Daniel em 2026-11-09, sem versão nova da política nem do consentimento e sem a faixa: só a "Última atualização" mudou. Fica para depois do deploy baixar um Corpus do hospedado e importar no self-host.
 
 **Onde está:**
 - `src/arquivo-do-corpus/index.ts`: o tipo, o schema zod (v1) e `lerArquivoDeCorpus(texto)` → `{ ok, arquivo }` ou `{ ok: false, razao }`, com a razão em português (as mensagens do próprio zod saem pelo `z.locales.pt()`, só nesta leitura). `limites.ts` tem o `LIMITE_ARQUIVO` (5 MB), separado para o formulário do navegador não levar o zod e o schema do banco. `exportar.ts` tem `exportarCorpus(sessaoId, agora?)`, separado do formato porque lê o banco.
@@ -71,14 +71,14 @@ Substituir ou mesclar um Corpus existente. Exportar Vagas, Anotações ou a tran
 
 **Comandos:** `npx vitest run src/arquivo-do-corpus` (o formato, a ida e volta pelo banco e a rota).
 
-**Pendente, o texto da privacidade (item 6), proposta para o Daniel.** Em `src/conteudo/privacidade.md`:
+**O texto da privacidade (item 6), aprovado pelo Daniel em 2026-11-09** e aplicado em `src/conteudo/privacidade.md`:
 
 1. Em "Os seus direitos", trocar o parágrafo por:
    > Pela LGPD (art. 18), você pode confirmar se eu tenho dados seus, ver quais são, corrigir, levar uma cópia, apagar, saber com quem eles passam e retirar um consentimento. Dois são botões na sua página: "Baixar meu Corpus" entrega num arquivo o que você me contou da sua carreira, que entra de novo aqui ou numa instância sua do sem-sotaque, e "Apagar meus dados" apaga tudo. O resto, inclusive uma cópia do que não vai no arquivo (a conversa, as vagas e os currículos), peça por e-mail em hello@teamdbsolutions.com, e eu respondo em até 15 dias. Você também pode reclamar na ANPD, a Autoridade Nacional de Proteção de Dados.
 2. Em "O que eu guardo", no item do currículo, acrescentar: "Se você trouxer o arquivo do seu Corpus, eu guardo o arquivo como veio, para saber de onde o Corpus veio."
 3. Trocar a "Última atualização".
 
-A minha leitura é que isso não pede versão nova do consentimento nem a faixa do passo 26: não há dado novo, só uma cópia do Corpus que já é guardado, e um direito que vira botão. A decisão é do Daniel.
+Sem versão nova do consentimento e sem a faixa do passo 26: não há dado novo, só uma cópia do Corpus que já é guardado, e um direito que vira botão.
 
 ## Achados
 
