@@ -12,7 +12,7 @@
  *
  * `codex exec` is an agent, and what the person typed is in the prompt, so it
  * runs with no way to act (M8): an empty temporary directory, `--sandbox
- * read-only`, `approval_policy="never"`, the shell, image and web tools off,
+ * read-only`, `approval_policy="never"`, every feature that acts off (`FEATURES_QUE_AGEM`), web search off,
  * no user config (`--ignore-user-config`, which also leaves its MCP servers
  * out) and no rules, no project docs (`project_doc_max_bytes=0`), nothing kept
  * (`--ephemeral`), and its own instructions replaced (`model_instructions_file`).
@@ -58,6 +58,97 @@ export type ExecutarCodex = (
 
 const LIMITE_MS = 10 * 60_000;
 
+/**
+ * Every Codex feature (`codex features list`, CLI 0.167.0) that gives the model
+ * a way to act: run or prepare commands, see images, browse, drive the
+ * computer, call apps, plugins, skills or MCP tools, spawn agents, run hooks.
+ * All off, by `--disable`, which fails on a name it does not know: a feature
+ * renamed in a new version breaks the call instead of staying on. The user's
+ * `~/.codex/hooks.json` is not config.toml, so `--ignore-user-config` alone
+ * would leave its hooks in.
+ */
+export const FEATURES_QUE_AGEM = [
+  'shell_tool',
+  'unified_exec_tty',
+  'shell_snapshot',
+  'view_image',
+  'image_generation',
+  'browser_use',
+  'browser_use_external',
+  'browser_use_full_cdp_access',
+  'browser_annotation_api',
+  'computer_use',
+  'in_app_browser',
+  'in_app_local_automation',
+  'apps',
+  'plugins',
+  'remote_plugin',
+  'plugin_sharing',
+  'plugin_discovery_prefetch',
+  'hooks',
+  'multi_agent',
+  'skill_search',
+  'skill_mcp_dependency_install',
+  'tool_suggest',
+  'tool_call_mcp_elicitation',
+  'code_mode_host',
+  'sleep_tool',
+  'workspace_dependencies',
+  'goals',
+  'write_stdin_approval',
+] as const;
+
+/**
+ * What may stay on once `FEATURES_QUE_AGEM` is off, checked against CLI
+ * 0.167.0: the client's own plumbing (auth, transport, compaction, the TUI),
+ * none of it a tool the model calls. `disponibilidade.ts` turns the ChatGPT
+ * option off when anything else is on, so a new version that adds a feature
+ * is off until someone checks it.
+ */
+export const FEATURES_CONFERIDAS = new Set([
+  'api_key_cyber_access_programs',
+  'api_key_model_discovery',
+  'auth_elicitation',
+  'bedrock_setup_wizard',
+  'cli_daybreak',
+  'code_mode_interrupt',
+  'collaboration_modes',
+  'compaction_image_budget',
+  'content_item_kinds',
+  'daemon_auto_start',
+  'deferred_tool_world_state',
+  'enable_request_compression',
+  'fast_mode',
+  'guardian_approval',
+  'guardian_reuse_parent_compaction',
+  'in_app_chat',
+  'in_app_dictation',
+  'in_app_updates',
+  'in_app_voice',
+  'incremental_tools',
+  'instant_interrupt',
+  'item_ids',
+  'mcp_oauth_refresh_coordination',
+  'mentions_v2',
+  'prediction_preserve_parent_tools',
+  'realtime_conversation',
+  'reasoning_effort_override',
+  'resize_all_images',
+  'secret_auth_storage',
+  'sqlite',
+  'steer',
+  'system_proxy_fallback',
+  'terminal_resize_reflow',
+  'tool_search_always_defer_mcp_tools',
+  'tui_app_server',
+  'ultrafast_mode',
+  'unbounded_connection_retries',
+  'worktrees',
+]);
+
+/** `--disable` for each feature that acts: the calls and the availability check use the same. */
+export const DESLIGAR_FEATURES = FEATURES_QUE_AGEM.flatMap((f) => ['--disable', f]);
+
 /** The levels every Codex model takes; the stages that ask for more get `high` (M7). */
 const EFFORTS = new Set(['low', 'medium', 'high']);
 
@@ -75,8 +166,7 @@ export function argumentosCodex(params: Params, modelo: string | null): string[]
     '--sandbox',
     'read-only',
     ...config('approval_policy="never"'),
-    ...config('features.shell_tool=false'),
-    ...config('features.view_image=false'),
+    ...DESLIGAR_FEATURES,
     ...config('web_search="disabled"'),
     ...config('project_doc_max_bytes=0'),
     ...(modelo ? ['-m', modelo] : []),

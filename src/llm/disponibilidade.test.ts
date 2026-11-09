@@ -11,8 +11,7 @@ type Resposta = Awaited<ReturnType<RodarComando>>;
 /** What `codex features list` prints with this app's `--disable`s: only features the app checked stay on. */
 const featuresLimpas = (...extras: string[]): Resposta => ({
   codigo: 0,
-  saida: ['sqlite                 removed   true', 'shell_tool             stable    false', ...extras].join('
-'),
+  saida: ['sqlite                 removed   true', 'shell_tool             stable    false', ...extras].join('\n'),
   erros: '',
 });
 
