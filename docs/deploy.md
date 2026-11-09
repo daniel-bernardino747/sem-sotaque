@@ -28,7 +28,7 @@ A app roda numa VPS com **Coolify**, ao lado de um Postgres 16 do próprio Cooli
 | `TETO_SESSAO_USD` | não | Teto de gasto por sessão. Vazio: US$ 3 |
 | `CONTATO_WHATSAPP` | não | O número que os links de convite da landing e o "chamar no WhatsApp" abrem, só dígitos, com o 55 (`src/app/contato.ts`). Vazio: os links mandam e-mail para hello@teamdbsolutions.com |
 
-`NODE_ENV=production` e `PORT=3000` vêm do `Dockerfile`. `LLM_BACKEND` fica **vazia** em produção (o backend `assinatura` é só local e recusa `NODE_ENV=production`).
+`NODE_ENV=production` e `PORT=3000` vêm do `Dockerfile`. O caminho até o modelo é sempre a API em produção: a tela de Configuração e as assinaturas existem só no `MODO=local` (passo 28).
 
 ## Os apps de OAuth (passo 20)
 

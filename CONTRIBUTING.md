@@ -36,7 +36,7 @@ Os testes que compilam PDF pulam se faltar o Tectonic, o Python com `pypdf` ou o
 - **Dado de pessoa real nunca vai para o git:** nem PDF, nem transcrição, nem dump de banco. Fixtures usam pessoas inventadas.
 - **O modelo nunca escreve LaTeX.** Ele produz uma Selection JSON, e o template fixo renderiza.
 - **Nenhum número sem origem.** Toda Metric tem `origem` e, se estimada, a `ancora`.
-- **Chamada paga ao modelo** (`simular`, `gerar`, o teste de integração do import) gasta a sua chave; diga o custo no PR se ela fizer parte da conferência. No dia a dia, `MODO=local LLM_BACKEND=assinatura` usa a sua assinatura do Claude.
+- **Chamada paga ao modelo** (`simular`, `gerar`, o teste de integração do import) gasta a sua chave; diga o custo no PR se ela fizer parte da conferência. No dia a dia, no `MODO=local`, escolha em "Configuração" a sua assinatura do Claude (ou a do ChatGPT, experimental).
 - Interface e interrogatório em **português**; currículo em **inglês**. A redação segue [`docs/regras-de-redacao.md`](docs/regras-de-redacao.md).
 - Arquivo de código novo começa com o cabeçalho de licença:
 
