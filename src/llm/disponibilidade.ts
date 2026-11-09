@@ -17,10 +17,16 @@ import { spawn } from 'node:child_process';
 
 import type { CaminhoModelo } from '@/db/schema';
 
+import { ambienteDoClaude } from './assinatura';
+import { ambienteDoCodex } from './codex';
+
 export type Estado = { disponivel: true; detalhe: string } | { disponivel: false; motivo: string };
 export type StatusDosCaminhos = Record<CaminhoModelo, Estado>;
 
-export type RodarComando = (bin: string, args: string[]) => Promise<{ codigo: number | null; saida: string; erros: string } | 'nao_instalado'>;
+type Ambiente = Record<string, string | undefined>;
+
+/** `env` is the environment the CLI runs with: the same its calls get, so the check sees what they will. */
+export type RodarComando = (bin: string, args: string[], env?: Ambiente) => Promise<{ codigo: number | null; saida: string; erros: string } | 'nao_instalado'>;
 
 /**
  * The Codex CLI version whose flags were checked against the installed CLI
@@ -31,9 +37,9 @@ export const CODEX_CONFERIDO: string | null = null;
 const NO_DOCKER = 'No Docker, só a chave da API.';
 
 /** A CLI, with a short time limit; a missing binary is "não instalado". */
-export const rodarComando: RodarComando = (bin, args) =>
+export const rodarComando: RodarComando = (bin, args, env) =>
   new Promise((resolve) => {
-    const filho = spawn(bin, args, { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, timeout: 15_000 });
+    const filho = spawn(bin, args, { env: env as NodeJS.ProcessEnv | undefined, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, timeout: 15_000 });
     let saida = '';
     let erros = '';
     filho.stdout.setEncoding('utf8').on('data', (d: string) => (saida += d));
@@ -50,8 +56,9 @@ function estadoDaChave(env: Record<string, string | undefined>): Estado {
     : { disponivel: false, motivo: 'Não há ANTHROPIC_API_KEY no .env.' };
 }
 
-async function estadoDoClaude(rodar: RodarComando): Promise<Estado> {
-  const r = await rodar('claude', ['auth', 'status', '--json']);
+async function estadoDoClaude(rodar: RodarComando, env: Ambiente): Promise<Estado> {
+  // Without the API key, as `claude -p` runs: with it, the CLI reports the key, not the login.
+  const r = await rodar('claude', ['auth', 'status', '--json'], ambienteDoClaude(env));
   if (r === 'nao_instalado') return { disponivel: false, motivo: `O claude não está instalado nesta máquina. ${NO_DOCKER}` };
   let status: { loggedIn?: boolean; authMethod?: string; subscriptionType?: string } = {};
   try {
@@ -74,10 +81,11 @@ const naoMenor = (a: number[], b: number[]) => {
   return true;
 };
 
-async function estadoDoCodex(rodar: RodarComando, conferido: string | null): Promise<Estado> {
-  const versao = await rodar('codex', ['--version']);
+async function estadoDoCodex(rodar: RodarComando, env: Ambiente, conferido: string | null): Promise<Estado> {
+  const semChave = ambienteDoCodex(env);
+  const versao = await rodar('codex', ['--version'], semChave);
   if (versao === 'nao_instalado') return { disponivel: false, motivo: `O codex não está instalado nesta máquina. ${NO_DOCKER}` };
-  const r = await rodar('codex', ['login', 'status']);
+  const r = await rodar('codex', ['login', 'status'], semChave);
   if (r === 'nao_instalado') return { disponivel: false, motivo: `O codex não está instalado nesta máquina. ${NO_DOCKER}` };
   const texto = `${r.saida}\n${r.erros}`;
   if (r.codigo !== 0 || /not logged in/i.test(texto)) return { disponivel: false, motivo: 'O codex está instalado, mas sem login: rode codex login.' };
@@ -101,7 +109,7 @@ export async function statusDosCaminhos(
   const env = deps.env ?? process.env;
   const rodar = deps.rodar ?? rodarComando;
   const conferido = deps.codexConferido === undefined ? CODEX_CONFERIDO : deps.codexConferido;
-  const [claude, codex] = await Promise.all([estadoDoClaude(rodar), estadoDoCodex(rodar, conferido)]);
+  const [claude, codex] = await Promise.all([estadoDoClaude(rodar, env), estadoDoCodex(rodar, env, conferido)]);
   return { api: estadoDaChave(env), assinatura_claude: claude, assinatura_chatgpt: codex };
 }
 
