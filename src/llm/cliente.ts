@@ -23,12 +23,13 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { BetaMessageStreamParams } from '@anthropic-ai/sdk/resources/beta/messages/messages';
 
-import { gastoDaSessao, registrarChamadaLlm, vagasCriadas } from '../db';
+import { configuracaoDaInstancia, gastoDaSessao, registrarChamadaLlm, vagasCriadas } from '../db';
 import { registrarErro, type ErroARegistrar } from '../erros';
-import { modo } from '../modo';
 import type { etapaLlm } from '../db/schema';
 
 import { criarSdkAssinatura } from './assinatura';
+import { sdkPorConfiguracao, type Fabricas } from './caminho';
+import { criarSdkCodex } from './codex';
 import { custoUsd, MODELO_MAIS_CARO, MODELO_PADRAO, PREFIXO_ASSINATURA, PRECOS, type Uso } from './precos';
 
 export type Etapa = (typeof etapaLlm.enumValues)[number];
@@ -248,30 +249,27 @@ export function tetoDoAmbiente(valor = process.env.TETO_SESSAO_USD): number {
   return valor && Number.isFinite(n) && n > 0 ? n : TETO_SESSAO_PADRAO_USD;
 }
 
+/** The real SDK of each way: the API (one client), `claude -p`, `codex exec`. */
+const fabricasReais: Fabricas = {
+  api: () => (api ??= new Anthropic({ maxRetries: 0, timeout: 5 * 60_000 })),
+  claude: () => criarSdkAssinatura(),
+  codex: (modelo) => criarSdkCodex(modelo),
+};
+// The client does its own single retry, so it can record each attempt.
+let api: Anthropic | undefined;
+
 /**
- * The SDK `LLM_BACKEND` picks: `assinatura` is the Claude subscription of
- * whoever runs the app, through `claude -p` (src/llm/assinatura.ts); anything
- * else the real API (`ANTHROPIC_API_KEY`). The subscription is for `MODO=local`
- * only (step 23): a personal subscription cannot serve an app for other
- * people, so the hosted mode refuses it whatever `NODE_ENV` says.
+ * The SDK of the configuration (step 28): in `MODO=local`, each call goes the
+ * way the configuration screen saved; hosted, always the API, never read.
  */
-export function sdkDoAmbiente(env: Record<string, string | undefined> = process.env): SdkMinimo {
-  if (env.LLM_BACKEND !== 'assinatura') {
-    // The client does its own single retry, so it can record each attempt.
-    return new Anthropic({ maxRetries: 0, timeout: 5 * 60_000 });
-  }
-  if (modo(env) !== 'local') {
-    throw new Error(
-      'LLM_BACKEND=assinatura needs MODO=local: a personal Claude subscription cannot serve an app for other people (Anthropic terms); unset it here.',
-    );
-  }
-  return criarSdkAssinatura();
+export function sdkDaConfiguracao(): SdkMinimo {
+  return sdkPorConfiguracao({ ler: configuracaoDaInstancia, fabricas: fabricasReais });
 }
 
-/** The app's client: the SDK `LLM_BACKEND` picks, recording into `chamadas_llm`, capped per session. */
+/** The app's client: the way the configuration says, recording into `chamadas_llm`, capped per session. */
 export function llm(): ClienteLlm {
   padrao ??= criarClienteLlm({
-    sdk: sdkDoAmbiente(),
+    sdk: sdkDaConfiguracao(),
     registrar: registrarChamadaLlm,
     gastoDaSessao,
     vagasCriadas,

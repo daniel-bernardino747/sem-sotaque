@@ -20,7 +20,7 @@
  *   played. Each of them ends as a record or on a company's stack, and the
  *   general conversation gets no message. It runs without `TYPESAFE_API_KEY`
  *   too (the evaluator falls back to its fixed rules), so
- *   `MODO=local LLM_BACKEND=assinatura` spends nothing.
+ *   `MODO=local` with a subscription chosen on the configuration screen spends nothing.
  *
  * The evaluator's decisions go into the transcript, between the messages.
  * `--sem-jev` runs a general persona without the Jev on purpose (step 23: what
@@ -41,6 +41,7 @@ import {
   confirmarVaga,
   corpusDaSessao,
   criarTester,
+  configuracaoDaInstancia,
   criarVaga,
   custoDaSessao,
   decisoesDaSessao,
@@ -61,7 +62,9 @@ import { contagemPorRegistro, ehFormacao, LIMITE_DURO, progresso } from '../src/
 import { numeroFoiDito, numerosDaFala } from '../src/interrogatorio/numeros';
 import { maisDeUmaPergunta } from '../src/interrogatorio/pergunta';
 import { encerrarInterrogatorio, turno, type Entrada } from '../src/interrogatorio/turno';
-import { criarClienteLlm, type LinhaChamada, sdkDoAmbiente } from '../src/llm/cliente';
+import type { CaminhoModelo } from '../src/db/schema';
+import { NOME_DO_CAMINHO } from '../src/llm/caminho';
+import { criarClienteLlm, type LinhaChamada, sdkDaConfiguracao } from '../src/llm/cliente';
 import { lerEGravar } from '../src/vaga';
 
 import { PERSONAS, type Persona } from './personas';
@@ -83,10 +86,10 @@ else if (!process.env.TYPESAFE_API_KEY && !persona.vaga) {
 }
 if (!process.env.TYPESAFE_API_KEY) console.warn('sem TYPESAFE_API_KEY: o avaliador roda pelas regras de reserva');
 
-// The persona's calls: the backend `LLM_BACKEND` picks, counted here and not in `chamadas_llm`.
+// The persona's calls: the way the configuration says (step 28), counted here and not in `chamadas_llm`.
 const chamadasPersona: LinhaChamada[] = [];
 const clientePersona = criarClienteLlm({
-  sdk: sdkDoAmbiente(),
+  sdk: sdkDaConfiguracao(),
   registrar: async (linha) => chamadasPersona.push(linha),
 });
 
@@ -229,6 +232,8 @@ function transcricao(dados: {
   tempos: number[];
   sessaoId: string;
   motivoDoFim: string;
+  /** The way the calls went (step 28). */
+  caminho: CaminhoModelo;
 }): string {
   const { fechadas, total } = progresso(dados.corpus);
   const custoTotal = dados.custo.reduce((s, c) => s + c.custoUsd, 0);
@@ -248,7 +253,7 @@ function transcricao(dados: {
     })(),
     `- Turnos: ${dados.tempos.length}; tempo por turno: média ${(media(dados.tempos) / 1000).toFixed(1)} s, mediana ${((ordenados[Math.floor(ordenados.length / 2)] ?? 0) / 1000).toFixed(1)} s, máximo ${((ordenados.at(-1) ?? 0) / 1000).toFixed(1)} s`,
     dados.custo.some((c) => c.naoMedidas > 0)
-      ? '- Custo da sessão (chamadas_llm): não medido (pela assinatura, LLM_BACKEND=assinatura)'
+      ? `- Custo da sessão (chamadas_llm): não medido (pela ${NOME_DO_CAMINHO[dados.caminho]})`
       : `- Custo da sessão (chamadas_llm): US$ ${custoTotal.toFixed(4)}`,
     ...dados.custo.map(
       (c) =>
@@ -376,7 +381,7 @@ async function main() {
   const pasta = path.join('storage', 'simulacoes');
   mkdirSync(pasta, { recursive: true });
   const arquivo = path.join(pasta, `${nome}-${new Date().toISOString().replace(/[:.]/g, '-')}.md`);
-  writeFileSync(arquivo, transcricao({ mensagens, decisoes, cobertura: plano?.cobertura ?? 0, corpus, checagens, custo, custoPersona, tempos, sessaoId, motivoDoFim }));
+  writeFileSync(arquivo, transcricao({ mensagens, decisoes, cobertura: plano?.cobertura ?? 0, corpus, checagens, custo, custoPersona, tempos, sessaoId, motivoDoFim, caminho: (await configuracaoDaInstancia()).caminho }));
 
   console.log(`\n${motivoDoFim}; ${((Date.now() - inicio) / 60_000).toFixed(1)} min`);
   for (const c of checagens) console.log(`${c.ok ? 'OK    ' : 'FALHOU'} ${c.nome}${c.detalhes.length ? `: ${c.detalhes.join(' | ')}` : ''}`);
