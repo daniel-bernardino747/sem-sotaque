@@ -47,14 +47,20 @@ export type Executar = (invocacao: Invocacao) => Promise<{ codigo: number | null
 
 const LIMITE_MS = 10 * 60_000;
 
+/** The child's environment without an Anthropic key: with one, `claude -p` bills the API. */
+export function ambienteDoClaude<T extends Record<string, string | undefined>>(env: T): T {
+  const limpo = { ...env };
+  delete limpo.ANTHROPIC_API_KEY;
+  delete limpo.ANTHROPIC_AUTH_TOKEN;
+  return limpo;
+}
+
 /** The real `claude` binary, in an empty temporary directory so no project file is near it. */
 export const executarClaude: Executar = ({ args, sistema, prompt }) => {
   const pasta = mkdtempSync(path.join(tmpdir(), 'sem-sotaque-assinatura-'));
   const arquivo = path.join(pasta, 'sistema.md');
   writeFileSync(arquivo, sistema);
-  const env = { ...process.env };
-  delete env.ANTHROPIC_API_KEY;
-  delete env.ANTHROPIC_AUTH_TOKEN;
+  const env = ambienteDoClaude(process.env);
 
   return new Promise((resolve, reject) => {
     const filho = spawn(process.env.CLAUDE_BIN ?? 'claude', [...args, '--system-prompt-file', arquivo], {
