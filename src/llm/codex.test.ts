@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import { criarClienteLlm, type LinhaChamada } from './cliente';
 import {
   ambienteDoCodex,
+  comandoDoCodex,
   argumentosCodex,
   criarSdkCodex,
   linhaDeComando,
@@ -150,5 +151,32 @@ describe('o codex exec', () => {
     const ultima = JSON.stringify({ texto: '', chamadas: [{ name: 'rm_rf', input: {} }] });
     const p = processoFalso({ codigo: 0, saida: SUCESSO, erros: '', ultima });
     await expect(responder(criarSdkCodex(null, p.executar))).rejects.toThrow(/codex exec called a tool it was not given/);
+  });
+});
+
+describe('onde está o codex', () => {
+  const existe = (...arquivos: string[]) => (p: string) => arquivos.includes(p.replaceAll('\', '/'));
+
+  it('runs CODEX_BIN when it is set', () => {
+    expect(comandoDoCodex({ env: { CODEX_BIN: '/opt/codex' }, plataforma: 'win32', existe: existe() })).toEqual({ bin: '/opt/codex', prefixo: [] });
+  });
+
+  it('elsewhere, the codex on the PATH', () => {
+    expect(comandoDoCodex({ env: { PATH: '/usr/bin' }, plataforma: 'linux', existe: existe() })).toEqual({ bin: 'codex', prefixo: [] });
+  });
+
+  it('on Windows, the npm package’s script through node, never a .cmd through a shell', () => {
+    const r = comandoDoCodex({
+      env: { Path: 'C:/Windows;C:/nvm4w/nodejs' },
+      plataforma: 'win32',
+      existe: existe('C:/nvm4w/nodejs/codex.cmd', 'C:/nvm4w/nodejs/node_modules/@openai/codex/bin/codex.js'),
+      node: 'C:/node.exe',
+    });
+    expect(r.bin).toBe('C:/node.exe');
+    expect(r.prefixo.map((p) => p.replaceAll('\', '/'))).toEqual(['C:/nvm4w/nodejs/node_modules/@openai/codex/bin/codex.js']);
+  });
+
+  it('on Windows without the npm package, the plain name (and "não instalado" if it is not there)', () => {
+    expect(comandoDoCodex({ env: { Path: 'C:/Windows' }, plataforma: 'win32', existe: existe() })).toEqual({ bin: 'codex', prefixo: [] });
   });
 });
