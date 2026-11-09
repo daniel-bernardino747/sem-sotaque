@@ -139,7 +139,7 @@ async function main() {
     `- Tentativas: ${r.tentativas}; entregue: a tentativa ${entregue!.selection.tentativa}; aprovada: ${r.aprovada ? 'sim' : 'não (marcada para revisão)'}`,
     `- Tempo: ${duracao.toFixed(0)} s (${Object.entries(tempos).map(([e, ms]) => `${e} ${(ms / 1000).toFixed(0)} s`).join(', ')})`,
     chamadas.some((c) => c.modelo.startsWith(PREFIXO_ASSINATURA))
-      ? '- Custo: não medido (pela assinatura, LLM_BACKEND=assinatura)'
+      ? `- Custo: não medido (pela ${chamadas.some((c) => c.modelo.startsWith(`${PREFIXO_ASSINATURA}codex:`)) ? 'assinatura do ChatGPT' : 'assinatura do Claude'})`
       : `- Custo: US$ ${custo.toFixed(4)}`,
     ...[...porEtapa].map(([e, x]) => `  - ${e}: ${x.chamadas} chamadas, US$ ${x.custo.toFixed(4)}, ${(x.ms / 1000).toFixed(0)} s`),
     `- Preenchimento insuficiente: ${violacoes.preenchimento_insuficiente ? `sim (${violacoes.preenchimento_insuficiente.fill}%: ${violacoes.preenchimento_insuficiente.motivo})` : 'não'}`,

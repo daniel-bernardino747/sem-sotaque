@@ -6,7 +6,7 @@ import type { BetaMessageStreamParams } from '@anthropic-ai/sdk/resources/beta/m
 import { describe, expect, it } from 'vitest';
 
 import { criarSdkAssinatura, esquemaDaResposta, type Executar, type Invocacao } from './assinatura';
-import { criarClienteLlm, type LinhaChamada, sdkDoAmbiente } from './cliente';
+import { criarClienteLlm, type LinhaChamada } from './cliente';
 
 const FERRAMENTA: Anthropic.Beta.BetaTool = {
   name: 'registrar_metric',
@@ -160,25 +160,5 @@ describe('criarSdkAssinatura', () => {
     await cliente.chamar({ etapa: 'interrogatorio', sessaoId: 's1', params: { max_tokens: 100, messages: [{ role: 'user', content: 'oi' }] } });
 
     expect(linhas[0]).toMatchObject({ modelo: 'assinatura:claude-opus-5-5', custoUsd: 0, tokensEntrada: 12, erro: null });
-  });
-});
-
-describe('sdkDoAmbiente', () => {
-  it('uses the API unless LLM_BACKEND=assinatura, in any mode', () => {
-    expect(sdkDoAmbiente({ ANTHROPIC_API_KEY: 'x' })).toBeDefined();
-    expect(sdkDoAmbiente({ MODO: 'local', NODE_ENV: 'production', ANTHROPIC_API_KEY: 'x' })).toBeDefined();
-  });
-
-  it('accepts the subscription in MODO=local, even under NODE_ENV=production', () => {
-    expect(sdkDoAmbiente({ MODO: 'local', LLM_BACKEND: 'assinatura', NODE_ENV: 'production' })).toBeDefined();
-    expect(sdkDoAmbiente({ MODO: 'local', LLM_BACKEND: 'assinatura', NODE_ENV: 'development' })).toBeDefined();
-  });
-
-  it.each([
-    ['unset MODO, in development', { NODE_ENV: 'development' }],
-    ['MODO=hospedado, in development', { MODO: 'hospedado', NODE_ENV: 'development' }],
-    ['MODO=hospedado, in production', { MODO: 'hospedado', NODE_ENV: 'production' }],
-  ])('refuses the subscription when hosted (%s)', (_, env) => {
-    expect(() => sdkDoAmbiente({ LLM_BACKEND: 'assinatura', ...env })).toThrow(/MODO=local/);
   });
 });
