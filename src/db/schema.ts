@@ -81,7 +81,8 @@ export const tipoAccomplishment = pgEnum('tipo_accomplishment', TIPOS_ACCOMPLISH
 
 export const importancia = pgEnum('importancia', ['alta', 'normal', 'baixa']);
 export const origemMetric = pgEnum('origem_metric', ['afirmado', 'estimado', 'qualitativo']);
-export const formatoImportacao = pgEnum('formato_importacao', ['pdf', 'texto', 'linkedin']);
+/** `corpus`: a Corpus file (step 27), kept whole in `texto_extraido` as the provenance. */
+export const formatoImportacao = pgEnum('formato_importacao', ['pdf', 'texto', 'linkedin', 'corpus']);
 export const papelMensagem = pgEnum('papel_mensagem', ['assistente', 'pessoa', 'sistema']);
 export const etapaLlm = pgEnum('etapa_llm', [
   'import',

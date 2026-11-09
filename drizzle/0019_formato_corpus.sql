@@ -1,0 +1,1 @@
+ALTER TYPE "public"."formato_importacao" ADD VALUE 'corpus';
