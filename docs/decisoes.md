@@ -48,7 +48,7 @@ O link da pessoa deixa de ser um fluxo de mão única e vira a **casa** dela: de
 | P19 | **Um aceite à parte para as vagas**, pedido no primeiro "Achei uma vaga". Quem recusa segue sem vagas e pode aceitar depois | O texto da vaga e o que sai dele é dado novo |
 | P20 | **Painel:** a seção "Vagas" por sessão e as etapas das vagas (criadas → com currículo → enviadas → em entrevista → proposta) com o custo por vaga | "Enviei → Em entrevista" é a primeira métrica de resultado do produto |
 | P23 | **Rotas de verdade** (`/conversa`, `/curriculo`, `/vagas/nova`, `/vagas/<id>`). Vaga de outra sessão dá 404 | Voltar e recarregar funcionam |
-| P26 | **Desenvolvido pela assinatura** (`LLM_BACKEND=assinatura`, só local); rodada contra a API só com o custo à vista | |
+| P26 | **Desenvolvido pela assinatura** (`LLM_BACKEND=assinatura`, só local); rodada contra a API só com o custo à vista. Desde o passo 28 a escolha é na tela de configuração (M3–M4) | |
 
 ## Parte 3: o hospedado e o código aberto
 
@@ -61,7 +61,7 @@ Quem quiser paga e usa o hospedado; quem quiser roda na própria máquina, gasta
 | Q3, Q7 | **Repo público com um commit inicial**; o histórico anterior não vem. Os passos vêm como roadmap aberto | Os passos são o que um contribuidor com Claude Code sabe seguir |
 | Q4–Q5 | **AGPL-3.0, com CLA** ([`CONTRIBUTING.md`](../CONTRIBUTING.md)) | Open-source de verdade; quem hospedar uma cópia modificada abre o código. O CLA guarda o direito de relicenciar |
 | Q6 | **Um código só, `MODO=local\|hospedado`.** No `local`: um usuário, sem login, sem consentimento, sem pagamento, sem landing, sem painel | Fork privado diverge; o código da cobrança não esconde nada |
-| Q8, Q21 | **Self-host:** Docker oficial com `ANTHROPIC_API_KEY`, e nativo para contribuidor (aceita `LLM_BACKEND=assinatura`). O guarda da assinatura olha o `MODO`, não o `NODE_ENV`. **O Jev é opcional:** sem `TYPESAFE_API_KEY`, o avaliador roda pelas regras fixas | Tectonic e poppler no Windows são atrito; o README explica por que o Docker não usa a assinatura |
+| Q8, Q21 | **Self-host:** Docker oficial com `ANTHROPIC_API_KEY`, e nativo para contribuidor (aceita `LLM_BACKEND=assinatura`; desde o passo 28, a escolha da tela, M3). O guarda da assinatura olha o `MODO`, não o `NODE_ENV`. **O Jev é opcional:** sem `TYPESAFE_API_KEY`, o avaliador roda pelas regras fixas | Tectonic e poppler no Windows são atrito; o README explica por que o Docker não usa a assinatura |
 | Q9 | **No hospedado, o app paga a API.** Sem BYOK | Guardar chave de terceiro é alvo; quem tem chave prefere o self-host |
 | Q10, Q23 | **O hospedado e o código aberto saem no mesmo dia,** o quanto antes. Ordem: contas → assinatura → privacidade → self-host e código aberto → lançamento. Candidaturas (18) e o painel das vagas (19) vêm depois | "Pague ou rode local" é a história do anúncio. Currículo geral e por vaga já entregam a promessa |
 | Q11, Q14 | **Login com GitHub e Google** (sem magic link) e **assinatura recorrente** com renovação e cancelamento | O público é dev; sem e-mail transacional |
@@ -117,6 +117,23 @@ Decidido num grilling em 2026-11-08 (passo 27). A pessoa leva o próprio Corpus 
 | C6 | **Exportar não depende da Assinatura**, e "Apagar meus dados" oferece baixar antes. Importar fica atrás do `temAcesso` | Portabilidade (LGPD, art. 18, V), e "rode local quando quiser" vale para o que a pessoa já contou |
 | C7 | **Depois de importar:** consentimento antes, Sessão em `importou`, a conversa retoma a Fila aberta; o cabeçalho do arquivo entra se não houver um | O mesmo caminho do PDF, sem estado novo |
 | C8 | **O nome real das confidenciais vai no arquivo**, com um aviso na tela de exportar | Sem ele o Corpus não volta inteiro; omitir criaria um segundo formato |
+
+## A configuração do modelo
+
+Decidido num grilling em 2026-11-09 (passo 28). No `MODO=local`, a pessoa escolhe numa tela por onde o app fala com o modelo, e a assinatura do ChatGPT entra ao lado da do Claude.
+
+| # | Decisão | Por quê |
+|---|---|---|
+| M1 | **"Assinatura do GPT" é o plano do ChatGPT pelo `codex exec`**, logado no host. Não a API da OpenAI | É a irmã do `claude -p` (passo 12) e entra pelo mesmo `SdkMinimo`. A API da OpenAI mexeria no hospedado, nos preços e no painel |
+| M2 | **O mesmo tratamento da assinatura do Claude:** só no `MODO=local` (o hospedado recusa sempre), só no caminho nativo (nunca na imagem Docker), um parágrafo no README com os termos da OpenAI, custo não medido | Os termos da OpenAI são tão cinzentos quanto os da Anthropic para um app local que chama o CLI; a mesma cerca para os dois |
+| M3 | **Uma tela de configuração** (`/casa/configuracao`), só no `MODO=local`, com o link no rodapé. Três opções, gravadas no banco: chave da API da Anthropic (a padrão), assinatura do Claude, assinatura do ChatGPT. Vale a partir da próxima chamada, sem reiniciar | Escolher por variável de ambiente pede reiniciar e não se vê; no hospedado o caminho é sempre a API |
+| M4 | **O `LLM_BACKEND` sai.** O banco é a única fonte, e o `simular` e o `gerar` leem a mesma escolha | Duas fontes para a mesma escolha deixam alguém ver "assinatura" na tela e gastar a API |
+| M5 | **A chave continua no `.env`.** A tela só diz se ela existe; sem ela, a opção fica desabilitada | Um segredo no banco vai para todo `pg_dump`, e a tela não tem login no `MODO=local` |
+| M6 | **A tela confere cada assinatura** (`claude auth status`, `codex login status`) ao abrir e ao salvar; o indisponível fica desabilitado com o motivo (no Docker, "não instalado"). **Uma assinatura que cai nunca cai sozinha para a API:** a chamada falha, dizendo o caminho | Cair para a API é gastar sem a pessoa pedir |
+| M7 | **O GPT usa o modelo padrão do Codex**, com um campo opcional para fixar outro (`-m`). O `effort` de cada etapa vira o esforço de raciocínio do Codex. As chamadas ficam como `assinatura:codex:<modelo>` | Um id de modelo da OpenAI não se confere aqui como o da Anthropic (skill `claude-api`) |
+| M8 | **O Codex roda sem poder agir:** pasta vazia, sandbox somente leitura, nenhuma aprovação, sem shell, sem MCP nem `AGENTS.md`, a resposta forçada pelo `--output-schema`. **Se o CLI instalado não deixar desligar algo disso, a opção fica indisponível** | O `codex exec` é um agente, e o que a pessoa digita entra no prompt; com ferramentas, isso vira instrução com acesso à máquina |
+| M9 | **Os prompts não mudam;** a opção sai como "experimental", e as personas do `simular` e o `gerar` rodam pelas duas assinaturas, comparados nas notas | O que protege o currículo (schema, checagens, Crítico) não depende do modelo; bifurcar prompts antes de medir dobra a manutenção |
+| M10 | **A configuração é da instância:** "Apagar meus dados" não a apaga, ela não vai no Arquivo do Corpus e não aparece no painel | Ela não guarda nada do que a pessoa contou |
 
 ## Em aberto
 
