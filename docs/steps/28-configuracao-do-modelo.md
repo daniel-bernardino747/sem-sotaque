@@ -90,3 +90,4 @@ O caminho da API não foi chamado, para não gastar.
 ## Achados
 
 - O CLI do Claude, logado na assinatura, passa a responder `authMethod: "api_key"` quando a `ANTHROPIC_API_KEY` está no ambiente. Por isso a conferência da tela roda sem a chave, como a chamada.
+- `src/conta/paywall.test.ts` ("subscribed, the routes open") falhou uma vez na rodada cheia, e passou sozinho três vezes e na rodada seguinte. Ele não toca em nada deste passo; parece corrida entre arquivos no banco de testes compartilhado.
