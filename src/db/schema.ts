@@ -107,6 +107,14 @@ export const FORCAS = ['forte', 'medio', 'fraco'] as const;
 export const forca = pgEnum('forca', FORCAS);
 export type Forca = (typeof FORCAS)[number];
 export const pagaria = pgEnum('pagaria', ['sim', 'nao', 'talvez']);
+/**
+ * How the app reaches the model in `MODO=local` (step 28): the Anthropic API
+ * key, the Claude subscription (`claude -p`) or the ChatGPT one (`codex exec`).
+ * Hosted, it is always the API, and this is never read.
+ */
+export const CAMINHOS_MODELO = ['api', 'assinatura_claude', 'assinatura_chatgpt'] as const;
+export const caminhoModelo = pgEnum('caminho_modelo', CAMINHOS_MODELO);
+export type CaminhoModelo = (typeof CAMINHOS_MODELO)[number];
 
 /** The language a Vaga is written in. The résumé is always in English; `pt` gets a warning (P16). */
 export const LINGUAS_VAGA = ['en', 'pt', 'outra'] as const;
