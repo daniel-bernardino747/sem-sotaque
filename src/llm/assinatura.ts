@@ -245,28 +245,45 @@ export function mensagemDaSaida(
     const status = json.api_error_status ? ` (${json.api_error_status})` : '';
     throw new Error(`claude -p failed${status}: ${(json.result ?? erros).trim().slice(0, 500)}`);
   }
-  const resposta = json.structured_output;
-  if (!resposta || typeof resposta.texto !== 'string') {
-    throw new Error('claude -p answered without the structured output');
+  return mensagemEstruturada(json.structured_output, params, {
+    quem: 'claude -p',
+    modelo: `${PREFIXO_ASSINATURA}${params.model ?? MODELO_PADRAO}`,
+    uso: json.usage ?? {},
+  });
+}
+
+/**
+ * A subscription's structured reply (`{ texto, chamadas }`, the schema of
+ * `esquemaDaResposta`) as the message the API would have sent: one `text`
+ * block and a `tool_use` per call. A call to a tool it was not given throws.
+ * `quem` names the CLI in the errors; `modelo` is what `chamadas_llm` records.
+ */
+export function mensagemEstruturada(
+  resposta: unknown,
+  params: Params,
+  { quem, modelo, uso }: { quem: string; modelo: string; uso: Partial<Anthropic.Beta.BetaUsage> },
+): Anthropic.Beta.BetaMessage {
+  const estruturada = resposta as { texto?: unknown; chamadas?: unknown } | null | undefined;
+  if (!estruturada || typeof estruturada.texto !== 'string') {
+    throw new Error(`${quem} answered without the structured output`);
   }
   const nomes = new Set(ferramentasDo(params).map((t) => t.name));
-  const chamadas = resposta.chamadas ?? [];
-  if (!Array.isArray(chamadas)) throw new Error('claude -p answered with "chamadas" not a list');
+  const chamadas = estruturada.chamadas ?? [];
+  if (!Array.isArray(chamadas)) throw new Error(`${quem} answered with "chamadas" not a list`);
   const usos = chamadas.map((c: unknown): Anthropic.Beta.BetaToolUseBlock => {
     const { name, input } = (c ?? {}) as { name?: unknown; input?: unknown };
     if (typeof name !== 'string' || !nomes.has(name) || !input || typeof input !== 'object') {
-      throw new Error(`claude -p called a tool it was not given, or without input: ${JSON.stringify(c).slice(0, 200)}`);
+      throw new Error(`${quem} called a tool it was not given, or without input: ${JSON.stringify(c).slice(0, 200)}`);
     }
     return { type: 'tool_use', id: `toolu_assinatura_${randomUUID().replaceAll('-', '')}`, name, input };
   });
 
-  const texto = resposta.texto.trim();
-  const uso = json.usage ?? {};
+  const texto = estruturada.texto.trim();
   return {
     id: `msg_assinatura_${randomUUID().replaceAll('-', '')}`,
     type: 'message',
     role: 'assistant',
-    model: `${PREFIXO_ASSINATURA}${params.model ?? MODELO_PADRAO}`,
+    model: modelo,
     content: [...(texto ? [{ type: 'text' as const, text: texto, citations: null }] : []), ...usos],
     stop_reason: usos.length ? 'tool_use' : 'end_turn',
     stop_sequence: null,
