@@ -7,9 +7,10 @@
 # MODO=local (one user, no login, no paywall, no consent, no landing, no
 # /admin) and the migrations applied on every start.
 #
-# Through the API key only: whether a Claude subscription token may drive the
-# app from a container is not clear in Anthropic's terms (docs/steps/23-self-host.md),
-# so LLM_BACKEND is pinned empty here and the image has no `claude` CLI. The
+# Through the API key only: whether a Claude or ChatGPT subscription may drive
+# the app from a container is not clear in either's terms (docs/steps/23-self-host.md,
+# step 28), so the image has neither the `claude` nor the `codex` CLI, and the
+# Configuração screen shows both subscriptions as not installed. The
 # subscription path is the native one, in README.md.
 name: sem-sotaque-local
 
@@ -21,7 +22,6 @@ services:
         required: true
     environment:
       MODO: local
-      LLM_BACKEND: ""
       DATABASE_URL: postgres://sem_sotaque:sem_sotaque@db:5432/sem_sotaque
       APP_URL: http://localhost:3000
     # tsx straight, not `npm run db:migrate`: that one reads a .env file, which

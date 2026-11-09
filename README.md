@@ -25,6 +25,8 @@ A primeira subida constrói a imagem (uns minutos: ela aquece o cache do Tectoni
 
 **E a assinatura do Claude (Pro/Max)?** Não pelo Docker. A política da Anthropic diz que quem constrói um produto usa chave da API e que terceiros não podem oferecer o login do Claude.ai nem os limites da assinatura no próprio app; ela também diz que você pode usar o Claude Code, sem modificação, com a sua própria assinatura. Um app local, só seu, que chama o `claude -p` cai entre as duas frases, e nenhum texto da Anthropic trata desse caso ([legal-and-compliance](https://code.claude.com/docs/en/legal-and-compliance), [Agent SDK](https://code.claude.com/docs/en/agent-sdk/overview), lidos em 2026-11-03). Por isso o Docker usa só a chave. O caminho nativo, abaixo, aceita a assinatura para quem quiser assumir essa leitura.
 
+**E a assinatura do ChatGPT?** A mesma coisa, pelo [Codex CLI](https://learn.chatgpt.com/docs/non-interactive-mode) (`codex exec`). Os termos da OpenAI proíbem usar os serviços "de forma automática ou programática", e o próprio Codex já faz pedidos assim; nenhum texto da OpenAI trata de um app local, só seu, que chama o CLI sem modificação ([termos de serviço](https://openai.com/policies/service-terms/), [discussão no repo do Codex](https://github.com/openai/codex/discussions/8338), lidos em 2026-11-09). Fica só no caminho nativo, como a do Claude, e é experimental: os textos foram afinados para o Claude.
+
 ## Rodar nativo (para quem vai contribuir)
 
 Precisa de:
@@ -44,7 +46,12 @@ MODO=local npm run dev           # e abra http://localhost:3000
 
 **No Windows,** o `next dev` com Turbopack (o padrão) quebra ao baixar as fontes do Google ("next/font/google queries have exactly one entry"). Use o webpack: `MODO=local npx next dev --webpack`. No Linux, o Turbopack funciona (conferido em 2026-11-05, dentro da imagem).
 
-**Pela assinatura do Claude, em vez da chave:** com o [Claude Code](https://code.claude.com) instalado e logado no host (`claude auth status`), rode `MODO=local LLM_BACKEND=assinatura npm run dev`. O app chama o `claude -p` sem modificação, e as chamadas aparecem com "custo não medido". Leia o parágrafo sobre a política acima antes: o uso é seu, sob os termos da Anthropic. O hospedado recusa a assinatura sempre, com qualquer `NODE_ENV`.
+**Pela assinatura, em vez da chave:** em "Configuração", no rodapé da sua página (só no `MODO=local`), escolha por onde o app fala com o modelo: a chave da API da Anthropic (o padrão), a assinatura do Claude ou a do ChatGPT. A escolha fica no banco e vale da próxima pergunta em diante. A tela confere cada caminho nesta máquina e desliga, com o motivo, o que não está pronto:
+
+- **Claude:** o [Claude Code](https://code.claude.com) instalado e logado com a conta do Claude.ai (`claude auth status`). O app chama o `claude -p` sem modificação.
+- **ChatGPT:** o [Codex CLI](https://learn.chatgpt.com/docs/non-interactive-mode) instalado e logado com a conta do ChatGPT (`codex login status`). O app chama o `codex exec` sem poder rodar nada: sandbox somente leitura, sem shell, sem a sua configuração do Codex (e com ela os MCP), sem `AGENTS.md`, sem a sua chave da OpenAI no ambiente. O modelo é o padrão do seu Codex, a não ser que você fixe outro na tela.
+
+As chamadas pelas assinaturas aparecem com "custo não medido", e uma assinatura que cai nunca passa sozinha para a chave da API. Leia os parágrafos sobre a política acima antes: o uso é seu, sob os termos da Anthropic e da OpenAI. No hospedado a tela não existe e o caminho é sempre a API.
 
 `npm test` roda os testes (os que precisam de Tectonic, do Python ou do banco pulam se faltar), e `npm run typecheck` confere os tipos. Os comandos todos estão no `CLAUDE.md`.
 
@@ -52,9 +59,8 @@ MODO=local npm run dev           # e abra http://localhost:3000
 
 | Variável | Para quê |
 |---|---|
-| `ANTHROPIC_API_KEY` | A chave da API. Obrigatória, a não ser que `LLM_BACKEND=assinatura` |
+| `ANTHROPIC_API_KEY` | A chave da API. Obrigatória no Docker e no hospedado; no nativo, só se a Configuração usar a chave |
 | `MODO` | `local` ou `hospedado` (vazio é `hospedado`). O `docker-compose.local.yml` já põe `local` |
-| `LLM_BACKEND` | `assinatura` usa o `claude -p` logado no host, e só vale com `MODO=local`. Vazio: a API |
 | `TYPESAFE_API_KEY` | O Jev, o classificador do avaliador. Opcional (abaixo) |
 | `DATABASE_URL` | O Postgres. No Docker, o compose já define |
 | `APP_URL` | O endereço que vai nos links. Vazio: `http://localhost:3000` |

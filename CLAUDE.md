@@ -18,14 +18,14 @@ A implementação é feita **um passo por janela**. Ao abrir uma sessão:
 - **O modelo nunca escreve LaTeX.** Ele produz uma Selection JSON, e o template fixo renderiza (`docs/decisoes.md`, decisão 14).
 - **Nenhum número sem origem.** Toda Metric tem `origem` e, se estimada, a `ancora`. Todo bullet cita o seu `accomplishment_id`.
 - **IDs de modelo e preços:** carregue a skill `claude-api` antes de escolher um modelo ou de escrever a tabela de custo. Nunca de memória.
-- **Chamada paga ao modelo** (`simular`, `gerar`, o teste de integração do import): diga o custo estimado antes de rodar. No dia a dia, use `LLM_BACKEND=assinatura`.
+- **Chamada paga ao modelo** (`simular`, `gerar`, o teste de integração do import): diga o custo estimado antes de rodar. No dia a dia, escolha a assinatura do Claude na Configuração do `MODO=local`.
 - **Next.js 16:** confira a documentação da versão instalada antes de usar uma API do framework. Ela mudou em relação ao que o treino conhece.
 - Interface e interrogatório em **português**; currículo em **inglês**.
 
 ## Comandos
 
 - `npm run dev` / `npm run build` / `npm start`: o app Next.js
-- `docker compose up -d db` + `MODO=local LLM_BACKEND=assinatura npm run dev` (com `docker compose stop app`: o container ocupa a 3000 e usa a API): o app local pela assinatura do Claude (`claude -p`, logado no host), sem gastar API. Vale também para `simular` e `gerar`. Só com `MODO=local` (o `hospedado`, padrão, recusa com qualquer `NODE_ENV`), e as chamadas ficam com "custo não medido" no painel
+- `docker compose up -d db` + `MODO=local npm run dev` (com `docker compose stop app`: o container ocupa a 3000 e usa a API), e em "Configuração", no rodapé, a assinatura do Claude (`claude -p`, logado no host) ou a do ChatGPT (`codex exec`, experimental): o app local sem gastar API (passo 28). A escolha fica no banco e vale também para `simular` e `gerar`. Só no `MODO=local` (no `hospedado`, padrão, a tela dá 404 e o caminho é sempre a API), e as chamadas ficam com "custo não medido" no painel
 - `docker compose -f docker-compose.local.yml up`: o self-host (`MODO=local`, migrações na subida), só pela `ANTHROPIC_API_KEY` do `.env`. No `local`, a casa abre em `localhost:3000` sem login; landing, `/entrar` e o OAuth vão para `/casa`, e `/admin` dá 404. Atenção: `MODO=local` no dev também desliga o login
 - `npm test`: vitest. Os testes que compilam PDF pulam se faltar Tectonic, Python com `pypdf` ou `pdftotext`; os do banco pulam se não houver Postgres (`docker compose up -d db`). Eles usam o banco `sem_sotaque_test` (ou `TEST_DATABASE_URL`), criado e migrado sozinho
 - `npm run typecheck`: `tsc --noEmit`
