@@ -38,6 +38,7 @@ export function Chat({
   casa,
   curriculo,
   rotuloVolta = 'Voltar para a minha página',
+  local = false,
 }: {
   endereco: string;
   inicial: MensagemDoChat[];
@@ -55,6 +56,8 @@ export function Chat({
   curriculo: string;
   /** What the way back to `casa` says. */
   rotuloVolta?: string;
+  /** `MODO=local`: a failure may be a subscription that fell (step 28), fixed in the configuration. */
+  local?: boolean;
 }) {
   const [mensagens, setMensagens] = useState(inicial);
   const [escrevendo, setEscrevendo] = useState<string | null>(null);
@@ -208,6 +211,11 @@ export function Chat({
       {erro && (
         <div role="alert" className="erro">
           <p>{erro}</p>
+          {local && (
+            <p>
+              Se o modelo está numa assinatura, confira se ela continua logada em <a href="/casa/configuracao">Configuração</a>.
+            </p>
+          )}
           <button type="button" onClick={() => void enviar({ tipo: 'continuar', deNovo: true })}>
             Tentar de novo
           </button>

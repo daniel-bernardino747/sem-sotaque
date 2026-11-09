@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { ErroDoCaminho, sdkPorConfiguracao, type Configuracao, type Fabricas } from './caminho';
+import { caminhoDoErro, ErroDoCaminho, sdkPorConfiguracao, type Configuracao, type Fabricas } from './caminho';
 import type { SdkMinimo } from './cliente';
 
 type Params = Parameters<SdkMinimo['beta']['messages']['stream']>[0];
@@ -103,5 +103,8 @@ describe('sdkPorConfiguracao', () => {
     expect((erro as ErroDoCaminho).caminho).toBe('assinatura_chatgpt');
     expect((erro as Error).message).toMatch(/assinatura do ChatGPT.*not logged in/);
     expect(c.api.chamadas).toHaveLength(0);
+    // The screens read the way back from the message the client keeps.
+    expect(caminhoDoErro((erro as Error).message)).toBe('assinatura_chatgpt');
+    expect(caminhoDoErro('rate limited')).toBeNull();
   });
 });

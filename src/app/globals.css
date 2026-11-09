@@ -345,6 +345,17 @@ button.discreto {
   text-underline-offset: 0.2em;
 }
 
+/* A link that sits among the footer's discreet buttons ("Configuração", step 28). */
+a.discreto {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--e-2) 0;
+  color: var(--suave);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 /* ---- forms ---- */
 
 .envio {

@@ -4,6 +4,7 @@
 import { emRetomada, estadoDoPlano, opcoesDaOferta } from '@/avaliador';
 import { mensagensDaSessao, type Sessao } from '@/db';
 import { progressoDaSessao } from '@/interrogatorio/turno';
+import { modo } from '@/modo';
 
 import { terminar } from '../acoes';
 import { Chat, type MensagemDoChat } from './chat';
@@ -52,6 +53,7 @@ export async function Conversa({ sessao, vagaId = null }: { sessao: Sessao; vaga
       casa={daVaga ?? '/casa'}
       rotuloVolta={daVaga ? 'Voltar para a vaga' : undefined}
       curriculo={`/casa/curriculo`}
+      local={modo() === 'local'}
     />
   );
 }

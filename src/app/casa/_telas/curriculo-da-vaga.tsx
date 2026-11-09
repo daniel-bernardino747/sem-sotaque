@@ -20,6 +20,7 @@ import { enviarCabecalhoDaVaga, gerarParaAVaga, tentarDeNovoNaVaga } from '../ac
 import { BotaoEnviar } from './botao-enviar';
 import { FormularioCabecalho } from './cabecalho';
 import { dataCurta } from './resultado';
+import { AvisoDoCaminho } from './aviso-do-caminho';
 
 /** Each requirement with the résumé line that answers it, as the page prints it, or null ("não coberto"). */
 export function linhasDoMapa(mapa: LinhaDoMapaGravada[], requisitos: Requisito[], selection: Selection): { requisito: Requisito; linha: string | null }[] {
@@ -61,6 +62,7 @@ export async function CurriculoDaVaga({ sessaoId, vaga, principal }: { sessaoId:
       <section className="curriculo-da-vaga" aria-labelledby="curriculo-da-vaga">
         <h2 id="curriculo-da-vaga">Não consegui terminar o currículo desta vaga</h2>
         <p>Algo deu errado do meu lado, não do seu. Tudo o que você me contou está guardado.</p>
+        <AvisoDoCaminho erro={geracao.erro} />
         <form action={tentarDeNovoNaVaga.bind(null, vaga.id)} className="seguir">
           <BotaoEnviar pendente="Recomeçando…" className="primario">
             Tentar de novo
