@@ -29,7 +29,7 @@ Um passo por janela. Cada arquivo é autossuficiente: objetivo, o que ler antes,
 | 18 | [Candidaturas](18-candidaturas.md) | 17, 25 | pendente |
 | 19 | [O painel das vagas](19-painel-das-vagas.md) | 18 | pendente |
 
-**Parte 3: o beta pago e o código aberto** (grilling de 2026-10-28; decisões em [`decisoes.md`](../decisoes.md#parte-3-o-hospedado-e-o-código-aberto)). Vem antes do 18 e do 19. O 26 entra antes do ensaio do 09 e do 25, e o 09 fecha antes do 25.
+**Parte 3: o beta pago e o código aberto** (grilling de 2026-10-28; decisões em [`decisoes.md`](../decisoes.md#parte-3-o-hospedado-e-o-código-aberto)). Vem antes do 18 e do 19. O 26 entra antes do ensaio do 09 e do 25, o 27 antes do 25 (grilling de 2026-11-08; decisões em [`decisoes.md`](../decisoes.md#exportar-e-importar-o-corpus)), e o 09 fecha antes do 25.
 
 | # | Passo | Depende de | Status |
 |---|---|---|---|
@@ -38,8 +38,9 @@ Um passo por janela. Cada arquivo é autossuficiente: objetivo, o que ler antes,
 | 22 | [Privacidade, termos e o fim para quem paga](22-privacidade.md) | 21 | feito |
 | 23 | [Self-host (`MODO=local`)](23-self-host.md) | 20 | feito (com pendência) |
 | 24 | [O código aberto](24-codigo-aberto.md) | 22, 23 | feito |
-| 25 | [Lançamento do beta](25-lancamento.md) | 09, 21, 22, 24, 26 | em andamento |
+| 25 | [Lançamento do beta](25-lancamento.md) | 09, 21, 22, 24, 26, 27 | em andamento |
 | 26 | [Erros e atritos no uso](26-erros-e-atritos.md) | 22 | em andamento |
+| 27 | [Exportar e importar o Corpus](27-exportar-importar-corpus.md) | 22, 23 | pendente |
 
 **Paralelo possível:** 03 ∥ 04 (depois do 02) e 08 ∥ 06/07 (depois do 05). Na Parte 3: 23 ∥ 21/22 (depois do 20), e o 09 a qualquer momento. Janelas paralelas devem trabalhar em worktrees ou branches separados e não editar o mesmo arquivo de schema ao mesmo tempo. Se um passo precisar de coluna nova, ele cria uma migração própria.
 
