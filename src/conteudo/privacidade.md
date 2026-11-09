@@ -1,6 +1,6 @@
 # Política de privacidade
 
-Última atualização: 5 de novembro de 2026.
+Última atualização: 9 de novembro de 2026.
 
 **Antes de tudo:** eu escrevi este texto a partir do que o sem-sotaque faz de verdade, mas ele ainda não passou por um advogado. Se algo aqui não bater com o que o app faz, vale o que for mais protetor para você, e eu corrijo o texto.
 
@@ -11,7 +11,7 @@ O sem-sotaque é feito pelo Daniel, dev, e mantido pela DB Software Solutions LT
 ## O que eu guardo
 
 - **Da sua conta:** o nome, o e-mail e o identificador que o GitHub ou o Google me passam quando você entra. Não recebo a sua senha.
-- **O currículo que você envia:** o texto tirado dele. O arquivo em si é descartado logo depois de ler.
+- **O currículo que você envia:** o texto tirado dele. O arquivo em si é descartado logo depois de ler. Se você trouxer o arquivo do seu Corpus, eu guardo o arquivo como veio, para saber de onde o Corpus veio.
 - **A conversa:** as perguntas, as suas respostas e quanto tempo você levou para responder cada uma.
 - **O que sai da conversa:** as suas experiências, os números e de onde veio cada um, e os currículos em inglês, em PDF, com as versões antigas.
 - **O cabeçalho do currículo:** nome, e-mail, LinkedIn, GitHub e cidade, como você digitou.
@@ -51,7 +51,7 @@ Enquanto a sua conta existir. "Apagar meus dados", no rodapé de toda tela, apag
 
 ## Os seus direitos
 
-Pela LGPD (art. 18), você pode confirmar se eu tenho dados seus, ver quais são, corrigir, pedir uma cópia, apagar, saber com quem eles passam e retirar um consentimento. Apagar é o botão; o resto, peça por e-mail em hello@teamdbsolutions.com, e eu respondo em até 15 dias. Você também pode reclamar na ANPD, a Autoridade Nacional de Proteção de Dados.
+Pela LGPD (art. 18), você pode confirmar se eu tenho dados seus, ver quais são, corrigir, levar uma cópia, apagar, saber com quem eles passam e retirar um consentimento. Dois são botões na sua página: "Baixar meu Corpus" entrega num arquivo o que você me contou da sua carreira, que entra de novo aqui ou numa instância sua do sem-sotaque, e "Apagar meus dados" apaga tudo. O resto, inclusive uma cópia do que não vai no arquivo (a conversa, as vagas e os currículos), peça por e-mail em hello@teamdbsolutions.com, e eu respondo em até 15 dias. Você também pode reclamar na ANPD, a Autoridade Nacional de Proteção de Dados.
 
 ## Idade
 
