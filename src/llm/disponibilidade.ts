@@ -18,7 +18,7 @@ import { spawn } from 'node:child_process';
 import type { CaminhoModelo } from '@/db/schema';
 
 import { ambienteDoClaude } from './assinatura';
-import { ambienteDoCodex, DESLIGAR_FEATURES, FEATURES_CONFERIDAS } from './codex';
+import { ambienteDoCodex, comandoDoCodex, DESLIGAR_FEATURES, FEATURES_CONFERIDAS } from './codex';
 
 export type Estado = { disponivel: true; detalhe: string } | { disponivel: false; motivo: string };
 export type StatusDosCaminhos = Record<CaminhoModelo, Estado>;
@@ -39,7 +39,9 @@ const NO_DOCKER = 'No Docker, só a chave da API.';
 /** A CLI, with a short time limit; a missing binary is "não instalado". */
 export const rodarComando: RodarComando = (bin, args, env) =>
   new Promise((resolve) => {
-    const filho = spawn(bin, args, { env: env as NodeJS.ProcessEnv | undefined, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, timeout: 15_000 });
+    // The Codex on Windows is its npm script through node (`comandoDoCodex`).
+    const { bin: real, prefixo } = bin === 'codex' ? comandoDoCodex() : { bin, prefixo: [] };
+    const filho = spawn(real, [...prefixo, ...args], { env: env as NodeJS.ProcessEnv | undefined, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true, timeout: 15_000 });
     let saida = '';
     let erros = '';
     filho.stdout.setEncoding('utf8').on('data', (d: string) => (saida += d));

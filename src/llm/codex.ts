@@ -196,6 +196,30 @@ export function ambienteDoCodex<T extends Record<string, string | undefined>>(en
   return limpo;
 }
 
+/**
+ * How to start the Codex: `CODEX_BIN` if set; on Windows, the npm package's
+ * own script run by this `node` (the `codex.cmd` shim needs a shell, and the
+ * arguments carry quotes and JSON); elsewhere, `codex` from the PATH.
+ */
+export function comandoDoCodex(
+  deps: {
+    env?: Record<string, string | undefined>;
+    plataforma?: NodeJS.Platform;
+    existe?: (caminho: string) => boolean;
+    node?: string;
+  } = {},
+): { bin: string; prefixo: string[] } {
+  const env = deps.env ?? process.env;
+  if (env.CODEX_BIN) return { bin: env.CODEX_BIN, prefixo: [] };
+  if ((deps.plataforma ?? process.platform) !== 'win32') return { bin: 'codex', prefixo: [] };
+  const existe = deps.existe ?? existsSync;
+  for (const pasta of (env.Path ?? env.PATH ?? '').split(';').filter(Boolean)) {
+    const script = path.join(pasta, 'node_modules', '@openai', 'codex', 'bin', 'codex.js');
+    if (existe(path.join(pasta, 'codex.cmd')) && existe(script)) return { bin: deps.node ?? process.execPath, prefixo: [script] };
+  }
+  return { bin: 'codex', prefixo: [] };
+}
+
 /** The real `codex` binary, in an empty temporary directory so no project file is near it. */
 export const executarCodex: ExecutarCodex = ({ args, sistema, esquema, prompt }) => {
   const pasta = mkdtempSync(path.join(tmpdir(), 'sem-sotaque-codex-'));
@@ -208,7 +232,8 @@ export const executarCodex: ExecutarCodex = ({ args, sistema, esquema, prompt })
   writeFileSync(arquivos.esquema, JSON.stringify(esquema));
 
   return new Promise((resolve, reject) => {
-    const filho = spawn(process.env.CODEX_BIN ?? 'codex', linhaDeComando(args, arquivos), {
+    const { bin, prefixo } = comandoDoCodex();
+    const filho = spawn(bin, [...prefixo, ...linhaDeComando(args, arquivos)], {
       cwd: pasta,
       env: ambienteDoCodex(process.env),
       stdio: ['pipe', 'pipe', 'pipe'],
