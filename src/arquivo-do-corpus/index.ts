@@ -20,8 +20,7 @@ import { FORCAS, TIPOS_ACCOMPLISHMENT, TIPOS_AFFILIATION } from '@/db/schema';
 export const FORMATO = 'sem-sotaque/corpus';
 /** Bump it on a change of shape, and migrate the older ones in `lerArquivoDeCorpus`. */
 export const VERSAO = 1;
-/** Larger than any Corpus a conversation builds; the form's own limit is the Server Action's. */
-export const LIMITE_ARQUIVO = 5 * 1024 * 1024;
+export { LIMITE_ARQUIVO } from './limites';
 
 const MES = /^[0-9]{4}-(0[1-9]|1[0-2])$/;
 const mes = z.string().regex(MES, 'precisa ser um mês no formato AAAA-MM').nullable();

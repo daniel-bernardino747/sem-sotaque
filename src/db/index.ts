@@ -382,6 +382,25 @@ export async function gravarImportacao(
   });
 }
 
+/** The session has some record: "Baixar meu Corpus" has something to give. */
+export async function temCorpus(sessaoId: string): Promise<boolean> {
+  const [linha] = await db().execute<{ tem: boolean }>(sql`
+    select exists (select 1 from ${affiliations} where ${affiliations.sessaoId} = ${sessaoId})
+        or exists (select 1 from ${accomplishments} where ${accomplishments.sessaoId} = ${sessaoId}) as tem`);
+  return Boolean(linha?.tem);
+}
+
+/** How the session's Corpus came in (the first import), or null before any. */
+export async function formatoDaImportacao(sessaoId: string): Promise<(typeof importacoes.$inferSelect)['formato'] | null> {
+  const [linha] = await db()
+    .select({ formato: importacoes.formato })
+    .from(importacoes)
+    .where(eq(importacoes.sessaoId, sessaoId))
+    .orderBy(asc(importacoes.createdAt))
+    .limit(1);
+  return linha?.formato ?? null;
+}
+
 /** A Corpus file that did not pass the check: `message` is the reason, in Portuguese, for the person. */
 export class ErroArquivoDoCorpus extends Error {
   constructor(razao: string) {

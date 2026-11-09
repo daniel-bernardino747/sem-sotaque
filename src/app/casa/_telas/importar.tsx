@@ -1,16 +1,19 @@
 // Copyright (C) 2026 DB Software Solutions LTDA
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { corpusDaSessao, type Corpus, type Sessao } from '@/db';
+import { corpusDaSessao, formatoDaImportacao, type Corpus, type Sessao } from '@/db';
 import { fraseDoImport } from '@/import/resumo';
 
-import { comecarPerguntas, enviarCurriculo } from '../acoes';
+import { comecarPerguntas, enviarArquivoDoCorpus, enviarCurriculo } from '../acoes';
 import { BotaoEnviar } from './botao-enviar';
+import { EnvioArquivoDoCorpus } from './envio-arquivo-do-corpus';
 import { EnvioCurriculo } from './envio-curriculo';
 
 /**
  * The import screen: the form at `consentiu`, the draft Corpus it found at
- * `importou`. Nothing is edited here; the interrogation corrects it.
+ * `importou`. Nothing is edited here; the interrogation corrects it. A Corpus
+ * file (step 27) is a third door, only here: a session past `consentiu` has a
+ * Corpus, and a file never goes over one.
  */
 export async function Importar({ sessao }: { sessao: Sessao }) {
   if (sessao.estado === 'consentiu') {
@@ -22,21 +25,36 @@ export async function Importar({ sessao }: { sessao: Sessao }) {
           perguntas sobre cada coisa.
         </p>
         <EnvioCurriculo enviar={enviarCurriculo} />
+        <p className="ou">ou</p>
+        <EnvioArquivoDoCorpus enviar={enviarArquivoDoCorpus} />
       </>
     );
   }
 
-  const corpus = await corpusDaSessao(sessao.id);
+  const [corpus, formato] = await Promise.all([corpusDaSessao(sessao.id), formatoDaImportacao(sessao.id)]);
+  const doArquivo = formato === 'corpus';
   return (
     <>
-      <h1>{fraseDoImport(corpus.affiliations.length, corpus.accomplishments.length)}</h1>
-      <p>
-        Ainda é um rascunho: quase nada aqui tem número. É isso que as perguntas vão buscar. Se algo
-        estiver errado ou faltando, me diga durante as perguntas.
-      </p>
+      {doArquivo ? (
+        <>
+          <h1>Seu Corpus chegou</h1>
+          <p>
+            Está como você deixou: as experiências, o que você fez e os números. A conversa continua do que ficou em
+            aberto.
+          </p>
+        </>
+      ) : (
+        <>
+          <h1>{fraseDoImport(corpus.affiliations.length, corpus.accomplishments.length)}</h1>
+          <p>
+            Ainda é um rascunho: quase nada aqui tem número. É isso que as perguntas vão buscar. Se algo
+            estiver errado ou faltando, me diga durante as perguntas.
+          </p>
+        </>
+      )}
       <Encontrado corpus={corpus} />
       <form action={comecarPerguntas} className="seguir">
-        <BotaoEnviar pendente="Abrindo…">Começar as perguntas</BotaoEnviar>
+        <BotaoEnviar pendente="Abrindo…">{doArquivo ? 'Continuar a conversa' : 'Começar as perguntas'}</BotaoEnviar>
       </form>
     </>
   );

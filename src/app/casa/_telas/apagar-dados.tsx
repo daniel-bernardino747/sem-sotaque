@@ -27,15 +27,19 @@ export function avisoDeApagar({ comConta, cancelaAssinatura }: { comConta: boole
  * "Apagar meus dados", in two steps on the page itself (no browser dialog): the
  * first tap only says what will happen, the second erases. With a live
  * subscription, it says first that the subscription is canceled now (decision 5).
+ * With a Corpus, it offers the file before erasing (step 27, C6).
  */
 export function ApagarDados({
   apagar,
   cancelaAssinatura,
   comConta,
+  baixarAntes = false,
 }: {
   apagar: (anterior: EstadoApagar, form: FormData) => Promise<EstadoApagar>;
   cancelaAssinatura: boolean;
   comConta: boolean;
+  /** The session has a Corpus to take. */
+  baixarAntes?: boolean;
 }) {
   const [confirmando, setConfirmando] = useState(false);
   const [estado, acao] = useActionState(apagar, { erro: false });
@@ -53,6 +57,12 @@ export function ApagarDados({
       <p id="apagar-titulo">
         <strong>Apagar tudo?</strong> {avisoDeApagar({ comConta, cancelaAssinatura })}
       </p>
+      {baixarAntes && (
+        <p>
+          Antes, se quiser, <a href="/casa/exportar/arquivo" download>baixe o seu Corpus</a>: com o arquivo, você traz
+          tudo de volta aqui ou numa instância sua.
+        </p>
+      )}
       {estado.erro && (
         <p className="erro" role="alert">
           Não deu para cancelar a assinatura, então nada foi apagado. Tente de novo.

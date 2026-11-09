@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { LinksLegais } from '@/app/_documento';
 import { Faixa } from '@/app/marca';
 import { apagarCancelaAssinatura } from '@/assinatura/cancelar';
-import { assinaturaDaConta } from '@/db';
+import { assinaturaDaConta, sessaoDaConta, temCorpus } from '@/db';
 import { contaAtual } from '@/conta/servidor';
 import { modo } from '@/modo';
 
@@ -27,6 +27,9 @@ export async function Moldura({ children }: { children: ReactNode }) {
   const [cancelaAssinatura, assinatura] = conta && !local
     ? await Promise.all([apagarCancelaAssinatura(conta.id), assinaturaDaConta(conta.id)])
     : [false, null];
+  const sessao = conta ? await sessaoDaConta(conta.id) : null;
+  // "Apagar meus dados" offers the file first (step 27), when there is something in it.
+  const baixarAntes = sessao ? await temCorpus(sessao.id) : false;
   return (
     <>
       <Abertura registrar={abriuOLink} />
@@ -49,7 +52,7 @@ export async function Moldura({ children }: { children: ReactNode }) {
             </button>
           </form>
         )}
-        <ApagarDados apagar={apagarDados} cancelaAssinatura={cancelaAssinatura} comConta={!local} />
+        <ApagarDados apagar={apagarDados} cancelaAssinatura={cancelaAssinatura} comConta={!local} baixarAntes={baixarAntes} />
         {/* The terms and the policy are the hosted service's: MODO=local has neither. */}
         {!local && <LinksLegais />}
       </footer>

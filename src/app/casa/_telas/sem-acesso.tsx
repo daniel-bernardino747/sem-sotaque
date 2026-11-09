@@ -13,9 +13,16 @@ import { Recarregar } from './recarregar';
  * The home of an account without access (step 21, decision 2): only this.
  * `assinar` is the paywall; `esperando`, back from a paid Checkout, reloads
  * until the webhook opens the home; `pendente` sends to the portal to fix
- * the card, never to a second subscription.
+ * the card, never to a second subscription. With a Corpus, the person can
+ * still take it (step 27, C6): exporting needs no subscription.
  */
-export function SemAcesso({ tela }: { tela: TelaSemAcesso }) {
+export function SemAcesso({ tela, temCorpus }: { tela: TelaSemAcesso; temCorpus: boolean }) {
+  const baixar = temCorpus && (
+    <p className="motivo">
+      O que você me contou continua seu, com ou sem assinatura: <a href="/casa/exportar">Baixar meu Corpus</a>.
+    </p>
+  );
+
   if (tela === 'esperando') {
     return (
       <>
@@ -34,6 +41,7 @@ export function SemAcesso({ tela }: { tela: TelaSemAcesso }) {
         <form action={gerirAssinatura}>
           <BotaoEnviar pendente="Abrindo…">Gerenciar assinatura</BotaoEnviar>
         </form>
+        {baixar}
       </>
     );
   }
@@ -59,6 +67,7 @@ export function SemAcesso({ tela }: { tela: TelaSemAcesso }) {
         Ao assinar, você concorda com os <a href="/termos">termos de uso</a>. O que acontece com os seus dados está na{' '}
         <a href="/privacidade">política de privacidade</a>.
       </p>
+      {baixar}
     </>
   );
 }
