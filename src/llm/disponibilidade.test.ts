@@ -65,6 +65,20 @@ describe('statusDosCaminhos', () => {
   });
 });
 
+describe('o ambiente da conferência', () => {
+  it('checks each CLI with the environment its calls run with: no API key for either', async () => {
+    const ambientes: Record<string, Record<string, string | undefined>> = {};
+    const rodar: RodarComando = async (bin, args, env) => {
+      ambientes[`${bin} ${args[0]}`] = env ?? {};
+      return 'nao_instalado';
+    };
+    const env = { PATH: '/bin', ANTHROPIC_API_KEY: 'sk-ant', ANTHROPIC_AUTH_TOKEN: 't', OPENAI_API_KEY: 'sk-o', CODEX_API_KEY: 'ck' };
+    await statusDosCaminhos({ env, rodar });
+    expect(ambientes['claude auth']).toEqual({ PATH: '/bin', OPENAI_API_KEY: 'sk-o', CODEX_API_KEY: 'ck' });
+    expect(ambientes['codex --version']).toEqual({ PATH: '/bin', ANTHROPIC_API_KEY: 'sk-ant', ANTHROPIC_AUTH_TOKEN: 't' });
+  });
+});
+
 describe('escolhaPermitida', () => {
   it('lets only an available way be saved', async () => {
     const status = await statusDosCaminhos({ env: {}, rodar: maquina({ claude: claudeLogado('claude.ai') }).rodar });
