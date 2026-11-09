@@ -743,6 +743,26 @@ export const eventos = pgTable(
   ],
 );
 
+// ---- a configuração (passo 28) ---------------------------------------------
+
+/**
+ * The instance's settings, one row (`id` is always true): how the app reaches
+ * the model in `MODO=local`. It belongs to the machine, not to a person, so
+ * `apagarSessao` leaves it, the Corpus file does not carry it and the panel
+ * does not show it (M10). No secret here: the API key stays in `.env` (M5).
+ */
+export const configuracao = pgTable(
+  'configuracao',
+  {
+    id: boolean('id').primaryKey().default(true),
+    caminhoModelo: caminhoModelo('caminho_modelo').notNull().default('api'),
+    /** The Codex model to pin (`-m`); null is the Codex's own default. */
+    modeloCodex: text('modelo_codex'),
+    atualizadaEm: timestamp('atualizada_em', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [check('configuracao_uma_linha', sql`${t.id}`)],
+);
+
 // ---- os erros (passo 26) ----------------------------------------------------
 
 export const origemErro = pgEnum('origem_erro', ORIGENS_ERRO);
