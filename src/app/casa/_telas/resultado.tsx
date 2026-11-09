@@ -18,6 +18,7 @@ import { garantirGeracao } from '@/geracao/segundo-plano';
 import type { Selection } from '@/render';
 
 import { enviarCabecalho, gerarDeNovo, tentarDeNovo } from '../acoes';
+import { AvisoDoCaminho } from './aviso-do-caminho';
 import { BotaoEnviar } from './botao-enviar';
 import { FormularioCabecalho } from './cabecalho';
 import { Espera } from './espera';
@@ -57,6 +58,7 @@ export async function Curriculo({ sessao }: { sessao: Sessao }) {
         <VoltarParaACasa />
         <h1>Não consegui terminar seu currículo</h1>
         <p>Algo deu errado do meu lado, não do seu. Tudo o que você me contou está guardado.</p>
+        <AvisoDoCaminho erro={geracao.erro} />
         <form action={tentarDeNovo} className="seguir">
           <BotaoEnviar pendente="Recomeçando…" className="primario">
             Tentar de novo

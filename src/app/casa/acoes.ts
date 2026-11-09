@@ -4,7 +4,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 import { LIMITE_ARQUIVO } from '@/arquivo-do-corpus';
 import { COOKIE_CONTA } from '@/conta/acesso';
@@ -22,6 +22,7 @@ import {
   ErroCorpusNaoVazio,
   ErroEstadoSessao,
   gravarCabecalho,
+  gravarConfiguracao,
   gravarOpiniao,
   importarCorpusDeArquivo,
   iniciarInterrogatorio,
@@ -47,6 +48,8 @@ import { lerIndicacoes, lerOpiniao, type Lido } from '@/sessao/fechamento';
 import { encerrarInterrogatorio } from '@/interrogatorio/turno';
 import { garantirLeitura } from '@/vaga';
 import { lerConfirmacao, lerVagaColada } from '@/vaga/entrada';
+import { CAMINHOS_MODELO, type CaminhoModelo } from '@/db/schema';
+import { escolhaPermitida, statusDosCaminhos } from '@/llm/disponibilidade';
 import { modo } from '@/modo';
 
 /**
@@ -501,4 +504,27 @@ export async function conversarSobreAVaga(vagaId: string): Promise<void> {
   if (vaga.estagio !== 'confirmada') redirect(`/casa/vagas/${vagaId}`);
   await emSerie(id, () => abrirConversaDaVaga(id, vagaId));
   redirect(`/casa/vagas/${vagaId}/conversa`);
+}
+
+export interface EstadoConfiguracao {
+  erro: string | null;
+  salvo: boolean;
+}
+
+/**
+ * The configuration screen's "Guardar" (step 28): only in `MODO=local`, and
+ * only a way available now, checked again here (a stale tab cannot save one
+ * that fell). It applies from the next model call.
+ */
+export async function salvarConfiguracao(_anterior: EstadoConfiguracao, form: FormData): Promise<EstadoConfiguracao> {
+  if (modo() !== 'local') notFound();
+  const caminho = form.get('caminho');
+  if (typeof caminho !== 'string' || !(CAMINHOS_MODELO as readonly string[]).includes(caminho)) {
+    return { erro: 'Escolha um dos caminhos.', salvo: false };
+  }
+  const permitida = escolhaPermitida(caminho as CaminhoModelo, await statusDosCaminhos());
+  if (!permitida.ok) return { erro: permitida.motivo, salvo: false };
+  const modelo = form.get('modeloCodex');
+  await gravarConfiguracao({ caminho: caminho as CaminhoModelo, modeloCodex: typeof modelo === 'string' ? modelo : null });
+  return { erro: null, salvo: true };
 }

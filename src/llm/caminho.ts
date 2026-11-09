@@ -48,6 +48,14 @@ export class ErroDoCaminho extends Error {
   }
 }
 
+/** Which subscription an error message failed through (`ErroDoCaminho`'s, as `ErroLlm` keeps it), or null. */
+export function caminhoDoErro(mensagem: string): CaminhoModelo | null {
+  for (const caminho of ['assinatura_claude', 'assinatura_chatgpt'] as const) {
+    if (mensagem.startsWith(`pela ${NOME_DO_CAMINHO[caminho]}:`)) return caminho;
+  }
+  return null;
+}
+
 type Stream = ReturnType<SdkMinimo['beta']['messages']['stream']>;
 
 /**

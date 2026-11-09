@@ -52,6 +52,12 @@ export async function Moldura({ children }: { children: ReactNode }) {
             </button>
           </form>
         )}
+        {/* How the app reaches the model (step 28): only MODO=local chooses. */}
+        {local && (
+          <a href="/casa/configuracao" className="discreto">
+            Configuração
+          </a>
+        )}
         <ApagarDados apagar={apagarDados} cancelaAssinatura={cancelaAssinatura} comConta={!local} baixarAntes={baixarAntes} />
         {/* The terms and the policy are the hosted service's: MODO=local has neither. */}
         {!local && <LinksLegais />}
