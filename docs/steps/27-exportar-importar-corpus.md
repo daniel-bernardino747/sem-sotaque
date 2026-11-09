@@ -51,4 +51,37 @@ Substituir ou mesclar um Corpus existente. Exportar Vagas, Anotações ou a tran
 
 ## Notas de implementação
 
+**Status:** em andamento. Falta só o item 6, o texto da privacidade, que espera o sim do Daniel (abaixo). O resto do "Pronto quando" passou.
+
+**Onde está:**
+- `src/arquivo-do-corpus/index.ts`: o tipo, o schema zod (v1) e `lerArquivoDeCorpus(texto)` → `{ ok, arquivo }` ou `{ ok: false, razao }`, com a razão em português (as mensagens do próprio zod saem pelo `z.locales.pt()`, só nesta leitura). `limites.ts` tem o `LIMITE_ARQUIVO` (5 MB), separado para o formulário do navegador não levar o zod e o schema do banco. `exportar.ts` tem `exportarCorpus(sessaoId, agora?)`, separado do formato porque lê o banco.
+- `importarCorpusDeArquivo(sessaoId, texto)` em `src/db/index.ts`, ao lado do `gravarImportacao`. Recebe o **texto** do arquivo, não o objeto: lê ele mesmo, então "nada é gravado" se confere numa porta só, e a procedência em `importacoes.texto_extraido` é o arquivo exatamente como veio. Erros: `ErroArquivoDoCorpus` (a mensagem é a razão), `ErroEstadoSessao` (fora do `consentiu`) e `ErroCorpusNaoVazio` (no `consentiu` com algum registro).
+- Migração `0019_formato_corpus.sql`: só o `ALTER TYPE ... ADD VALUE 'corpus'`.
+- Telas: a porta "Tenho um arquivo do sem-sotaque" (`_telas/envio-arquivo-do-corpus.tsx`, ação `enviarArquivoDoCorpus`) abaixo do PDF e do texto, só no `consentiu`. A página `/casa/exportar` (o que vai e o que não vai, e o aviso das confidenciais só quando há alguma) e a rota `/casa/exportar/arquivo` (`attachment; filename="corpus-sem-sotaque-AAAA-MM-DD.json"`, `private, no-store`). As duas leem a Conta pelo login (`entradaAtual`/`sessaoAtual`), sem `temAcesso` e sem o portão do consentimento, e saem dinâmicas no build (`ƒ`). "Baixar meu Corpus" aparece na Casa (seção "Seu Corpus", depois de importar), na tela sem acesso (assinar e pagamento pendente, se houver Corpus) e na confirmação de "Apagar meus dados" (link direto para o arquivo, se houver Corpus).
+
+**Decisões e desvios:**
+- **Os nomes dos campos:** o envelope como o passo escreveu (`formato`, `versao`, `exportadoEm`), e os registros com os nomes das colunas do banco (`descricao_publica`, `periodo_confirmado`, `adiado_voltou`), que são os que o `CONTEXT.md` usa. As refs são `affiliation_ref`/`accomplishment_ref`, como na extração do import. As Metrics vão dentro do Accomplishment, com o `confirmado_em` (C5: sem reconfirmar). Cada Linha Original vai como está no banco, uma por registro.
+- **O mesmo arquivo na volta:** as refs são `af1…`/`ac1…` na ordem do `corpusDaSessao`. As Linhas Originais de um import saem do banco em ordem de id (aleatória, ver Achados), então o export as ordena pelo registro. Na importação, as Metrics ganham `created_at` com 1 ms de diferença, para manter a ordem do arquivo.
+- **O avaliador mantém a `forca` que veio (C2):** o `iniciarPlano` julgava de novo todo registro não pulado. Agora julga só os sem `forca`; com nada a julgar, não chama o Jev e calcula a Cobertura na hora. Para o import do PDF não muda nada (ali nenhum tem `forca`).
+- **A Casa antes do primeiro checkpoint** mostra `cobertura(corpus)` quando ainda não há plano (antes, 0%). Depois de um PDF dá 0 do mesmo jeito; depois de um arquivo dá a Cobertura dele (C7).
+- **O nome da pessoa para o Jev:** a pseudonimização tirava o nome da primeira linha do texto importado. Com o arquivo, essa linha é `{`. Agora, quando o texto não dá um nome, ela usa o nome do cabeçalho.
+- **Depois de importar o arquivo,** a tela do resultado diz "Seu Corpus chegou" e o botão é "Continuar a conversa" (a mesma ação do "Começar as perguntas"). Um arquivo recusado vai para `erros` só pela classe (`onde: import`), como o PDF ilegível. O evento `importou` leva `formato: 'corpus'`, então a contagem no painel (fora do escopo) já tem o dado.
+
+**Verificado no `MODO=local`** (banco `sem_sotaque_verif` à parte, `LLM_BACKEND=assinatura`, porta 3100): o arquivo da pessoa inventada (`src/arquivo-do-corpus/inventado.ts`) entrou pela tela de importar. A Casa mostrou 43% e "2 coisas em aberto", e "Continuar a conversa" abriu na biblioteca de CPF, o rascunho que restava. Baixado de volta, o arquivo é o mesmo, menos o `exportadoEm` e a `forca` que o avaliador acabou de dar à biblioteca. O download a partir do hospedado de verdade fica para depois do deploy: lá ainda não existe o passo 27. O arquivo usado tem o mesmo formato que a rota entrega.
+
+**Comandos:** `npx vitest run src/arquivo-do-corpus` (o formato, a ida e volta pelo banco e a rota).
+
+**Pendente, o texto da privacidade (item 6), proposta para o Daniel.** Em `src/conteudo/privacidade.md`:
+
+1. Em "Os seus direitos", trocar o parágrafo por:
+   > Pela LGPD (art. 18), você pode confirmar se eu tenho dados seus, ver quais são, corrigir, levar uma cópia, apagar, saber com quem eles passam e retirar um consentimento. Dois são botões na sua página: "Baixar meu Corpus" entrega num arquivo o que você me contou da sua carreira, que entra de novo aqui ou numa instância sua do sem-sotaque, e "Apagar meus dados" apaga tudo. O resto, inclusive uma cópia do que não vai no arquivo (a conversa, as vagas e os currículos), peça por e-mail em hello@teamdbsolutions.com, e eu respondo em até 15 dias. Você também pode reclamar na ANPD, a Autoridade Nacional de Proteção de Dados.
+2. Em "O que eu guardo", no item do currículo, acrescentar: "Se você trouxer o arquivo do seu Corpus, eu guardo o arquivo como veio, para saber de onde o Corpus veio."
+3. Trocar a "Última atualização".
+
+A minha leitura é que isso não pede versão nova do consentimento nem a faixa do passo 26: não há dado novo, só uma cópia do Corpus que já é guardado, e um direito que vira botão. A decisão é do Daniel.
+
 ## Achados
+
+- `linhasDaSessao` (e o painel, que lê as linhas por ela) ordena por `created_at, id`. As linhas de um mesmo import têm o mesmo `created_at`, então saem em ordem aleatória. O export contorna ordenando pelo registro; o "antes" de outras telas pode embaralhar.
+- Quando o `iniciarPlano` não tem nada a julgar (um arquivo com todas as `forca`), a decisão do painel fica com `backend: 'reserva'` e o motivo "0 accomplishments na ordem do currículo". Não está errado, mas pode confundir a leitura do painel.
+- `src/conta/rotas.test.ts` estourou os 5 s uma vez na rodada cheia (importação a frio, 7,5 s) e passou sozinho e na rodada seguinte.
