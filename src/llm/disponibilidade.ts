@@ -18,7 +18,7 @@ import { spawn } from 'node:child_process';
 import type { CaminhoModelo } from '@/db/schema';
 
 import { ambienteDoClaude } from './assinatura';
-import { ambienteDoCodex } from './codex';
+import { ambienteDoCodex, DESLIGAR_FEATURES, FEATURES_CONFERIDAS } from './codex';
 
 export type Estado = { disponivel: true; detalhe: string } | { disponivel: false; motivo: string };
 export type StatusDosCaminhos = Record<CaminhoModelo, Estado>;
@@ -99,6 +99,23 @@ async function estadoDoCodex(rodar: RodarComando, env: Ambiente, conferido: stri
   const instalada = versaoDe(versao.saida);
   if (!instalada || !naoMenor(instalada, versaoDe(conferido)!)) {
     return { disponivel: false, motivo: `Esta versão do codex é anterior à ${conferido}, a conferida: atualize o codex.` };
+  }
+  // M8: what stays on with the calls' own --disable flags must all be plumbing this app checked.
+  const features = await rodar('codex', [...DESLIGAR_FEATURES, 'features', 'list'], semChave);
+  if (features === 'nao_instalado' || features.codigo !== 0) {
+    return { disponivel: false, motivo: 'Não consegui ler os recursos do codex (codex features list).' };
+  }
+  const ligadas = features.saida
+    .split('\n')
+    .map((linha) => linha.trim().split(/\s+/))
+    .filter((partes) => partes.length >= 3 && partes.at(-1) === 'true')
+    .map((partes) => partes[0]);
+  const naoConferidas = ligadas.filter((f) => !FEATURES_CONFERIDAS.has(f));
+  if (naoConferidas.length) {
+    return {
+      disponivel: false,
+      motivo: `O codex deixa ligado o que eu não conferi (${naoConferidas.join(', ')}): por enquanto, fica desligado.`,
+    };
   }
   return { disponivel: true, detalhe: 'Logado com o ChatGPT.' };
 }
