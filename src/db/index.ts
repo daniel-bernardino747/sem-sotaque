@@ -9,6 +9,7 @@ import { randomBytes } from 'node:crypto';
 
 import { and, asc, eq, inArray, isNull, notInArray, sql } from 'drizzle-orm';
 
+import { lerArquivoDeCorpus } from '../arquivo-do-corpus';
 import { textoIncluiLeitura } from '../conteudo/consentimento';
 
 import { db } from './client';
@@ -377,6 +378,149 @@ export async function gravarImportacao(
       tipo: 'importou',
       dados: { formato: dados.formato, ...contagem },
     });
+    return contagem;
+  });
+}
+
+/** A Corpus file that did not pass the check: `message` is the reason, in Portuguese, for the person. */
+export class ErroArquivoDoCorpus extends Error {
+  constructor(razao: string) {
+    super(razao);
+    this.name = 'ErroArquivoDoCorpus';
+  }
+}
+
+/** A Corpus file goes only into an empty Corpus (step 27, C3): never over it, never merged. */
+export class ErroCorpusNaoVazio extends Error {
+  constructor() {
+    super('the session already has a Corpus');
+    this.name = 'ErroCorpusNaoVazio';
+  }
+}
+
+/**
+ * "Tenho um arquivo do sem-sotaque" (step 27): reads the Corpus file and
+ * writes it in one transaction, like `gravarImportacao`. Each record gets a new
+ * id and the refs are tied to them; the state of each record comes as it was
+ * (C2), so the coverage and the open queue are the origin's. The header is
+ * written only if the session has none; the file, whole, is the import's
+ * provenance (C5). A file that does not pass `lerArquivoDeCorpus` throws
+ * `ErroArquivoDoCorpus`; a session not at `consentiu` throws
+ * `ErroEstadoSessao`, and one with a record already, `ErroCorpusNaoVazio`.
+ * Either way nothing is written.
+ */
+export async function importarCorpusDeArquivo(
+  sessaoId: string,
+  texto: string,
+): Promise<{ affiliations: number; accomplishments: number; linhas: number }> {
+  const lido = lerArquivoDeCorpus(texto);
+  if (!lido.ok) throw new ErroArquivoDoCorpus(lido.razao);
+  const arquivo = lido.arquivo;
+
+  return db().transaction(async (tx) => {
+    const [sessao] = await tx.select().from(sessoes).where(eq(sessoes.id, sessaoId)).for('update');
+    if (sessao?.estado !== 'consentiu' || sessao.apagadaEm) {
+      throw new ErroEstadoSessao('consentiu', sessao?.estado ?? null);
+    }
+    const [temAffiliation] = await tx.select({ id: affiliations.id }).from(affiliations).where(eq(affiliations.sessaoId, sessaoId)).limit(1);
+    const [temAccomplishment] = await tx
+      .select({ id: accomplishments.id })
+      .from(accomplishments)
+      .where(eq(accomplishments.sessaoId, sessaoId))
+      .limit(1);
+    if (temAffiliation || temAccomplishment) throw new ErroCorpusNaoVazio();
+
+    await tx.insert(importacoes).values({ sessaoId, formato: 'corpus', textoExtraido: texto });
+
+    const idAffiliation = new Map<string, string>();
+    if (arquivo.affiliations.length) {
+      const inseridas = await tx
+        .insert(affiliations)
+        .values(
+          arquivo.affiliations.map((a, ordem) => ({
+            sessaoId,
+            ordem,
+            organizacao: a.organizacao,
+            cargo: a.cargo,
+            tipo: a.tipo,
+            anoConclusao: a.ano_conclusao,
+            cursando: a.cursando,
+            periodoOriginal: a.periodo_original,
+            periodoInicio: a.periodo_inicio,
+            periodoFim: a.periodo_fim,
+            stack: a.stack,
+            confidencial: a.confidencial,
+            descricaoPublica: a.descricao_publica,
+            periodoConfirmado: a.periodo_confirmado,
+            pulado: a.pulado,
+          })),
+        )
+        .returning({ id: affiliations.id });
+      arquivo.affiliations.forEach((a, i) => idAffiliation.set(a.ref, inseridas[i].id));
+    }
+    const affiliationDe = (ref: string | null) => (ref === null ? null : idAffiliation.get(ref)!);
+
+    const idAccomplishment = new Map<string, string>();
+    if (arquivo.accomplishments.length) {
+      const inseridos = await tx
+        .insert(accomplishments)
+        .values(
+          arquivo.accomplishments.map((a, ordem) => ({
+            sessaoId,
+            ordem,
+            affiliationId: affiliationDe(a.affiliation_ref),
+            tipo: a.tipo,
+            enunciado: a.enunciado,
+            importanciaParaPessoa: a.importancia_para_pessoa,
+            data: a.data,
+            pulado: a.pulado,
+            forca: a.forca,
+            adiado: a.adiado,
+            adiadoVoltou: a.adiado_voltou,
+          })),
+        )
+        .returning({ id: accomplishments.id });
+      arquivo.accomplishments.forEach((a, i) => idAccomplishment.set(a.ref, inseridos[i].id));
+    }
+
+    // The Corpus reads a record's Metrics by `created_at`: one apart each keeps the file's order.
+    const base = Date.now();
+    const novasMetrics = arquivo.accomplishments.flatMap((a) =>
+      a.metrics.map((m) => ({
+        accomplishmentId: idAccomplishment.get(a.ref)!,
+        texto: m.texto,
+        valores: m.valores,
+        origem: m.origem,
+        ancora: m.ancora,
+        confirmadoEm: m.confirmado_em ? new Date(m.confirmado_em) : null,
+      })),
+    );
+    if (novasMetrics.length) {
+      await tx.insert(metrics).values(novasMetrics.map((m, i) => ({ ...m, createdAt: new Date(base + i) })));
+    }
+
+    if (arquivo.linhas_originais.length) {
+      await tx.insert(linhasOriginais).values(
+        arquivo.linhas_originais.map((l) => ({
+          sessaoId,
+          texto: l.texto,
+          affiliationId: affiliationDe(l.affiliation_ref),
+          accomplishmentId: l.accomplishment_ref === null ? null : idAccomplishment.get(l.accomplishment_ref)!,
+        })),
+      );
+    }
+
+    if (arquivo.cabecalho) {
+      await tx.insert(cabecalhos).values({ sessaoId, ...arquivo.cabecalho }).onConflictDoNothing({ target: cabecalhos.sessaoId });
+    }
+
+    const contagem = {
+      affiliations: arquivo.affiliations.length,
+      accomplishments: arquivo.accomplishments.length,
+      linhas: arquivo.linhas_originais.length,
+    };
+    await tx.update(sessoes).set({ estado: 'importou' }).where(eq(sessoes.id, sessaoId));
+    await tx.insert(eventos).values({ sessaoId, tipo: 'importou', dados: { formato: 'corpus', ...contagem } });
     return contagem;
   });
 }
