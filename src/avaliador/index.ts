@@ -517,10 +517,15 @@ async function abrir(sessaoId: string, d: Carregado, alvo: { tipo: TipoAssunto; 
   return { ...alvo, objetivo: objetivoDoAssunto(d.corpus, alvo, d.ctx), desde: d.mensagens.length };
 }
 
-/** The first checkpoint: every accomplishment judged, the first subject chosen. */
+/**
+ * The first checkpoint: every accomplishment judged, the first subject chosen.
+ * One that already has a strength keeps it: a Corpus file brings the
+ * evaluator's judgement with it (step 27, C2), and asking again would undo it.
+ */
 export async function iniciarPlano(sessaoId: string, deps: DepsAvaliador): Promise<EstadoPlano> {
   const d = await carregar(sessaoId);
-  const itens = itensAbertos(d.corpus);
+  const semForca = new Set(d.corpus.accomplishments.filter((a) => a.forca === null).map((a) => a.id));
+  const itens = itensAbertos(d.corpus).filter((i) => semForca.has(i.accomplishmentId));
   const { respostas, erro } = await perguntar(
     deps,
     sessaoId,
@@ -541,7 +546,7 @@ export async function iniciarPlano(sessaoId: string, deps: DepsAvaliador): Promi
   const estado = d.estado;
   const alvo = proximoAssunto(d.corpus, estado, d.ctx);
   estado.assunto = alvo ? await abrir(sessaoId, d, alvo) : null;
-  if (respostas || !deps.classificador) estado.cobertura = cobertura(d.corpus);
+  if (respostas || !deps.classificador || itens.length === 0) estado.cobertura = cobertura(d.corpus);
   estado.fila = fila(d.corpus, estado, d.ctx);
   estado.ultimoCheckpoint = d.mensagens.length;
   await gravarPlano(sessaoId, estado);
