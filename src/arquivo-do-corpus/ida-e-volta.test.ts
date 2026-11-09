@@ -4,6 +4,8 @@
 import { and, eq } from 'drizzle-orm';
 import { afterAll, describe, expect, inject, it } from 'vitest';
 
+import { estadoDoPlano, iniciarPlano } from '@/avaliador';
+import type { Classificador } from '@/avaliador/jev';
 import { cobertura, filaAberta } from '@/avaliador/plano';
 import {
   corpusDaSessao,
@@ -15,6 +17,7 @@ import {
   gravarCabecalho,
   gravarImportacao,
   importarCorpusDeArquivo,
+  iniciarInterrogatorio,
   registrarConsentimento,
   registrarMetric,
 } from '@/db';
@@ -160,6 +163,28 @@ describe.skipIf(semBanco)('o Arquivo do Corpus, ida e volta', () => {
     await gravarCabecalho(destino, meu);
     await importarCorpusDeArquivo(destino, JSON.stringify(arquivoInventado()));
     expect((await exportarCorpus(destino)).cabecalho).toEqual(meu);
+  });
+
+  it('the first checkpoint judges only what came without a strength, and the coverage counts the file’s', async () => {
+    const destino = await sessaoNova();
+    await importarCorpusDeArquivo(destino, JSON.stringify(arquivoInventado()));
+    await iniciarInterrogatorio(destino);
+
+    // A Jev that finds everything weak, and says what it was asked.
+    const perguntas: string[][] = [];
+    const classificador: Classificador = {
+      async classificar(p) {
+        perguntas.push(Object.keys(p.questions));
+        return Object.fromEntries(Object.entries(p.questions).map(([nome, q]) => [nome, { type: q.type, score: 0 }])) as never;
+      },
+    };
+    await iniciarPlano(destino, { classificador });
+
+    expect(perguntas).toEqual([['strength_item_2']]);
+    const forcas = (await exportarCorpus(destino)).accomplishments.map((a) => a.forca);
+    expect(forcas).toEqual(['forte', 'medio', 'fraco', 'fraco']);
+    // forte 3 covered, over forte 3 + medio 2 + the library now fraco 1: the skipped one does not count.
+    expect((await estadoDoPlano(destino))?.cobertura).toBe(50);
   });
 
   describe('refused, with nothing written', () => {
