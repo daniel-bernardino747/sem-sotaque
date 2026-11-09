@@ -47,8 +47,13 @@ const LETRAS = 'ABCDEFGHIJKLMNOPQRSTUVWYZ';
 
 const termosDe = (o: string) => [o.trim(), ...o.split(/[^\p{L}\p{N}]+/u).filter((p) => p.length >= 4 && !GENERICAS.has(normalizar(p)))];
 
-export function protegidos(dados: { curriculo: string; organizacoes: string[]; vaga?: string | null }): Protegidos {
-  const nome = nomeDaPessoa(dados.curriculo);
+/**
+ * What never goes to the Jev as it is. The person's name comes from the
+ * résumé's first line, or else from the header (`nome`): a Corpus file (step
+ * 27) has no name on its first line.
+ */
+export function protegidos(dados: { curriculo: string; nome?: string | null; organizacoes: string[]; vaga?: string | null }): Protegidos {
+  const nome = nomeDaPessoa(dados.curriculo) ?? (dados.nome?.trim() || null);
   const pessoa = nome ? nome.split(/\s+/).filter((p) => p.length >= 3 && !CONECTORES.has(p.toLowerCase())) : [];
   const vistas = new Set<string>();
   const organizacoes = dados.organizacoes
