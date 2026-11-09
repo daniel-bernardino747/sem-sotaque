@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import { Cantoneiras } from '@/app/ornamentos';
-import { emRetomada, estadoDoPlano, filaAberta } from '@/avaliador';
+import { cobertura as coberturaDoCorpus, emRetomada, estadoDoPlano, filaAberta } from '@/avaliador';
 import {
   corpusDaSessao,
   corpusMudou,
@@ -64,6 +64,8 @@ export async function Casa({ sessao }: { sessao: Sessao }) {
   const abertos = emAberto(corpus, terminou);
   const ultima = versoes[0];
   const gerando = geracao !== null && emAndamento(geracao);
+  // Before the first checkpoint there is no plan: an imported Corpus file (step 27) already has its coverage.
+  const coberto = plano?.cobertura ?? coberturaDoCorpus(corpus);
 
   return (
     <div className="casa">
@@ -79,9 +81,9 @@ export async function Casa({ sessao }: { sessao: Sessao }) {
         <p>Daqui você continua a conversa e vê o seu currículo.</p>
         <div className="cobertura">
           <span className="rotulo">
-            Currículo <strong>{plano?.cobertura ?? 0}%</strong> coberto
+            Currículo <strong>{coberto}%</strong> coberto
           </span>
-          <Vistos cobertura={plano?.cobertura ?? 0} />
+          <Vistos cobertura={coberto} />
         </div>
       </section>
 
@@ -192,9 +194,24 @@ export async function Casa({ sessao }: { sessao: Sessao }) {
         )}
       </section>
 
+      {importou && <SeuCorpus />}
+
       {/* Nobody reads anything in MODO=local: there is no Daniel and no panel. */}
       {modo() !== 'local' && <Leitura ligada={sessao.podeLerEm !== null} />}
     </div>
+  );
+}
+
+/** "Baixar meu Corpus" (step 27): the person takes what she told, to another instance or to someone. */
+function SeuCorpus() {
+  return (
+    <section className="casa-secao" aria-labelledby="corpus-titulo">
+      <h2 id="corpus-titulo">Seu Corpus</h2>
+      <p>Tudo o que você me contou da sua carreira, num arquivo seu: para levar a outra instância ou mostrar a alguém.</p>
+      <a href="/casa/exportar" className="botao">
+        Baixar meu Corpus
+      </a>
+    </section>
   );
 }
 

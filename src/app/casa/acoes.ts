@@ -6,6 +6,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+import { LIMITE_ARQUIVO } from '@/arquivo-do-corpus';
 import { COOKIE_CONTA } from '@/conta/acesso';
 import { cancelarAntesDeApagar } from '@/assinatura/cancelar';
 import { cobranca } from '@/assinatura/stripe';
@@ -17,9 +18,12 @@ import {
   confirmarVaga as gravarConfirmacao,
   criarVaga,
   definirLeitura,
+  ErroArquivoDoCorpus,
+  ErroCorpusNaoVazio,
   ErroEstadoSessao,
   gravarCabecalho,
   gravarOpiniao,
+  importarCorpusDeArquivo,
   iniciarInterrogatorio,
   reaceitarConsentimento as gravarReaceite,
   registrarAbertura,
@@ -221,6 +225,36 @@ export async function enviarCurriculo(
       // A file it cannot read is recorded too: it is where people get stuck (step 26).
       await registrarErro({ origem: 'servidor', onde: 'import', erro, sessaoId: sessao.id, log: `import failed for session ${sessao.id}:` });
       return falhou(erro instanceof ErroImport ? erro.message : 'Não consegui ler seu currículo agora. Tente de novo em alguns minutos.');
+    }
+  }
+  redirect('/casa/conversa');
+}
+
+export interface EstadoArquivo {
+  erro: string | null;
+}
+
+/**
+ * "Tenho um arquivo do sem-sotaque" (step 27): a Corpus file into the empty
+ * Corpus, behind the subscription like the PDF. A file that does not pass the
+ * check comes back with the reason; nothing is written. A session that already
+ * has a Corpus never sees the form: a stale tab goes to the conversation.
+ */
+export async function enviarArquivoDoCorpus(_anterior: EstadoArquivo, form: FormData): Promise<EstadoArquivo> {
+  const sessao = await sessaoDaAcao();
+  if (sessao.estado !== 'consentiu') redirect('/casa/conversa');
+
+  const arquivo = form.get('corpus');
+  if (!(arquivo instanceof File) || arquivo.size === 0) return { erro: 'Escolha o arquivo .json que você baixou em “Baixar meu Corpus”.' };
+  if (arquivo.size > LIMITE_ARQUIVO) return { erro: 'Este arquivo passa de 5 MB: não é um Corpus do sem-sotaque.' };
+
+  try {
+    await importarCorpusDeArquivo(sessao.id, await arquivo.text());
+  } catch (erro) {
+    if (!(erro instanceof ErroEstadoSessao || erro instanceof ErroCorpusNaoVazio)) {
+      // A refused file is recorded too, by its class only: it is where people get stuck (step 26).
+      await registrarErro({ origem: 'servidor', onde: 'import', erro, sessaoId: sessao.id, log: `corpus file import failed for session ${sessao.id}:` });
+      return { erro: erro instanceof ErroArquivoDoCorpus ? erro.message : 'Não consegui importar o arquivo agora. Tente de novo em alguns minutos.' };
     }
   }
   redirect('/casa/conversa');

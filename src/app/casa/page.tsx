@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 
 import { telaSemAcesso } from '@/assinatura/acesso';
 import { entradaAtual } from '@/conta/servidor';
-import { assinaturaDaConta, situacao } from '@/db';
+import { assinaturaDaConta, situacao, temCorpus } from '@/db';
 import { antesDaCasa } from '@/sessao/tela';
 
 import { Casa } from './_telas/casa';
@@ -32,7 +32,7 @@ export default async function PaginaDaCasa({ searchParams }: { searchParams: Pro
     const tela = telaSemAcesso(situacao(await assinaturaDaConta(entrada.conta.id)), (await searchParams).assinatura === 'ok');
     return (
       <Moldura>
-        <SemAcesso tela={tela} />
+        <SemAcesso tela={tela} temCorpus={await temCorpus(sessao.id)} />
       </Moldura>
     );
   }
