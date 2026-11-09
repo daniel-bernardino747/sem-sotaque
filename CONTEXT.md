@@ -32,7 +32,11 @@ A página que a Conta abre (`/casa`): Cobertura, "Achei uma vaga", "Continuar a 
 _Evite_: dashboard, home (a home é a página pública `/`)
 
 **Corpus**:
-A carreira de uma pessoa, guardada como Affiliations e Accomplishments. É a única fonte da verdade: todo currículo sai dele, e só o interrogatório escreve nele. É escrito em português (ou na língua em que a pessoa contou).
+A carreira de uma pessoa, guardada como Affiliations e Accomplishments. É a única fonte da verdade: todo currículo sai dele, e só o interrogatório e o import (do currículo ou de um Arquivo do Corpus) escrevem nele. É escrito em português (ou na língua em que a pessoa contou).
+
+**Arquivo do Corpus**:
+O Corpus de uma pessoa num `.json` (`formato: "sem-sotaque/corpus"`, `versao`), baixado em "Baixar meu Corpus" (passo 27): Affiliations, Accomplishments com as Metrics, Linhas Originais, o cabeçalho e o estado de cada registro, com uma `ref` do arquivo no lugar dos ids. Sem a conversa, as Anotações, as Vagas e os currículos. Baixar não depende da Assinatura; importar só entra num Corpus vazio, e o arquivo inteiro fica como a procedência.
+_Evite_: backup, dump, export (o painel não exporta nada)
 
 **Affiliation**:
 Onde algo aconteceu: um empregador, um cliente, um curso. Guarda organização, cargo, período (mês/ano) e stack; não guarda feitos. Pode ser **confidencial**: aí o currículo usa a `descricao_publica` e nunca o nome.
