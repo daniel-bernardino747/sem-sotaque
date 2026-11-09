@@ -60,11 +60,15 @@ describe('o codex exec', () => {
     expect(configs).toEqual(
       expect.arrayContaining([
         'approval_policy="never"',
-        'features.shell_tool=false',
-        'features.view_image=false',
         'web_search="disabled"',
         'project_doc_max_bytes=0',
       ]),
+    );
+    // Every feature that lets the model act is off, the user's hooks included (`~/.codex/hooks.json`
+    // is not config.toml, so --ignore-user-config leaves it in).
+    const desligadas = args.flatMap((a, i) => (args[i - 1] === '--disable' ? [a] : []));
+    expect(desligadas).toEqual(
+      expect.arrayContaining(['shell_tool', 'hooks', 'computer_use', 'browser_use', 'apps', 'plugins', 'multi_agent', 'image_generation', 'view_image']),
     );
     expect(args).not.toContain('--yolo');
     expect(args).not.toContain('--dangerously-bypass-approvals-and-sandbox');
