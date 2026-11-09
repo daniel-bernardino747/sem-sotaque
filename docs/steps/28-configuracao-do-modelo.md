@@ -52,7 +52,7 @@ A API da OpenAI com chave. Prompts próprios para o GPT. Tirar o rótulo "experi
 
 ## Notas de implementação
 
-**Status:** em andamento. Falta o que precisa do `codex` instalado e logado no host (ver "Pendente"). O resto do "Pronto quando" passou.
+**Status:** em andamento. Falta o que precisa do modelo pelo Codex, que está instalado e logado mas sem cota (ver "Pendente"). O resto do "Pronto quando" passou.
 
 **Onde está:**
 - `src/llm/caminho.ts`: `sdkPorConfiguracao`, um `SdkMinimo` que, no `MODO=local`, lê a configuração a cada `stream` e delega ao SDK do caminho. O stream que ele devolve é preguiçoso: os ouvintes de `text` esperam o stream de verdade. Fora do `MODO=local`, delega direto à API, sem ler o banco. Uma assinatura que falha vira `ErroDoCaminho` ("pela assinatura do ChatGPT: …"), e `caminhoDoErro` lê o caminho de volta na mensagem que o `ErroLlm` guarda. `NOME_DO_CAMINHO` dá os nomes da tela e dos erros.
@@ -70,18 +70,22 @@ A API da OpenAI com chave. Prompts próprios para o GPT. Tirar o rótulo "experi
 
 O caminho da API não foi chamado, para não gastar.
 
-**Pendente, com o `codex` instalado e logado no host** (`npm install -g @openai/codex`, `codex login` com a conta do ChatGPT):
-1. Conferir as flags na versão instalada. Itens:
-   - `--ignore-user-config`, `--ignore-rules`, `--ephemeral`;
-   - se o `-c approval_policy="never"`, o `features.shell_tool=false`, o `web_search="disabled"` e o `project_doc_max_bytes=0` são aceitos e fazem o que dizem;
-   - se o `AGENTS.md` global (`~/.codex/AGENTS.md`) fica de fora: a documentação não diz;
-   - que subconjunto de JSON Schema o `--output-schema` aceita: o nosso tem `anyOf`, `const` e `minItems`;
-   - a saída do `codex login status` (ChatGPT, chave de API, sem login).
+**Conferido com o Codex CLI 0.167.0, instalado e logado em 2026-11-09:**
+- As flags que o app usa existem no `codex exec --help`: `--ignore-user-config`, `--ignore-rules`, `--ephemeral`, `--skip-git-repo-check`, `--sandbox`, `--output-schema`, `--output-last-message`, `--json`, `-m`, `-c`, `--disable`.
+- **Muitas ferramentas vêm ligadas por padrão,** não só o shell (`codex features list`): `unified_exec`, `browser_use*`, `computer_use`, `apps`, `plugins`, `hooks`, `multi_agent`, `image_generation`, `code_mode_host` e outras. O `-c features.shell_tool=false` sozinho não cumpria a M8. Agora todas as que agem saem por `--disable` (`FEATURES_QUE_AGEM` em `src/llm/codex.ts`).
+- **`--disable` com um nome desconhecido dá erro** ("Unknown feature flag"): uma feature renomeada numa versão nova quebra a chamada, em vez de ficar ligada.
+- **O `~/.codex/hooks.json` não é o `config.toml`:** o `--ignore-user-config` não o tira, e hooks rodam comandos. Daí o `--disable hooks`.
+- **A trava pelo que sobra:** a conferência roda `codex <os mesmos --disable> features list`, e a opção só fica disponível se tudo o que continuar ligado estiver em `FEATURES_CONFERIDAS` (a infraestrutura do cliente, nenhuma ferramenta).
+- **O `unified_exec` não desliga,** nem por `--disable` nem por `-c features.unified_exec=false`. Ele fica fora de `FEATURES_CONFERIDAS` até um teste mostrar se, com o `shell_tool` desligado, sobra algum comando ao alcance do modelo. Enquanto isso, a opção do ChatGPT segue desligada pela própria trava.
+- Sem o `code_mode_host`, o Codex avisa que o "code mode will fail closed": fecha, não abre.
+- `codex login status`: "Logged in using ChatGPT", código 0; "Not logged in", código 1. Bate com a conferência.
+- **No Windows,** o `codex` do npm é um `codex.cmd`. `comandoDoCodex` acha o `codex.js` do pacote ao lado dele no PATH e roda com o `node`, sem shell (ou usa o `CODEX_BIN`).
 
-   Conferido, preencha `CODEX_CONFERIDO` com a versão e anote aqui.
-2. **No Windows:** o `codex` do npm é um `codex.cmd`, e o `spawn` sem shell não acha um `.cmd`: a tela diria "não instalado" e a chamada não sairia. Resolver na conferência, com `CODEX_BIN` apontando para o binário, ou chamando o `node` com o script do pacote. Não usar `shell: true`: os argumentos têm aspas e JSON.
-3. Uma conversa e uma geração pela assinatura do ChatGPT.
-4. As três personas do `simular` e o `gerar`, pelas duas assinaturas, comparados aqui. Isso gasta o limite dos dois planos, não dinheiro.
+**Pendente: a conta do ChatGPT logada não tem cota de Codex agora.** O teste que pede ao modelo para rodar um comando e ler um arquivo voltou "You’ve hit your usage limit … try again at Nov 18th, 2026 9:45 AM" (o plano não inclui o Codex, ou a cota acabou). O caminho de erro funcionou: o `turn.failed` vira "codex exec failed: …". Com cota, nesta ordem:
+1. Rodar de novo o teste de agir: pedir ao modelo para rodar `whoami`, ler um arquivo e listar uma pasta, e conferir nos eventos do `--json` que nenhum item é de comando ou de leitura. Isso decide o `unified_exec`.
+2. Conferir o subconjunto de JSON Schema que o `--output-schema` aceita: o nosso tem `anyOf`, `const` e `minItems`.
+3. Conferir se o `AGENTS.md` global (`~/.codex/AGENTS.md`) fica fora. Hoje ele não existe nesta máquina.
+4. Feito isso, `CODEX_CONFERIDO = '0.167.0'`, uma conversa e uma geração pela assinatura do ChatGPT, e as personas do `simular` e o `gerar` pelas duas assinaturas, comparados aqui.
 
 ## Achados
 
