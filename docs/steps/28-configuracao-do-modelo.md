@@ -52,4 +52,37 @@ A API da OpenAI com chave. Prompts próprios para o GPT. Tirar o rótulo "experi
 
 ## Notas de implementação
 
+**Status:** em andamento. Falta o que precisa do `codex` instalado e logado no host (ver "Pendente"). O resto do "Pronto quando" passou.
+
+**Onde está:**
+- `src/llm/caminho.ts`: `sdkPorConfiguracao`, um `SdkMinimo` que, no `MODO=local`, lê a configuração a cada `stream` e delega ao SDK do caminho. O stream que ele devolve é preguiçoso: os ouvintes de `text` esperam o stream de verdade. Fora do `MODO=local`, delega direto à API, sem ler o banco. Uma assinatura que falha vira `ErroDoCaminho` ("pela assinatura do ChatGPT: …"), e `caminhoDoErro` lê o caminho de volta na mensagem que o `ErroLlm` guarda. `NOME_DO_CAMINHO` dá os nomes da tela e dos erros.
+- `src/llm/cliente.ts`: o `sdkDoAmbiente` e o `LLM_BACKEND` saíram. O `llm()` usa `sdkDaConfiguracao()`, que é a mesma função que o `simular` usa para a persona. A API é um cliente `Anthropic` só, criado na primeira chamada.
+- `src/llm/codex.ts`: o `codex exec` como `SdkMinimo`. Reaproveita do `assinatura.ts` a transcrição, o prompt de sistema e o schema da resposta. A parte que transforma a resposta estruturada em mensagem saiu para `mensagemEstruturada`, que os dois caminhos usam. O prompt de sistema vai por `-c model_instructions_file=<arquivo>`, o schema por `--output-schema`, a resposta por `--output-last-message`, a conversa pelo stdin (`-`) e o uso de tokens vem do `turn.completed` do `--json`.
+- `src/llm/disponibilidade.ts`: `statusDosCaminhos` e `escolhaPermitida`. Cada CLI é conferido **com o mesmo ambiente da chamada**, sem a chave da API (`ambienteDoClaude`, `ambienteDoCodex`). Na conferência real, o `next dev` lê o `.env`, e o `claude auth status` com a `ANTHROPIC_API_KEY` no ambiente respondia "logado por chave de API".
+- `CODEX_CONFERIDO` (`null`): enquanto as flags não forem conferidas com um CLI instalado, a opção do ChatGPT fica desligada com esse motivo. Depois, ela exige uma versão igual ou mais nova que a conferida.
+- O banco: a tabela `configuracao`, com uma linha (`id` sempre `true`), o enum `caminho_modelo` e o `modelo_codex` (migração 0020). `configuracaoDaInstancia()` devolve a API quando não há nada gravado.
+- A tela: `/casa/configuracao` (`_telas/form-configuracao.tsx`, ação `salvarConfiguracao`), com o link "Configuração" no rodapé só no `MODO=local` (`a.discreto`, novo no CSS). A página chama o `connection()` **antes** de ler o modo: a mesma imagem serve o hospedado e o self-host, e o build roda sem `MODO`. Uma checagem no build congelaria um 404 que o self-host também serviria. O `AvisoDoCaminho`, no erro da geração (geral e da Vaga), e uma linha no erro do chat (`local`) apontam a Configuração.
+- O `simular` diz no relatório por qual caminho rodou (`NOME_DO_CAMINHO`); o `gerar` diz pelo modelo gravado (`assinatura:codex:` é o ChatGPT).
+
+**Verificado:** num banco à parte, com o `MODO=local` nativo e sem `LLM_BACKEND`:
+- a tela mostrou a chave encontrada, a assinatura do Claude logada (plano max) e o Codex "não instalado";
+- gravada a assinatura do Claude, uma chamada real pelo `llm()` foi pelo `claude -p` e ficou no `chamadas_llm` como `assinatura:claude-opus-5-5`, com custo zero.
+
+O caminho da API não foi chamado, para não gastar.
+
+**Pendente, com o `codex` instalado e logado no host** (`npm install -g @openai/codex`, `codex login` com a conta do ChatGPT):
+1. Conferir as flags na versão instalada. Itens:
+   - `--ignore-user-config`, `--ignore-rules`, `--ephemeral`;
+   - se o `-c approval_policy="never"`, o `features.shell_tool=false`, o `web_search="disabled"` e o `project_doc_max_bytes=0` são aceitos e fazem o que dizem;
+   - se o `AGENTS.md` global (`~/.codex/AGENTS.md`) fica de fora: a documentação não diz;
+   - que subconjunto de JSON Schema o `--output-schema` aceita: o nosso tem `anyOf`, `const` e `minItems`;
+   - a saída do `codex login status` (ChatGPT, chave de API, sem login).
+
+   Conferido, preencha `CODEX_CONFERIDO` com a versão e anote aqui.
+2. **No Windows:** o `codex` do npm é um `codex.cmd`, e o `spawn` sem shell não acha um `.cmd`: a tela diria "não instalado" e a chamada não sairia. Resolver na conferência, com `CODEX_BIN` apontando para o binário, ou chamando o `node` com o script do pacote. Não usar `shell: true`: os argumentos têm aspas e JSON.
+3. Uma conversa e uma geração pela assinatura do ChatGPT.
+4. As três personas do `simular` e o `gerar`, pelas duas assinaturas, comparados aqui. Isso gasta o limite dos dois planos, não dinheiro.
+
 ## Achados
+
+- O CLI do Claude, logado na assinatura, passa a responder `authMethod: "api_key"` quando a `ANTHROPIC_API_KEY` está no ambiente. Por isso a conferência da tela roda sem a chave, como a chamada.
