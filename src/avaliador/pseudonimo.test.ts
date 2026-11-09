@@ -74,3 +74,10 @@ describe('a empresa da vaga (passo 16)', () => {
     expect(muitas.organizacoes.map((o) => o.rotulo)).not.toContain('Empresa X');
   });
 });
+
+describe('um Corpus que veio de um arquivo (passo 27)', () => {
+  it('takes the person from the header when the imported text has no name on its first line', () => {
+    const doArquivo = protegidos({ curriculo: '{\n  "formato": "sem-sotaque/corpus"', nome: 'Fulana Inventada de Tal', organizacoes: [] });
+    expect(pseudonimizar({ fala: 'a Fulana Inventada fez o painel' }, doArquivo)).toEqual({ fala: 'a [pessoa] [pessoa] fez o painel' });
+  });
+});
