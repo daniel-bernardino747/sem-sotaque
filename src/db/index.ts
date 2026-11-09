@@ -47,6 +47,7 @@ export * from './vagas';
 export * from './contas';
 export * from './assinaturas';
 export * from './erros';
+export * from './configuracao';
 
 export type Tester = typeof testers.$inferSelect;
 export type Sessao = typeof sessoes.$inferSelect;

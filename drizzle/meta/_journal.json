@@ -141,6 +141,13 @@
       "when": 1794221713270,
       "tag": "0019_formato_corpus",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1794227430121,
+      "tag": "0020_configuracao",
+      "breakpoints": true
     }
   ]
 }
