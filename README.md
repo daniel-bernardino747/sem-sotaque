@@ -1,13 +1,42 @@
 # sem-sotaque
 
-> **In English:** a tool that interviews a Brazilian developer about their career, in Portuguese, without inventing a single number, and writes a one-page résumé in English for international jobs, in general and per job posting. Use the hosted version (paid) or run it on your own machine with your own Anthropic API key: `cp .env.example .env`, fill `ANTHROPIC_API_KEY`, `docker compose -f docker-compose.local.yml up`, open `localhost:3000`. The model never writes LaTeX: it picks a JSON Selection from what you said, and a fixed template renders the PDF.
+> **In English:** [semsotaque.teamdbsolutions.com](https://semsotaque.teamdbsolutions.com) is a tool that interviews a Brazilian developer about their career, in Portuguese, without inventing a single number, and writes a one-page résumé in English for international jobs, in general and per job posting. Use the hosted version (paid) or run it on your own machine with your own Anthropic API key: `cp .env.example .env`, fill `ANTHROPIC_API_KEY`, `docker compose -f docker-compose.local.yml up`, open `localhost:3000`. The model never writes LaTeX: it picks a JSON Selection from what you said, and a fixed template renders the PDF.
+
+**[semsotaque.teamdbsolutions.com](https://semsotaque.teamdbsolutions.com)**
+
+[![A capa do sem-sotaque: "Currículo que você defende"](docs/imagens/capa.jpg)](https://semsotaque.teamdbsolutions.com)
 
 O sem-sotaque conversa com você em português sobre o que você fez no trabalho, pergunta o que um recrutador de fora vai querer saber e escreve um currículo de uma página, em inglês, para vaga internacional. Ele não inventa número: toda métrica tem origem (você disse, ou estimou com uma âncora), e todo bullet aponta para o que você contou.
 
+## O mesmo trabalho, com o número que faltava
+
+O Rodrigo é a persona inventada dos testes. O "antes" é do currículo dele; o "depois" saiu da conversa e da geração reais, sem edição.
+
+![Antes e depois: "Implementei a idempotência na API de cobranças" vira "Ended ~30 support tickets a month about duplicate charges"](docs/imagens/antes-e-depois.jpg)
+
+Quando você não sabe o número, a pergunta muda até chegar numa âncora, e o número sai com `~`. Na entrevista, você sabe de onde veio cada um.
+
+![A pergunta pela âncora: "eram mais perto de 5 chamados ou de 50?"](docs/imagens/quanto.jpg)
+
+## Como funciona
+
+1. **Você manda** o currículo que já tem, em PDF ou colado do LinkedIn.
+2. **Ele pergunta**, uma pergunta por vez: o que é essa empresa, melhorou quanto, comparado com quê.
+3. **Sai** um currículo de uma página em inglês, cada linha nova ao lado do que você tinha escrito. Para cada vaga, você cola o anúncio e sai uma versão feita para ela. Se a vaga pede algo que nada do que você contou mostra, o currículo da vaga diz "não coberto": a linha não é inventada.
+
+O seu Corpus (tudo o que você contou) é seu: dá para baixar o arquivo e levá-lo para a versão local, ou apagar tudo.
+
 ## Pague ou rode local
 
-- **Hospedado:** você paga a assinatura e usa no navegador, sem instalar nada. O modelo roda na conta do sem-sotaque.
+- **Hospedado, em [semsotaque.teamdbsolutions.com](https://semsotaque.teamdbsolutions.com):** você assina e usa no navegador, sem instalar nada. O modelo roda na conta do sem-sotaque.
+  - **R$ 99 por trimestre**, o preço do beta, travado enquanto a assinatura estiver ativa.
+  - 15 vagas por trimestre, cada uma com até 3 versões.
+  - Cancela quando quiser; o acesso vai até o fim do trimestre pago.
+  - 7 dias para desistir, com o dinheiro de volta.
+  - Entra com o GitHub ou o Google, sem senha.
 - **Local:** o mesmo código, de graça, na sua máquina, só para você. O modelo roda na **sua** chave da API da Anthropic, e o gasto é seu (a conversa e o currículo geral ficam perto de US$ 1,15 por sessão, medido nas simulações).
+
+[![Entrar e assinar: R$ 99 por trimestre, 15 vagas por trimestre, 7 dias para desistir](docs/imagens/preco.jpg)](https://semsotaque.teamdbsolutions.com/entrar)
 
 O código é um só. O que muda é a variável `MODO`: o `local` é para um usuário só, sem login, sem pagamento, sem landing e sem o painel `/admin`. No `local` também não há tela de consentimento (quem preenche o `.env` já escolheu por onde o dado passa) nem limite de vagas; o teto de gasto por sessão continua valendo (`TETO_SESSAO_USD`).
 
